@@ -1,0 +1,321 @@
+body {
+
+/* background-image: url('../images/chemicals-8797257.png');  */
+
+background-size: cover; /* ปรับขนาดให้เต็มพื้นที่ */
+background-repeat: no-repeat; /* ไม่ให้ภาพซ้ำ */
+background-position: center; /* จัดภาพให้อยู่กลาง */
+font-family: Arial, sans-serif; /* ฟอนต์ที่ใช้ในหน้าเว็บ */
+
+}
+
+.navbar {
+
+background: -webkit-linear-gradient(to right, #FFF9B0, #FFB3B3);
+background: linear-gradient(to right, #FFF9B0, #FFB3B3);
+/* สีพื้นหลังเหลืองพาสเทล */
+
+/* ความกว้างเต็มจอ */
+padding-right: 30px;
+}
+
+.navbar-brand .brand-title {
+color: #ddbc58; /* สีฟอนต์เหลืองพาสเทลสำหรับหัวข้อ */
+}
+
+.navbar-brand .brand-subtitle {
+color: #7e6007; /* สีฟอนต์เหลืองพาสเทลที่อ่อนกว่า subtitle */
+}
+
+.navbar-nav .nav-link {
+color: #a91f3d; /* สีฟอนต์เหลืองพาสเทลเข้มสำหรับลิงก์เมนู */
+}
+
+.navbar-nav .nav-link:hover {
+color: #FFD700; /* สีเหลืองพาสเทลเมื่อเอาเมาส์ไปวาง */
+}
+
+.navbar-toggler {
+border-color: #FFD966; /* สีเหลืองพาสเทลสำหรับปุ่ม toggle */
+}
+
+.dropdown-menu {
+background-color: #FFF9E6; /* สีพื้นหลังเหลืองพาสเทลสำหรับเมนู dropdown */
+}
+
+.dropdown-item:hover {
+background-color: #FFECB3; /* สีเหลืองพาสเทลสำหรับ dropdown item เมื่อเอาเมาส์ไปวาง */
+}
+
+.navbar-brand {
+text-decoration: none; /* ลบขีดเส้นใต้ */
+color: #333; /* สีข้อความ */
+display: inline-block; /* ทำให้สามารถจัดระยะห่างด้านในได้ */
+text-align: center; /* จัดข้อความให้อยู่กึ่งกลาง */
+line-height: 1.2; /* ความสูงบรรทัด */
+padding: 10px; /* ระยะห่างด้านใน */
+}
+
+.brand-title {
+font-size: 24px; /* ขนาดฟอนต์ใหญ่สำหรับหัวข้อ */
+font-weight: bold; /* ทำให้ข้อความหนาขึ้น */
+color: #2a5d84; /* สีฟ้าเข้ม */
+}
+
+.brand-subtitle {
+font-size: 18px; /* ขนาดฟอนต์เล็กกว่าสำหรับ subtitle */
+font-weight: 300; /* น้ำหนักฟอนต์บางลง */
+color: #4a4a4a; /* สีเทาเข้ม */
+}
+
+.testcollor{
+background-color: #000000;
+}
+
+/* search2  */
+
+.containersearch {
+display: flex;
+justify-content: center;
+align-items: center; 
+flex-direction: column;
+top: 0;
+width: 100%;
+}
+
+
+.eachrow{
+    width: 100%;
+    max-width: 1200px;
+
+    
+}
+/* สไตล์สำหรับการ์ด */
+.card {
+    width: 100%;
+    max-width: 1200px;
+    padding: 10px;
+    margin-bottom: 40px;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    /* align-items: center; */
+    
+    transition: background-color 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+}
+.detail{
+    
+}
+
+
+.card:hover {
+    background-color: #FFB3B3;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    
+}
+
+.avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background-color: #ccc;
+    margin-right: 15px;
+}
+
+.info {
+    flex: 1;
+    display: flex; /* ตั้งค่าให้เป็น flex */
+    align-items: center; /* จัดตำแหน่งให้อยู่กึ่งกลางในแนวตั้ง */
+}
+
+.title {
+    font-size: 18px;
+    font-weight: bold;
+    
+}
+
+.company {
+    color: #555;
+    font-size: 14px;
+}
+
+.tag {
+    background-color: #e0f7fa;
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 14px;
+}
+
+
+
+.container-welcome-title {
+    z-index: 1000;
+    height: 600px;
+    width: 1200px;
+    margin-top: 100px;
+    display: flex;
+    justify-content: space-around;
+    align-items:right;
+}
+
+.title-welcome {
+    
+    backdrop-filter: blur(2px);
+    height: 200px;
+    width: 400px;
+    
+    margin-left:60%;
+    right: 20px; /* ตำแหน่งชิดขวา */
+    padding: 20px;
+    border-radius: 8px;
+    text-align: right;
+    color: #333;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+}
+
+.title-welcome h1 {
+    font-size: 36px; /* ขนาดตัวอักษรใหญ่ขึ้น */
+    color: #FFD966;
+    
+}
+
+.title-welcome p {
+    font-size: 22px; /* ขนาดตัวอักษรใหญ่ขึ้น */
+    color: #FFD966;
+        /* ระยะเยื้องขวาเล็กน้อย */
+}
+
+.rectangle-container {
+    
+    display: flex;
+    position: absolute;
+    top:480px;
+    left:15px;
+    gap: 10px;
+}
+
+.rectangle {
+    cursor:pointer;
+    padding: 20px;
+    background: #FFF9B0;
+    height: 200px;
+    width: 240px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    font-size: 16px;
+    color: #555;
+    text-decoration: none;
+    
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.rectangle p{
+    display: flex;
+    padding:10px;
+    
+    
+}
+.rectangle h1{
+    display: flex;
+    padding:10px;
+    
+    
+}
+
+/* การเปลี่ยนสีและเพิ่มเอฟเฟ็กต์เมื่อ hover */
+.rectangle:hover {
+    background-color: rgba(243, 204, 63, 1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transform: scale(1.05);
+    color: #7e6007;
+}
+
+.eachrow  p{
+    color:#333;
+}
+
+.search-bars{
+    display: flex;
+    justify-content: center; /* จัดให้อยู่กึ่งกลางแนวนอน */
+    align-items: center; /* จัดให้อยู่กึ่งกลางแนวตั้ง */
+    gap: 10px; /* เพิ่มช่องว่างระหว่างแต่ละ search-bar */
+    margin-bottom: 4px;
+}
+.search-bar .form-control{
+    width:300px;
+}
+.search-bar-btn{
+    background: -webkit-linear-gradient(to right, #FF4B2B, #FF416C);
+	background: linear-gradient(to right, #FF4B2B, #FF416C);
+    margin-bottom: 40px;
+
+}
+
+/* button */
+.button-20 {
+    z-index: 5;
+    appearance: button;
+    background-color: #ded127;
+    background-image: linear-gradient(180deg, rgba(255, 255, 255, .15), rgba(255, 255, 255, 0));
+    border: 1px solid #4D4AE8;
+    border-radius: 1rem;
+    box-shadow: rgba(255, 255, 255, 0.15) 0 1px 0 inset,rgba(46, 54, 80, 0.075) 0 1px 1px;
+    box-sizing: border-box;
+    color: #FFFFFF;
+    cursor: pointer;
+    display: flex;
+    position: absolute;
+    right: 125px;
+    transform: translateY(40px);
+    font-family: Inter,sans-serif;
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.5;
+    margin: 0;
+    padding: .5rem 1rem;
+    text-align: center;
+    text-transform: none;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+    user-select: none;
+    -webkit-user-select: none;
+    touch-action: manipulation;
+    /* vertical-align: middle; */
+  }
+  
+  .button-20:focus:not(:focus-visible),
+  .button-20:focus {
+    outline: 0;
+  }
+  
+  .button-20:hover {
+    background-color: #9b7c15;
+    border-color: #3733E5;
+  }
+  
+  .button-20:focus {
+    background-color: #ded127;
+    border-color: #3E3BBA;
+    box-shadow: rgba(255, 255, 255, 0.15) 0 1px 0 inset, rgba(46, 54, 80, 0.075) 0 1px 1px, rgba(104, 101, 235, 0.5) 0 0 0 .2rem;
+  }
+  
+  .button-20:active {
+    background-color: #ded127;
+    background-image: none;
+    border-color: #3A38AE;
+    box-shadow: rgba(46, 54, 80, 0.125) 0 3px 5px inset;
+  }
+  
+  .button-20:active:focus {
+    box-shadow: rgba(46, 54, 80, 0.125) 0 3px 5px inset, rgba(104, 101, 235, 0.5) 0 0 0 .2rem;
+  }
+  
+  .button-20:disabled {
+    background-image: none;
+    box-shadow: none;
+    opacity: .65;
+    pointer-events: none;
+  }
