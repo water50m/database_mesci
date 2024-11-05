@@ -4,13 +4,20 @@ require 'config/querySQL.php';
 $query = new SQLquery();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $id = $_POST['_id'];
-    $result = $query->selectAllDetail($id);
-    $fucn_query = $query->selectFacuty();
-    $region = $query->selectRegion();
-    $num_receive_per_year = $query->selectAllreceive_year($result['id']);
-
+    $type = $_POST['_id'];
 }
+
+$gettype =  isset($_GET['type']) ? $_GET['type'] : '';
+if($gettype){
+    $type = $gettype;
+}
+$result = $query->selectAllDetail($type);
+$id = $result['id'];
+
+$fucn_query = $query->selectFacuty();
+$region = $query->selectRegion();
+
+$num_receive_per_year = $query->selectAllreceive_year($id );
 
 ?>
 
@@ -43,13 +50,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         </svg>
                     </span>
                     สถานที่ฝึกงาน
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#addlocation" style="margin-left: 8px;">+</a>
+                    
                 </label>
 
 
                 <div class="input-group">
                     <?php 
-                    echo '<span class="form-control" >'.$result['location'].'</span>';
+                    echo '<input type="text"  value='.$result['location'].' class="form-control" aria-label="Text input" name="_loName">';
                     echo '<input type="text" style="display: none;" value='.$result['id'].' class="form-control" aria-label="Text input" name="_location">';
                     ?>
                     
@@ -67,7 +74,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h5  class="form-label">แผนก</h5>
             <div class="input-group">
                 <?php 
+                if($result['department']){
                 echo '<input type="text" value='.$result['department'] .' class="form-control" aria-label="Text input" name="_department">';
+                }else{
+                    echo '<input type="text"  class="form-control" aria-label="Text input" name="_department">';
+                }
                 ?>
                
             </div>
@@ -109,7 +120,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <h5  class="form-label">ที่อยู่</h5>
             <div class="input-group">
                 <?php 
-                echo '<textarea class="form-control" id="floatingTextarea2" style="height: 100px" name="_address">'.$result['address'].'</textarea>';
+                if($result['address']){ echo '<textarea class="form-control" id="floatingTextarea2" style="height: 100px" name="_address">'.$result['address'].'</textarea>';
+                }else{
+
+                    echo '<textarea class="form-control" id="floatingTextarea2" style="height: 100px" name="_address"></textarea>' ;
+                }
+               
                 ?>
                 
                 
@@ -151,15 +167,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
         <h5  class="form-label">จำนวนที่รับ</h5>
         <div class="input-group mb-3">
-            <!-- <select class="form-select" id="button-addon1" aria-label="Default select example">
-            <option selected>ภาคการศึกษา</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">ฤดูร้อน</option>
-            </select> -->
-            <input type="text" class="form-control"  value="แก้ไขจำนวนของปีที่มีในฐานข้อมูล" ria-label="Text input" name="_count1" readonly>
+
+            <input type="text" class="form-control"  value="แก้ไขจากปีที่มีในฐานข้อมูลแล้ว" ria-label="Text input" name="_count1" readonly>
             
-            <select class="form-select" aria-label="Default select example" id='_year1' name="_year1" onchange="handleSelectChange(this)">
+            <select class="form-select" aria-label="Default select example" id='_year1'  onchange="handleSelectChange(this)">
                 <option value='dontChange' selected>ภาคการศึกษา</option>
                 <?php foreach ($num_receive_per_year as $_year){
                     echo '<option value="'.htmlspecialchars($_year['id']).'">'.htmlspecialchars($_year['term']).'/'.htmlspecialchars($_year['year']).'</option>';
@@ -168,23 +179,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     ?>
        
             </select>
+            <input type="number" style="display: none;" class="form-control" placeholder="ภาคการศึกษาที่..." aria-label="Text input" id="_term1_before" name="_term1_before" >
+            <input type="number" style="display: none;" class="form-control" placeholder="ปีการศึกษา..." aria-label="Text input" id="_year1_before" name="_year1_before" >
+            
+            <input type="number" class="form-control" placeholder="ภาคการศึกษาที่..." aria-label="Text input" id="_term1" name="_term1" readonly ondblclick="this.removeAttribute('readonly'); this.style.cursor = 'text';" onblur="this.setAttribute('readonly', true); this.style.cursor = 'pointer'; " style="cursor: pointer;">
+            <input type="number" class="form-control" placeholder="ปีการศึกษา..." aria-label="Text input" id="_year1Input" name="_year1" readonly ondblclick="this.removeAttribute('readonly'); this.style.cursor = 'text';" onblur="this.setAttribute('readonly', true); this.style.cursor = 'pointer'; " style="cursor: pointer;">
             <input 
-                type="number" 
-                class="form-control" 
-                placeholder="รับ...คน" 
-                aria-label="Text input" 
-                id="countInput" 
-                name="_count1" 
-                disabled 
-                onclick="this.disabled = false;" 
-                onblur="this.disabled = true;"
-            >
-
+            type="number" 
+            class="form-control" 
+            placeholder="รับ...คน" 
+            aria-label="Text input" 
+            id="countInput" 
+            name="_receive" 
+            readonly
+            ondblclick="this.removeAttribute('readonly'); this.style.cursor = 'text';" 
+            onblur="this.setAttribute('readonly', true); this.style.cursor = 'pointer'; " 
+            style="cursor: pointer;"
+        >
         </div>
 
         <div class="input-group mb-3">
-           <input type="text" class="form-control"  value="เพิ่มปีการศึกษาใหม่" ria-label="Text input" name="_count1" readonly>
-            <input type="number" class="form-control" placeholder="ภาคการศึกษาที่..." aria-label="Text input" name="_term">
+           <input type="text" class="form-control"  value="เพิ่มปีการศึกษาใหม่" ria-label="Text input"  readonly>
+            <input type="number" class="form-control" placeholder="ภาคการศึกษาที่..." aria-label="Text input" name="_term2">
             <input type="number" class="form-control" placeholder="ปีการศึกษา..." aria-label="Text input" name="_year2">
             <input type="number" class="form-control" placeholder="รับ...คน" aria-label="Text input" name="_count2">
         </div>
@@ -202,25 +218,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     </form>
 
 
-<!-- Modal -->
-<div class="modal fade" id="addlocation" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="staticBackdropLabel">เพิ่มสถานที่</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <h5 class="form-label">ชื่อสถานที่</h5>
-                        <input type="text" class="form-control" aria-label="Text input">
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-                        <button type="button" class="btn btn-primary">เพิ่ม</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+
 
 
 <script>
@@ -233,6 +231,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             numReceivePerYear.forEach(item=>{
             if (selectedValue == item['id']){
                 document.getElementById('countInput').value = item['received'];
+                document.getElementById('_term1').value = item['term'];
+                document.getElementById('_year1Input').value = item['year'];
+                document.getElementById('_term1_before').value = item['term'];
+                document.getElementById('_year1_before').value = item['year'];
+            }if(selectedValue == 'dontChange'){
+                document.getElementById('countInput').value = 'รับ...คน';
+                document.getElementById('_term1').value = 'ภาคการศึกษาที่...';
+                document.getElementById('_year1Input').value = 'ปีการศึกษา...';
             }
         })
         } else {

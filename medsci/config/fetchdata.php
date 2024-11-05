@@ -54,10 +54,10 @@ if (isset($_GET['func']) && $_GET['func'] == 2 ) {
     $params = [];
     if ($location) {
         
-        $mainWordQuery .= " AND d.location LIKE :location";
-        $params[':location'] = '%' . $location . '%';
+        $mainWordQuery .= " AND LOWER(d.location) LIKE LOWER(:location)";
+        $params[':location'] = '%' . strtolower($location) . '%';
     }
-    if ($region && $region!='allr') {
+    if ($region && $region!='allr' && $region != 'noselect') {
         
         $mainWordQuery .= " AND r.name LIKE :region";
         $params[':region'] = '%' . $region . '%';
