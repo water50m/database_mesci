@@ -11,7 +11,7 @@
     <title>Sign in</title>
 </head>
 <body>
-    <a href="search.php">Page</a>
+    <a href="search.php">คลิกที่นี่เพื่อเข้าสู่เว็บไซต์</a>
 <!-- <h2>Weekly Coding Challenge #1: Sign in/up Form</h2> -->
 <div class="container" id="container">
 	<div class="form-container sign-up-container">
@@ -68,7 +68,7 @@
 		<a target="_blank" href="https://www.florin-pop.com/blog/2019/03/double-slider-sign-in-up-form/">here</a>.
 	</p>
 </footer>
-<script src="..\scripts\script.js"></script>
+<script src="js/script.js"></script>
 
 </body>
 

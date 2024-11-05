@@ -79,6 +79,38 @@ class SQLquery {
             echo "Error: " . $e->getMessage();
         }
     }
+    public function selectAllDetail($id){
+        try{
+            $stmt = $this->conn->prepare("SELECT d.id,d.location, d.department, d.Scope_work, d.receive_term1, d.receive_term2,f.id AS fid, 
+                      f.major_subject AS majorName, r.name AS regionName ,r.id AS rid ,d.address,d.sendto,d.coordinator,d.Scope_work
+                      FROM detail d 
+                      JOIN facuty f ON f.id = d.facuty_id 
+                      JOIN region r ON d.region_id = r.id
+                      JOIN recieve_year y ON d.id = y.location_id
+                      WHERE d.id = ?
+                      ");
+            $stmt->execute([$id]);          
+            $result = $stmt-> fetch(PDO::FETCH_ASSOC);
+            return $result;
+        }
+        catch(PDOEException $e) {
+            echo "Error: " .$e->getMessage();
+        }
+    }
+    public function selectAllreceive_year($id){
+        try{
+            $stmt = $this->conn->prepare("SELECT  *
+                      FROM recieve_year
+                      WHERE location_id = ?
+                      ");
+            $stmt->execute([$id]);          
+            $result = $stmt-> fetchAll(PDO::FETCH_ASSOC);
+            return $result;
+        }
+        catch(PDOEException $e) {
+            echo "Error: " .$e->getMessage();
+        }
+    }
 }
 
 

@@ -7,7 +7,8 @@ if (isset($_GET['func']) && $_GET['func'] == 1) {
     $db = new connectdb();
     $conn = $db->connectPDO();
 
-    $details_query = "SELECT d.location, d.department, d.Scope_work, d.receive_term1, d.receive_term2, f.major_subject AS majorName ,r.name AS regionName
+    $details_query = "SELECT d.id,d.location, d.department, d.Scope_work, d.receive_term1, d.receive_term2, 
+                 f.major_subject AS majorName ,r.name AS regionName
                   FROM detail d 
                   JOIN facuty f ON f.id = d.facuty_id 
                   JOIN region r ON d.region_id = r.id
@@ -35,14 +36,15 @@ $details = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 
 
-if (isset($_POST['func']) && $_POST['func'] == 2) {
+if (isset($_GET['func']) && $_GET['func'] == 2 ) {
     $location = $_POST['location'] ?? null;
     $region = $_POST['region'] ?? null;
     $department = $_POST['department'] ?? null;
     $branch = $_POST['branch'] ?? null;
+    
 
     // เริ่มสร้าง query หลัก
-    $mainWordQuery = "SELECT d.location, d.department, d.Scope_work, d.receive_term1, d.receive_term2, 
+    $mainWordQuery = "SELECT d.id,d.location, d.department, d.Scope_work, d.receive_term1, d.receive_term2, 
                       f.major_subject AS majorName, r.name AS regionName
                       FROM detail d 
                       JOIN facuty f ON f.id = d.facuty_id 
@@ -65,7 +67,7 @@ if (isset($_POST['func']) && $_POST['func'] == 2) {
         $mainWordQuery .= " AND d.department LIKE :department";
         $params[':department'] = '%' . $department . '%';
     }
-    if ($branch && $branch != 'noselect') {
+    if ($branch && $branch != 'noselect' && $branch != 'allp') {
         $mainWordQuery .= " AND f.major_subject LIKE :branch";
         $params[':branch'] = '%' . $branch . '%';
     }
@@ -92,8 +94,6 @@ if (isset($_POST['func']) && $_POST['func'] == 2) {
         'value' => $details
     ]);
 }
-
-
 
 
 ?>

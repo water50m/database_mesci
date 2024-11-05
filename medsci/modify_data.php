@@ -1,3 +1,19 @@
+<?php 
+
+require 'config/querySQL.php';
+$query = new SQLquery();
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $id = $_POST['_id'];
+    $result = $query->selectAllDetail($id);
+    $fucn_query = $query->selectFacuty();
+    $region = $query->selectRegion();
+    $num_receive_per_year = $query->selectAllreceive_year($result['id']);
+
+}
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,186 +21,229 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     
-    <script src="js/scripts.js"></script>
-    <script src="js/page_search2.js"></script>
+    <link rel="stylesheet" href="css/addData.css">
+
+    
     <title>แก้ไขข้อมูล</title>
     <style>
-        .container2 {
-            
-            justify-content: center;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
 
-        .form-label {
-            display: inline-flex;
-            align-items: center;
-        }
-
-        .icon-container {
-            display: inline-flex;
-            align-items: center;
-            background-color: #e0f7fa; /* สีพื้นหลังเบาๆ */
-            border-radius: 50%; /* ให้เป็นวงกลม */
-            padding: 4px;
-            margin-right: 8px;
-        }
-
-        .size-3 {
-            width: 24px; /* ปรับขนาดไอคอน */
-            height: 24px;
-            stroke: #00796b; /* สีขอบไอคอน */
-        }
-
-        .box {
-            width: 100%;
-            max-width: 1000px;
-            
-        }
-        .modal h1,h5{
-            color:#333;
-        }
-        input{
-            color: rgba(255, 247, 204, 0.8);
-        }
-        .form-label {
-            color:#333;
-        }
     </style>
 </head>
 <body>
 <?php include 'navbar.php'; ?>
 <div class="container2">
-    
-    <div class="box">
-        <div class="mb-3">
-            <label class="form-label">
-                <span class="icon-container">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-3">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"></path>
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"></path>
-                    </svg>
-                </span>
-                สถานที่ฝึกงาน
+    <form action="config/modify_datadb.php" method="POST">
+        <div class="box">
+            <div class="mb-3">
+                <label class="form-label">
+                    <span class="icon-container">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-3">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"></path>
+                        </svg>
+                    </span>
+                    สถานที่ฝึกงาน
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#addlocation" style="margin-left: 8px;">+</a>
+                </label>
+
+
+                <div class="input-group">
+                    <?php 
+                    echo '<span class="form-control" >'.$result['location'].'</span>';
+                    echo '<input type="text" style="display: none;" value='.$result['id'].' class="form-control" aria-label="Text input" name="_location">';
+                    ?>
+                    
+                    
                 
-            </label>
 
-            <select id='location' class="form-select" aria-label="Default select example">
-                <option velue='noSelect' selected>เลือกสถานที่</option>
-                <option value="1">One</option>
-                <option value="2">Two</option>
-                <option value="3">Three</option>
+            </div>
+            </div>
+                <div class="input-group mb-3">
+                <label class="input-group-text" for="inputGroupFile01">รูปภาพ</label>
+                <input type="file" class="form-control" id="inputGroupFile01" name="_image">
+                </div>
+        
+        <div class="mb-3">
+            <h5  class="form-label">แผนก</h5>
+            <div class="input-group">
+                <?php 
+                echo '<input type="text" value='.$result['department'] .' class="form-control" aria-label="Text input" name="_department">';
+                ?>
+               
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <h5 class="form-label">สาขาวิชา</h5>
+            <select class="form-select" aria-label="Default select example" name="_faculty">
+                <option selected>เลือกสาขาวิชา</option>
+                <?php 
+                        echo '<option selected value='.$result['fid'].'>'.$result['majorName'].'</option>';
+                 ?>
+                <?php foreach ($fucn_query as $faculty): ?>
+                    <?php if($faculty['f_major'] == $result['majorName']){ }else{?>
+                    <option value="<?php echo $faculty['fid']; ?>">
+                        <?php echo $faculty['f_major']; ?>
+                    </option>
+                <?php }endforeach; ?>
             </select>
+        </div>
 
+        <div class="mb-3">
+            <h5 class="form-label">ภูมิภาค</h5>
+            <select class="form-select" aria-label="Default select example" name="_region">
+                <option selected>เลือกภูมิภาค</option>
+                <?php 
+                        echo '<option selected value='.$result['rid'].'>'.$result['regionName'].'</option>';
+                 ?>
+                <?php foreach ($region as $_region): ?>
+                    <?php if($_region['id'] == $result['rid']){ }else{?>
+                    <option value="<?php echo $_region['id']; ?>" >
+                        <?php echo $_region['name']; ?>
+                    </option>
+                <?php }endforeach; ?>
+            </select>
+         </div>
+
+        <div class="mb-3">
+            <h5  class="form-label">ที่อยู่</h5>
+            <div class="input-group">
+                <?php 
+                echo '<textarea class="form-control" id="floatingTextarea2" style="height: 100px" name="_address">'.$result['address'].'</textarea>';
+                ?>
+                
+                
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <h5  class="form-label">เรียน</h5>
+            <div class="input-group">
             
+            <?php
+            echo '<textarea class="form-control"  id="floatingTextarea2" style="height: 100px" name="_sendto">'.$result['sendto'].'</textarea>';
+            ?>
+            </div>
         </div>
 
-    <div class="mb-3">
-        <h5  class="form-label">ที่อยู่</h5>
-        <div class="input-group">
-            <textarea id='address' class="form-control" id="floatingTextarea2" style="height: 100px"></textarea>
+
+        <div class="mb-3">
+            <h5  class="form-label">ผู้ประสานงาน</h5>
+            <div class="input-group">
+                
+                <?php
+            echo '<input type="text" value="'.$result['coordinator'].'" class="form-control" aria-label="Text input" name="_coordinator">';
+            ?>
+            </div>
+        </div>
+
+
+        <div class="mb-3">
+            <h5  class="form-label">ขอบข่ายงาน</h5>
+            <div class="input-group">
             
+            <?php
+            echo '<textarea class="form-control"  id="floatingTextarea2" style="height: 100px" name="_scope">'.$result['Scope_work'].'</textarea>';
+            ?>
+            </div>
         </div>
-    </div>
 
-    <div class="mb-3">
-        <h5  class="form-label">เรียน</h5>
-        <div class="input-group">
-        <textarea id='sender_to' class="form-control"  id="floatingTextarea2" style="height: 100px"></textarea>
         
+        <h5  class="form-label">จำนวนที่รับ</h5>
+        <div class="input-group mb-3">
+            <!-- <select class="form-select" id="button-addon1" aria-label="Default select example">
+            <option selected>ภาคการศึกษา</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">ฤดูร้อน</option>
+            </select> -->
+            <input type="text" class="form-control"  value="แก้ไขจำนวนของปีที่มีในฐานข้อมูล" ria-label="Text input" name="_count1" readonly>
+            
+            <select class="form-select" aria-label="Default select example" id='_year1' name="_year1" onchange="handleSelectChange(this)">
+                <option value='dontChange' selected>ภาคการศึกษา</option>
+                <?php foreach ($num_receive_per_year as $_year){
+                    echo '<option value="'.htmlspecialchars($_year['id']).'">'.htmlspecialchars($_year['term']).'/'.htmlspecialchars($_year['year']).'</option>';
+
+                    }                    
+                    ?>
+       
+            </select>
+            <input 
+                type="number" 
+                class="form-control" 
+                placeholder="รับ...คน" 
+                aria-label="Text input" 
+                id="countInput" 
+                name="_count1" 
+                disabled 
+                onclick="this.disabled = false;" 
+                onblur="this.disabled = true;"
+            >
+
         </div>
-    </div>
 
-
-    <div class="mb-3">
-        <h5  class="form-label">ผู้ประสานงาน</h5>
-        <div class="input-group">
-            <input id='coordinator' type="text" class="form-control" aria-label="Text input">
+        <div class="input-group mb-3">
+           <input type="text" class="form-control"  value="เพิ่มปีการศึกษาใหม่" ria-label="Text input" name="_count1" readonly>
+            <input type="number" class="form-control" placeholder="ภาคการศึกษาที่..." aria-label="Text input" name="_term">
+            <input type="number" class="form-control" placeholder="ปีการศึกษา..." aria-label="Text input" name="_year2">
+            <input type="number" class="form-control" placeholder="รับ...คน" aria-label="Text input" name="_count2">
+        </div>
         
+        <div class="d-flex justify-content-between mt-3">
+            <button type="submit" class="btn btn-danger btn-lg w-100 me-2" role="button">ลบ</button>
+            <button type="submit" class="btn btn-warning btn-lg w-100 ms-2" role="button">แก้ไข</button>
         </div>
-    </div>
 
 
-    <div class="mb-3">
-        <h5  class="form-label">ขอบข่ายงาน</h5>
-        <div class="input-group">
-        <textarea id='scope_work' class="form-control"  id="floatingTextarea2" style="height: 100px"></textarea>
-        
-        </div>
-    </div>
 
+        <div class="input-group mb-3" style="padding: 50px;">
     
-    <h5  class="form-label">จำนวนที่รับ เทอม 1</h5>
-    <div class="input-group mb-3">
-        <select id='term1' class="form-select" id="button-addon1" aria-label="Default select example">
-        <option velue='noSelect' selected>ภาคการศึกษา</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">ฤดูร้อน</option>
-        </select>
+        </div>
+    </form>
+
+
+<!-- Modal -->
+<div class="modal fade" id="addlocation" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="staticBackdropLabel">เพิ่มสถานที่</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <h5 class="form-label">ชื่อสถานที่</h5>
+                        <input type="text" class="form-control" aria-label="Text input">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                        <button type="button" class="btn btn-primary">เพิ่ม</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+<script>
+     function handleSelectChange(selectElement) {
+        const selectedValue = selectElement.value; // ค่าที่เลือก
         
-        <input id='year' type="number" class="form-control" placeholder="ปีการศึกษา..." aria-label="Text input">
-        <input id='receive'type="number" class="form-control" placeholder="รับ...คน"aria-label="Text input">
-    </div>
-    
-    <h5  class="form-label">จำนวนที่รับ  เทอม 2</h5>
-    <div class="input-group mb-3">
-        <select id='term2' class="form-select" id="button-addon1" aria-label="Default select example">
-        <option velue='noSelect' selected>ภาคการศึกษา</option>
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">ฤดูร้อน</option>
-        </select>
         
-        <input id='year' type="number" class="form-control" placeholder="ปีการศึกษา..." aria-label="Text input">
-        <input id='receive'type="number" class="form-control" placeholder="รับ...คน"aria-label="Text input">
-    </div>
-
-    <div class="input-group mb-3" style="padding: 50px;">
+        const numReceivePerYear = <?php echo json_encode($num_receive_per_year); ?>;
+        if (Array.isArray(numReceivePerYear)) {
+            numReceivePerYear.forEach(item=>{
+            if (selectedValue == item['id']){
+                document.getElementById('countInput').value = item['received'];
+            }
+        })
+        } else {
+            console.error("numReceivePerYear ไม่ใช่อาร์เรย์", numReceivePerYear);
+        }
+        // console.log(numReceivePerYear)
         
-    </div>
 
-
-
-
-
-    <script>
-    
-    // ฟังก์ชันเพื่อดึงค่าจาก URL
-    function getQueryParameter(param) {
-            const urlParams = new URLSearchParams(window.location.search);
-            return urlParams.get(param);
     }
 
-    // ตั้งค่าตามค่าที่ได้จาก URL
-    const dataParam = getQueryParameter('data');
-    if (dataParam) {
-            try {
-                // แปลงข้อมูล JSON String เป็น Object
-                const data = JSON.parse(decodeURIComponent(dataParam));
-
-                // document.getElementById('location').value = data.location;
-                // document.getElementById('address').value = data.test;
-                // document.getElementById('sender_to').value = data.test;
-                // document.getElementById('coordinator').value = data.coordinator;
-                // document.getElementById('scope_work').value = data.test;
-                document.getElementById('term1').value = '1';
-                // document.getElementById('term2').value = '2';
-                // document.getElementById('year1').value = data.year;
-                // document.getElementById('receive1').value = data.receive;
-                // document.getElementById('year2').value = data.year;
-                // document.getElementById('receive2').value = data.receive;
-            } catch (error) {
-                console.error('Error parsing JSON:', error);
-                document.getElementById('dataDisplay').innerText = 'ไม่สามารถแปลงข้อมูล JSON ได้';
-            }
-        } else {
-            document.getElementById('dataDisplay').innerText = 'ไม่พบข้อมูล';
-        }
-        
-    
-    
+    ;
 </script>
 </div>
 </div>

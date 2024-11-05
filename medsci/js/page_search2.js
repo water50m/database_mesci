@@ -1,8 +1,9 @@
     
+
    function fetchData(element) {
     // ดึงค่า attribute 'value' จาก element ที่ถูกคลิก
     const value = element.getAttribute('value');
-    console.log('value is:', value);
+    
     
     // เรียกข้อมูลจากไฟล์ PHP ที่จะ query ข้อมูล
     fetch(`config/fetchdata.php?func=1&value=${value}`)
@@ -13,13 +14,26 @@
             return response.json(); // แปลง JSON จากการตอบกลับ
         })
         .then(data => {
-            console.log(data);
+            
+            
             let htmlContent = '';
-
+            if (Array.isArray(data.value) && data.value.length === 0) {
+                // ถ้าเป็นอาร์เรย์ว่าง ให้แสดงข้อความแจ้งเตือนสีแดง
+                htmlContent = `
+                    <div style="color: red; font-weight: bold; text-align: center; margin: 20px; margin-bottom: 40px;">
+                        ไม่มีข้อมูลนี้ในรายการ
+                    </div>
+                `;
+            } else {
+    
             // ใช้ forEach เพื่อวนลูปตามข้อมูลใน data
             data.value.forEach(single_data => {
+                console.log(single_data);
                 htmlContent += `
-                    <button class="button-20" onclick='modifyClick(${JSON.stringify(single_data)})' role="button">แก้ไข</button>
+                    <form action="modify_data.php" method="POST">
+                        <button class="button-20" role="button">แก้ไข</button>
+                        <input type="text" id="inputGroupFile01" name="_id" value=${single_data.id} style="display: none;" ">
+                        </form>
                     <div class="card" onclick='handleCardClick(${JSON.stringify(single_data)})'>
                         
                         <div class="row">
@@ -29,13 +43,13 @@
                                     <p class="title">${single_data.location}</p>
                                     
                                 </div>
- 
+    
                             </div>
                             <div class="col">
                                 <div class="detail">
                                     <p>ด้าน: ${single_data.majorName}</p>
                                 <p>แผนก: ${single_data.department}</p>
-                                <p>ขอบข่ายงาน: ${single_data.Scope_work} คน</p>
+                                
                                 </div>
                             </div>
                             <div class="col">
@@ -46,7 +60,7 @@
                         </div>
                     </div>
                 `;
-            });
+            })};
 
             // ตั้งค่า innerHTML ของ card ด้วย htmlContent
             document.getElementById('detail_internship').innerHTML = htmlContent;
@@ -68,12 +82,12 @@ function handleSubmit(event) {
     const branch = document.getElementById('branchSelect').value;
 
     // ส่งค่าผ่าน fetch API
-    fetch(`config/fetchdata.php?`, {
+    fetch(`config/fetchdata.php?func=2`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `func=2&location=${encodeURIComponent(location)}&region=${encodeURIComponent(region)}&department=${encodeURIComponent(department)}&branch=${encodeURIComponent(branch)}`
+        body: `&location=${encodeURIComponent(location)}&region=${encodeURIComponent(region)}&department=${encodeURIComponent(department)}&branch=${encodeURIComponent(branch)}`
     })
     .then(response => {
         if (!response.ok) {
@@ -84,12 +98,23 @@ function handleSubmit(event) {
     .then(data => {
         
         let htmlContent = '';
+        if (Array.isArray(data.value) && data.value.length === 0) {
+            // ถ้าเป็นอาร์เรย์ว่าง ให้แสดงข้อความแจ้งเตือนสีแดง
+            htmlContent = `
+                <div style="color: red; font-weight: bold; text-align: center; margin: 20px; margin-bottom: 40px;">
+                    ไม่มีข้อมูลนี้ในรายการ
+                </div>
+            `;
+        } else {
 
         // ใช้ forEach เพื่อวนลูปตามข้อมูลใน data
         data.value.forEach(single_data => {
             console.log(single_data);
             htmlContent += `
-                <button class="button-20" onclick='modifyClick(${JSON.stringify(single_data)})' role="button">แก้ไข</button>
+            <form action="modify_data.php" method="POST">
+                <button class="button-20" role="button">แก้ไข</button>
+                <input type="text" id="inputGroupFile01" name="_id" value='${single_data.id}' style="display: none;" ">
+                </form>
                 <div class="card" onclick='handleCardClick(${JSON.stringify(single_data)})'>
                     
                     <div class="row">
@@ -105,7 +130,7 @@ function handleSubmit(event) {
                             <div class="detail">
                                 <p>ด้าน: ${single_data.majorName}</p>
                             <p>แผนก: ${single_data.department}</p>
-                            <p>ขอบข่ายงาน: ${single_data.Scope_work} คน</p>
+                            
                             </div>
                         </div>
                         <div class="col">
@@ -116,7 +141,7 @@ function handleSubmit(event) {
                     </div>
                 </div>
             `;
-        });
+        })};
 
         // ตั้งค่า innerHTML ของ card ด้วย htmlContent
         document.getElementById('detail_internship').innerHTML = htmlContent;

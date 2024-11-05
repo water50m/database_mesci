@@ -32,8 +32,10 @@ $region = $query->selectRegion();
         </div>
         <div class="rectangle-container">
             <?php foreach ($fucn_query as $facuty) {
-                    echo "<a onclick='fetchData(this)' class='rectangle' value='".htmlspecialchars($facuty['fid'])."'><h3>".htmlspecialchars($facuty['f_major'])."</h3><p>รับทั้งหมด ".htmlspecialchars($facuty['total'])." ตำแหน่ง</p></a>";
+
+                    echo "<a onclick='fetchData(this)' class='rectangle' value='".htmlspecialchars($facuty['fid'])."'><h3>".htmlspecialchars($facuty['f_major'])."</h3><p>รับแล้ว ".htmlspecialchars($facuty['total'])." ตำแหน่ง</p></a>";
                     }
+
                 ?>
                 
 
@@ -86,11 +88,7 @@ $region = $query->selectRegion();
                                                 echo "<option  value='".$facuty['f_major']."' >".$facuty['f_major']."</option>";
                                              }
                                         ?>
-                                        <style>
-                                            .select-branch{
-                                                color:#000000;
-                                            }
-                                        </style>
+
                                     </select>
                         
                                 </div>
@@ -126,16 +124,18 @@ $region = $query->selectRegion();
       <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Details</h5>
+            <h4 class="modal-title" id="exampleModalLabel">Details</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div class=text-modal-card>
-            <p id="modal-name">ชื่อ:</p>
-            <p id="madal-location">สถานที่ฝึกงาน:</p>
-            <p id="modal-province">จังหวัด:</p>
+            <h5 id="modal-name">ชื่อ:</h5>
+            
+            <p id="modal-department">แผนก:</p>
+            <p id="modal-major">ด้าน:</p>
             <p id="modal-region">ภูมิภาค:</p>
-            <p id="modal-year">ปีที่ฝึกงาน:</p>
+            <p id="modal-scope-work"></p>
+            
             </div>
           </div>
           <div class="modal-footer">
@@ -157,12 +157,13 @@ $region = $query->selectRegion();
     <script>
         //modal control
         function handleCardClick(data) {
+        
+            document.getElementById('modal-name').innerText = data.location;
+            document.getElementById('modal-major').innerText ='ด้าน: ' + data.majorName;
+            document.getElementById('modal-department').innerText = 'แผนก: '+ data.department;
+            document.getElementById('modal-region').innerText ='ภูมิภาค: ' +data.regionName;
+            document.getElementById('modal-scope-work').innerText = 'ขอบข่ายงาน: ' +data.Scope_work;
 
-            document.getElementById('modal-name').innerText = 'ชื่อ: ' + 'success2!';
-            // document.getElementById('modal-location').innerText = 'สถานที่ฝึกงาน: ' + data.location;
-            // document.getElementById('modal-province').innerText = 'จังหวัด: ' + province;
-            // document.getElementById('modal-region').innerText = 'ภูมิภาค: ' + data.region;
-            // document.getElementById('modal-year').innerText = 'ปีที่ฝึกงาน: ' + year;
             var myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
             myModal.show();
         }
