@@ -29,8 +29,12 @@
 
 .box {
     width: 1000px;
-    
-    
+    background-color: #ffffff; /* สีพื้นหลัง */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* เงาบาง ๆ */
+    border-radius: 10px; /* ขอบมน */
+    padding: 20px; /* เพิ่ม padding ด้านใน */
+    margin-top: 20px; /* ให้ช่องว่างด้านบน */
+
 }
 .modal h1,h5{
     color:#333;
@@ -41,8 +45,98 @@ input{
 .form-label {
     color:#333;
 }
+
+/* Button addData */
+.button-3 {
+  width: 100%;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #ff9800, #ff7300); /* ไล่เฉดสี */
+  border: none;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 8px; /* มุมโค้งมากขึ้น */
+  cursor: pointer;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15); /* เงาเพื่อให้ดูโดดเด่น */
+  transition: all 0.3s ease;
+}
+
+.button-3:hover {
+  background: linear-gradient(135deg, #ff7300, #e65c00); /* สีไล่เฉดเมื่อ hover */
+  color: black;
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2); /* เพิ่มเงาเมื่อ hover */
+  transform: translateY(-2px); /* ยกขึ้นเล็กน้อยเมื่อ hover */
+}
+
+.button-3:active {
+  background: #e65c00;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15); /* เงาลดลงเมื่อกด */
+  transform: translateY(0px); /* กลับไปตำแหน่งเดิมเมื่อกด */
+}
+
+/* Button Modify_data */
+/* ปุ่มลบ */
+.btn-danger {
+  width: 100%;
+  padding: 12px;
+  background-color: #f44336; /* สีแดงสำหรับปุ่มลบ */
+  border: none;
+  color: white; /* สีตัวหนังสือเริ่มต้นเป็นขาว */
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-danger:hover {
+  background-color: #d32f2f; /* สีเข้มขึ้นเมื่อ hover */
+  color: black; /* เปลี่ยนสีตัวหนังสือเป็นสีดำเมื่อ hover */
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+  transform: translateY(-3px);
+}
+
+.btn-danger:active {
+  background-color: #b71c1c;
+  color: black; /* ยังคงสีตัวหนังสือดำเมื่อคลิก */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(0px);
+}
+
+/* ปุ่มแก้ไข */
+.btn-warning {
+  width: 100%;
+  padding: 12px;
+  background-color: #ff9800; /* สีส้มสำหรับปุ่มแก้ไข */
+  border: none;
+  color: white; /* สีตัวหนังสือเริ่มต้นเป็นขาว */
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.btn-warning:hover {
+  background-color: #e68900; /* สีเข้มขึ้นเมื่อ hover */
+  color: black; /* เปลี่ยนสีตัวหนังสือเป็นสีดำเมื่อ hover */
+  box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+  transform: translateY(-3px);
+}
+
+.btn-warning:active {
+  background-color: #e65c00;
+  color: black; /* ยังคงสีตัวหนังสือดำเมื่อคลิก */
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(0px);
+}
+
+
+
 /* CSS button-3*/
-.container2 .button-3 {
+/* .container2 .button-3 {
     width: 100%;
   appearance: none;
   background-color: #2ea44f;
@@ -92,4 +186,4 @@ input{
 .button-3:active {
   background-color: #298e46;
   box-shadow: rgba(20, 70, 32, .2) 0 1px 0 inset;
-}
+} */

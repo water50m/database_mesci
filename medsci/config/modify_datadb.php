@@ -10,6 +10,9 @@
         $locationName = $_POST['_loName'];
         $location = $_POST['_location'];
         
+        $province = $_POST['_province'];
+        $latitude = $_POST['_latitude'];
+        $longitude = $_POST['_longitude'];
         $department = $_POST['_department'];
         $faculty = $_POST['_faculty'];
         $region =$_POST['_region'];
@@ -35,9 +38,10 @@
         $stmt1 = $conn->prepare("UPDATE detail 
         SET region_id = ?, facuty_id = ?, department = ?, 
             address = ?, sendto = ?, 
-            coordinator = ?, Scope_work = ? 
+            coordinator = ?, Scope_work = ?, province = ?,
+            latitude = ?, longtitude = ? 
         WHERE id = ?");
-        $stmt1->bind_param("iisssssi", $region, $faculty, $department, $address, $sendTo, $coordinator, $scope, $location);
+        $stmt1->bind_param("iisssssi", $region, $faculty, $department, $address, $sendTo, $coordinator, $scope, $location, $province, $latitude, $longitude);
 
         // รันคำสั่ง
         if (!$stmt1->execute()) {

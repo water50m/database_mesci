@@ -7,6 +7,9 @@ $conn = $db->connectMySQL();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // รับค่าจากฟอร์มและทำความสะอาดข้อมูล
+    $province = $_POST['_province'];
+    $latitude = $_POST['_latitude'];
+    $longitude = $_POST['_longitude'];
     $location = $_POST['_location'];
     $department = $_POST['_department'];
     $faculty = $_POST['_faculty'];
@@ -21,7 +24,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $count2 = $_POST['_count2'];
 
     // เตรียมคำสั่ง SQL สำหรับการเพิ่มข้อมูลในตาราง detail
-    $stmt1 = $conn->prepare("INSERT INTO detail (region_id, facuty_id, location, department, address, sendto, coordinator, Scope_work) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt1 = $conn->prepare("INSERT INTO detail (region_id, facuty_id, location, department, address, sendto, coordinator, Scope_work, province, latitude, longtitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     
     // ตรวจสอบการเตรียมคำสั่ง
     if ($stmt1 === false) {
@@ -29,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // ผูกค่ากับคำสั่ง
-    $stmt1->bind_param("ssssssss", $region, $faculty, $location, $department, $address, $sendTo, $coordinator, $scope);
+    $stmt1->bind_param("ssssssss", $region, $faculty, $location, $department, $address, $sendTo, $coordinator, $scope, $province, $latitude, $longitude);
     
     // รันคำสั่ง
     if (!$stmt1->execute()) {

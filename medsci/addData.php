@@ -1,13 +1,14 @@
 <?php 
-
+session_start();
+if(!isset($_SESSION['whoareyou']) ){
+    header("location: login.php");
+    exit();
+}
 require 'config/querySQL.php';
 $query = new SQLquery();
 $fucn_query = $query->selectFacuty();
 $region = $query->selectRegion();
-
-
-
-
+$func_province = $query->selectProvince();
 ?>
 
 <!DOCTYPE html>
@@ -43,19 +44,32 @@ $region = $query->selectRegion();
                     <a href="#" data-bs-toggle="modal" data-bs-target="#addlocation" style="margin-left: 8px;">+</a>
                 </label>
 
-
                 <div class="input-group">
                     <input type="text" class="form-control" aria-label="Text input" name="_location">
-                    
-                
-
+                </div>   
             </div>
-            </div>
-                <div class="input-group mb-3">
-                <label class="input-group-text" for="inputGroupFile01">รูปภาพ</label>
-                <input type="file" class="form-control" id="inputGroupFile01" name="_image">
-                </div>
         
+        <div class="mb-3">
+            <h5  class="form-label">จังหวัด</h5>
+            <select class="form-select" aria-label="Default select example" name="_province">
+                <option value="noselect" selected>เลือกจังหวัด</option>
+                <?php foreach ($func_province as $province): ?>
+                    <option value="<?php echo $province['province_id']; ?>">
+                        <?php echo $province['province_name']; ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        
+
+        <div class="mb-3">
+            <h5 class="form-label">พิกัด</h5>
+            <div class="input-group">
+                <input type="text" class="form-control" aria-label="Latitude" placeholder="ละติจูด" name="_latitude">
+                <input type="text" class="form-control" aria-label="Longitude" placeholder="ลองจิจูด" name="_longitude">
+            </div>
+        </div>
+
         <div class="mb-3">
             <h5  class="form-label">แผนก</h5>
             <div class="input-group">
@@ -83,7 +97,7 @@ $region = $query->selectRegion();
                     <option value="<?php echo $_region['id']; ?>" >
                         <?php echo $_region['name']; ?>
                     </option>
-                <?php endforeach; ?>
+                <?php endforeach; ?>    
             </select>
          </div>
 
@@ -99,7 +113,6 @@ $region = $query->selectRegion();
             <h5  class="form-label">เรียน</h5>
             <div class="input-group">
             <textarea class="form-control"  id="floatingTextarea2" style="height: 100px" name="_sendto"></textarea>
-            
             </div>
         </div>
 
@@ -107,11 +120,9 @@ $region = $query->selectRegion();
         <div class="mb-3">
             <h5  class="form-label">ผู้ประสานงาน</h5>
             <div class="input-group">
-                <input type="text" class="form-control" aria-label="Text input" name="_coordinator">
-            
+                <input type="text" class="form-control" aria-label="Text input" name="_coordinator">           
             </div>
         </div>
-
 
         <div class="mb-3">
             <h5  class="form-label">ขอบข่ายงาน</h5>
@@ -121,7 +132,6 @@ $region = $query->selectRegion();
             </div>
         </div>
 
-        
         <h5  class="form-label">จำนวนที่รับ</h5>
         <div class="input-group mb-3">
             <!-- <select class="form-select" id="button-addon1" aria-label="Default select example">
@@ -146,13 +156,13 @@ $region = $query->selectRegion();
             <input type="number" class="form-control" placeholder="รับ...คน" aria-label="Text input" name="_count2">
         </div>
         
+        <!-- <button type="submit" class="btn btn-warning btn-lg w-100 ms-2" role="button">Submit</button> -->
         <button type="submit" class="button-3" role="button">Submit</button>
 
         <div class="input-group mb-3" style="padding: 50px;">
     
         </div>
     </form>
-
 
 <!-- Modal -->
 <div class="modal fade" id="addlocation" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">

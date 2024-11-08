@@ -1,10 +1,19 @@
 <?php 
-
+session_start();
+if(!isset($_SESSION['whoareyou']) ){
+    header("location: login.php");
+    exit();
+}
 require 'config/querySQL.php';
 $query = new SQLquery();
 $fucn_query = $query->selectFacuty();
 $region = $query->selectRegion();
-
+if (isset($_GET['func']) && $_GET['func'] == 3 ) {
+    require 'config/fetchdata.php';
+    $id = isset($_GET['type']) ? $_GET['type'] : null;
+    $datafrommap = func3($id)[0];
+    
+}
 ?>
 
 <!DOCTYPE html>
@@ -22,7 +31,6 @@ $region = $query->selectRegion();
                               
         <?php include 'navbar.php'; ?>
        <!-- การ์ด -->
-       
 
        <div class='container-welcome-title'>
         <div class='title-welcome'>
@@ -32,13 +40,9 @@ $region = $query->selectRegion();
         </div>
         <div class="rectangle-container">
             <?php foreach ($fucn_query as $facuty) {
-
                     echo "<a onclick='fetchData(this)' class='rectangle' value='".htmlspecialchars($facuty['fid'])."'><h3>".htmlspecialchars($facuty['f_major'])."</h3><p>รับแล้ว ".htmlspecialchars($facuty['total'])." ตำแหน่ง</p></a>";
                     }
-
-                ?>
-                
-
+                ?>                
         </div>
        </div>
 <div class='containersearch'>
@@ -82,7 +86,7 @@ $region = $query->selectRegion();
                                 </div>
                                 <div class="search-bar">
                                     <select class="form-control select-branch" id="branchSelect">
-                                        <option value="allp">สาขาวิชา(ทั้งหมด)</option>
+                                        <option value="allp">ด้านการฝึกงาน(ทั้งหมด)</option>
                                         <?php 
                                             foreach ($fucn_query as $facuty) {
                                                 echo "<option  value='".$facuty['f_major']."' >".$facuty['f_major']."</option>";
@@ -110,9 +114,45 @@ $region = $query->selectRegion();
             </div>
     </div>
 
-
+              <!-- ได้รับคำสั่งจากหน้า นี้ -->                              
     <div class=eachrow id="detail_internship">
+        <!-- ได้รับคำสั่งจากหน้า map -->
+    <?php if($datafrommap){ ?>
+        <form action="modify_data.php" method="POST">
+                        <div class="button-modify">
+                        <button class="button-20 form-control" role="button">แก้ไข</button>
+                        </div>
+                        <input type="text" id="inputGroupFile01" name="_id" value=<?php echo $datafrommap['id'] ?> style="display: none;" >
+                        </form>
+                    <div class="card" onclick='handleCardClick(<?php echo json_encode($datafrommap); ?>)'>
+                        
+                        <div class="row">
+                            <div class="col">
+                            <div class="avatar"></div>
+                                <div class="info">
+                                    <p class="title"><?php echo $datafrommap['location'] ?></p>
+                                    
+                                </div>
+    
+                            </div>
+                            <div class="col">
+                                <div class="detail">
+                                    <p>ด้าน: <?php echo $datafrommap['majorName'] ?></p>
+                                <p>แผนก: <?php echo $datafrommap['department'] ?></p>
+                                
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="detail">
+                                    <p><?php echo $datafrommap['regionName']?></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
         
+
+
+        <?php }?>
 </div>
     
   </div>
@@ -137,10 +177,13 @@ $region = $query->selectRegion();
             <p id="modal-scope-work"></p>
             
             </div>
+
+            <div class="table"></div>
+
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <button type="button" class="btn btn-primary">Apply Now</button>
+            <!-- <button type="button" class="btn btn-primary">Apply Now</button> -->
           </div>
         </div>
       </div>
@@ -157,7 +200,7 @@ $region = $query->selectRegion();
     <script>
         //modal control
         function handleCardClick(data) {
-        
+            
             document.getElementById('modal-name').innerText = data.location;
             document.getElementById('modal-major').innerText ='ด้าน: ' + data.majorName;
             document.getElementById('modal-department').innerText = 'แผนก: '+ data.department;
@@ -167,10 +210,16 @@ $region = $query->selectRegion();
             var myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
             myModal.show();
         }
+        var dataFromMap = <?php echo isset($datafrommap) ? json_encode($datafrommap) : 'null'; ?>;
+        console.log(dataFromMap)
+        if (dataFromMap){
+            document.getElementById('detail_internship').scrollIntoView({ behavior: 'smooth' });
+            handleCardClick(dataFromMap);
+        }
       //แสดงจังหวัดจากฐานข้อมูล  
 
     // หรือทำงานอื่นๆ ที่ต้องการ เช่น ส่งข้อมูลไปยัง server
-;
+
 </script>
 </body>
 </html>

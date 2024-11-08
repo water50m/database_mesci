@@ -1,5 +1,10 @@
 <?php 
-
+session_start();
+if(!isset($_SESSION['whoareyou']) ){
+    
+    header("location: login.php");
+    exit();
+}
 require 'config/querySQL.php';
 $query = new SQLquery();
 
@@ -18,7 +23,7 @@ $fucn_query = $query->selectFacuty();
 $region = $query->selectRegion();
 
 $num_receive_per_year = $query->selectAllreceive_year($id );
-
+$func_province = $query->selectProvince();
 ?>
 
 <!DOCTYPE html>
@@ -27,19 +32,15 @@ $num_receive_per_year = $query->selectAllreceive_year($id );
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    
     <link rel="stylesheet" href="css/addData.css">
-
     
     <title>แก้ไขข้อมูล</title>
-    <style>
 
-    </style>
 </head>
 <body>
 <?php include 'navbar.php'; ?>
 <div class="container2">
-    <form action="config/modify_datadb.php" method="POST">
+    <form  id="myForm" method="POST">
         <div class="box">
             <div class="mb-3">
                 <label class="form-label">
@@ -49,26 +50,44 @@ $num_receive_per_year = $query->selectAllreceive_year($id );
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"></path>
                         </svg>
                     </span>
-                    สถานที่ฝึกงาน
-                    
+                    สถานที่ฝึกงาน                    
                 </label>
-
 
                 <div class="input-group">
                     <?php 
                     echo '<input type="text"  value='.$result['location'].' class="form-control" aria-label="Text input" name="_loName">';
                     echo '<input type="text" style="display: none;" value='.$result['id'].' class="form-control" aria-label="Text input" name="_location">';
                     ?>
-                    
-                    
-                
-
-            </div>
-            </div>
-                <div class="input-group mb-3">
-                <label class="input-group-text" for="inputGroupFile01">รูปภาพ</label>
-                <input type="file" class="form-control" id="inputGroupFile01" name="_image">
                 </div>
+            </div>
+
+        <div class="mb-3">
+            <h5  class="form-label">จังหวัด</h5>
+            <select class="form-select" aria-label="Default select example" name="_province">
+                <option value="noselect" selected>เลือกจังหวัด</option>
+                <?php 
+                        echo '<option selected value='.$result['id'].'>'.$result['province'].'</option>';
+                 ?>
+                <?php foreach ($func_province as $province): ?>
+                    <?php if($province['province_name'] == $result['province']){ }else{?>
+                    <option value="<?php echo $province['province_id']; ?>">
+                        <?php echo $province['province_name']; ?>
+                    </option>
+                <?php }endforeach; ?>
+            </select>
+        </div>
+        
+
+        <div class="mb-3">
+            <h5 class="form-label">พิกัด</h5>
+            <div class="input-group">
+                    
+                <?php
+                    echo '<input type="text" value="'.$result['latitude'].'" class="form-control" aria-label="Latitude" placeholder="ละติจูด" name="_latitude">';
+                    echo '<input type="text" value="'.$result['longtitude'].'" class="form-control" aria-label="Longitude" placeholder="ลองจิจูด" name="_longitude">';
+                ?>
+            </div>
+        </div>
         
         <div class="mb-3">
             <h5  class="form-label">แผนก</h5>
@@ -114,7 +133,7 @@ $num_receive_per_year = $query->selectAllreceive_year($id );
                     </option>
                 <?php }endforeach; ?>
             </select>
-         </div>
+        </div>
 
         <div class="mb-3">
             <h5  class="form-label">ที่อยู่</h5>
@@ -122,48 +141,38 @@ $num_receive_per_year = $query->selectAllreceive_year($id );
                 <?php 
                 if($result['address']){ echo '<textarea class="form-control" id="floatingTextarea2" style="height: 100px" name="_address">'.$result['address'].'</textarea>';
                 }else{
-
                     echo '<textarea class="form-control" id="floatingTextarea2" style="height: 100px" name="_address"></textarea>' ;
-                }
-               
-                ?>
-                
-                
+                }              
+                ?>                               
             </div>
         </div>
 
         <div class="mb-3">
-            <h5  class="form-label">เรียน</h5>
+            <h5 class="form-label">เรียน</h5>
             <div class="input-group">
-            
-            <?php
-            echo '<textarea class="form-control"  id="floatingTextarea2" style="height: 100px" name="_sendto">'.$result['sendto'].'</textarea>';
-            ?>
+                <?php
+                echo '<textarea class="form-control"  id="floatingTextarea2" style="height: 100px" name="_sendto">'.$result['sendto'].'</textarea>';
+                ?>
             </div>
         </div>
-
 
         <div class="mb-3">
             <h5  class="form-label">ผู้ประสานงาน</h5>
-            <div class="input-group">
-                
+            <div class="input-group">  
                 <?php
-            echo '<input type="text" value="'.$result['coordinator'].'" class="form-control" aria-label="Text input" name="_coordinator">';
-            ?>
+                    echo '<input type="text" value="'.$result['coordinator'].'" class="form-control" aria-label="Text input" name="_coordinator">';
+                ?>
             </div>
         </div>
-
 
         <div class="mb-3">
             <h5  class="form-label">ขอบข่ายงาน</h5>
-            <div class="input-group">
-            
-            <?php
-            echo '<textarea class="form-control"  id="floatingTextarea2" style="height: 100px" name="_scope">'.$result['Scope_work'].'</textarea>';
-            ?>
+            <div class="input-group">           
+                <?php
+                echo '<textarea class="form-control"  id="floatingTextarea2" style="height: 100px" name="_scope">'.$result['Scope_work'].'</textarea>';
+                ?>
             </div>
         </div>
-
         
         <h5  class="form-label">จำนวนที่รับ</h5>
         <div class="input-group mb-3">
@@ -174,14 +183,11 @@ $num_receive_per_year = $query->selectAllreceive_year($id );
                 <option value='dontChange' selected>ภาคการศึกษา</option>
                 <?php foreach ($num_receive_per_year as $_year){
                     echo '<option value="'.htmlspecialchars($_year['id']).'">'.htmlspecialchars($_year['term']).'/'.htmlspecialchars($_year['year']).'</option>';
-
                     }                    
-                    ?>
-       
+                ?>
             </select>
             <input type="number" style="display: none;" class="form-control" placeholder="ภาคการศึกษาที่..." aria-label="Text input" id="_term1_before" name="_term1_before" >
-            <input type="number" style="display: none;" class="form-control" placeholder="ปีการศึกษา..." aria-label="Text input" id="_year1_before" name="_year1_before" >
-            
+            <input type="number" style="display: none;" class="form-control" placeholder="ปีการศึกษา..." aria-label="Text input" id="_year1_before" name="_year1_before" >           
             <input type="number" class="form-control" placeholder="ภาคการศึกษาที่..." aria-label="Text input" id="_term1" name="_term1" readonly ondblclick="this.removeAttribute('readonly'); this.style.cursor = 'text';" onblur="this.setAttribute('readonly', true); this.style.cursor = 'pointer'; " style="cursor: pointer;">
             <input type="number" class="form-control" placeholder="ปีการศึกษา..." aria-label="Text input" id="_year1Input" name="_year1" readonly ondblclick="this.removeAttribute('readonly'); this.style.cursor = 'text';" onblur="this.setAttribute('readonly', true); this.style.cursor = 'pointer'; " style="cursor: pointer;">
             <input 
@@ -199,32 +205,45 @@ $num_receive_per_year = $query->selectAllreceive_year($id );
         </div>
 
         <div class="input-group mb-3">
-           <input type="text" class="form-control"  value="เพิ่มปีการศึกษาใหม่" ria-label="Text input"  readonly>
+            <input type="text" class="form-control"  value="เพิ่มปีการศึกษาใหม่" ria-label="Text input"  readonly>
             <input type="number" class="form-control" placeholder="ภาคการศึกษาที่..." aria-label="Text input" name="_term2">
             <input type="number" class="form-control" placeholder="ปีการศึกษา..." aria-label="Text input" name="_year2">
             <input type="number" class="form-control" placeholder="รับ...คน" aria-label="Text input" name="_count2">
         </div>
         
+        <!-- <div class="d-flex justify-content-between mt-3">
+            <button type="submit" class="btn btn-danger btn-lg w-100 me-2" onclick="deletedata('config/delete.php')" role="button">ลบ</button>
+            <button type="submit" class="btn btn-warning btn-lg w-100 ms-2" onclick="modifydata('config/modify_datadb.php')" role="button">แก้ไข</button>
+        </div> -->
+
         <div class="d-flex justify-content-between mt-3">
-            <button type="submit" class="btn btn-danger btn-lg w-100 me-2" role="button">ลบ</button>
-            <button type="submit" class="btn btn-warning btn-lg w-100 ms-2" role="button">แก้ไข</button>
+            <button type="submit" class="btn btn-danger" onclick="deletedata('config/delete.php')" role="button">ลบ</button>
+            <button type="submit" class="btn btn-warning" onclick="modifydata('config/modify_datadb.php')" role="button">แก้ไข</button>
         </div>
-
-
 
         <div class="input-group mb-3" style="padding: 50px;">
     
         </div>
     </form>
 
-
-
-
-
 <script>
-     function handleSelectChange(selectElement) {
-        const selectedValue = selectElement.value; // ค่าที่เลือก
+        function modifydata(action) {
+        const form = document.getElementById('myForm');
+        form.action = action;
+        form.submit();
+    }
+    function deletedata(action) {
+        const isConfirmed = confirm("คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลนี้?");
         
+        // หากผู้ใช้กด "OK" ให้ดำเนินการส่งฟอร์ม
+        if (isConfirmed) {
+            const form = document.getElementById('myForm');
+            form.action = action;
+            form.submit();
+        }
+    }
+     function handleSelectChange(selectElement) {
+        const selectedValue = selectElement.value; // ค่าที่เลือก 
         
         const numReceivePerYear = <?php echo json_encode($num_receive_per_year); ?>;
         if (Array.isArray(numReceivePerYear)) {
@@ -244,12 +263,8 @@ $num_receive_per_year = $query->selectAllreceive_year($id );
         } else {
             console.error("numReceivePerYear ไม่ใช่อาร์เรย์", numReceivePerYear);
         }
-        // console.log(numReceivePerYear)
-        
-
-    }
-
-    ;
+        // console.log(numReceivePerYear)    
+    };
 </script>
 </div>
 </div>

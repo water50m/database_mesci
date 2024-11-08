@@ -95,5 +95,34 @@ if (isset($_GET['func']) && $_GET['func'] == 2 ) {
     ]);
 }
 
+function func3($id){
+    
+    $db = new connectdb();
+    $conn = $db->connectPDO();
+
+    $details_query = "SELECT d.id,d.location, d.department, d.Scope_work, d.receive_term1, d.receive_term2, 
+                 f.major_subject AS majorName ,r.name AS regionName
+                  FROM detail d 
+                  JOIN facuty f ON f.id = d.facuty_id 
+                  JOIN region r ON d.region_id = r.id
+                  WHERE d.id = :id";
+
+    // เตรียม statement
+    $stmt = $conn->prepare($details_query);
+
+    // กำหนดค่าตัวแปรสำหรับการ bind parameter
+
+    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+
+    // Execute คำสั่ง SQL
+    $stmt->execute();
+
+    // ดึงข้อมูลทั้งหมด
+    $details = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    
+    return $details;
+}
+
 
 ?>

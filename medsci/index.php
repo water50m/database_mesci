@@ -1,4 +1,4 @@
 <?php 
-include 'login.php'
+include 'Thaimap.php'
 
 ?>

@@ -11,11 +11,11 @@
     <title>Sign in</title>
 </head>
 <body>
-    <a href="search.php">คลิกที่นี่เพื่อเข้าสู่เว็บไซต์</a>
+ 
 <!-- <h2>Weekly Coding Challenge #1: Sign in/up Form</h2> -->
 <div class="container" id="container">
 	<div class="form-container sign-up-container">
-		<form action="#">
+		<form action="config/login_process.php" method="POST">
 			<h1>Create Account</h1>
 			<div class="social-container">
 				<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
@@ -23,14 +23,15 @@
 				<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
 			</div>
 			<span>or use your email for registration</span>
-			<input type="text" placeholder="Name" />
-			<input type="email" placeholder="Email" />
-			<input type="password" placeholder="Password" />
+			<input type="text" placeholder="Name" name="name_sup"/>
+			<input type="email" placeholder="Email" name="email_sup"/>
+			<input type="password" placeholder="Password" name="password_sup"/>
 			<button>Sign Up</button>
 		</form>
 	</div>
+
 	<div class="form-container sign-in-container">
-		<form action="#">
+		<form action="config/login_process.php" method="POST">
 			<h1>Sign in</h1>
 			<div class="social-container">
 				<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
@@ -38,12 +39,13 @@
 				<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
 			</div>
 			<span>or use your account</span>
-			<input type="email" placeholder="Email" />
-			<input type="password" placeholder="Password" />
-			<a href="#">Forgot your password?</a>
+			<input type="text" placeholder="Email" name="email_sin" />
+			<input type="password" placeholder="Password" name="password_sin" />
+			<!-- <a href="#">Forgot your password?</a> -->
 			<button>Sign In</button>
 		</form>
 	</div>
+	
 	<div class="overlay-container">
 		<div class="overlay">
 			<div class="overlay-panel overlay-left">

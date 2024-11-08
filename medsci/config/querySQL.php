@@ -79,10 +79,26 @@ class SQLquery {
             echo "Error: " . $e->getMessage();
         }
     }
+
+    public function selectCoordinate(){
+        try{
+            $stmt = $this->conn->prepare("SELECT *FROM detail  
+                      
+                      
+                      ");
+            $stmt->execute();          
+            $result = $stmt-> fetchALL(PDO::FETCH_ASSOC);
+            return $result;
+        }
+        catch(PDOEException $e) {
+            echo "Error: " .$e->getMessage();
+        }
+    }
+    
     public function selectAllDetail($id){
         try{
             $stmt = $this->conn->prepare("SELECT d.id,d.location, d.department, d.Scope_work, d.receive_term1, d.receive_term2,f.id AS fid, 
-                      f.major_subject AS majorName, r.name AS regionName ,r.id AS rid ,d.address,d.sendto,d.coordinator,d.Scope_work
+                      f.major_subject AS majorName, r.name AS regionName ,r.id AS rid ,d.address,d.sendto,d.coordinator, d.province, d.latitude, d.longtitude
                       FROM detail d 
                       JOIN facuty f ON f.id = d.facuty_id 
                       JOIN region r ON d.region_id = r.id

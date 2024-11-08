@@ -1,10 +1,10 @@
 body {
 
-/* background-image: url('../images/chemicals-8797257.png');  */
+background-image: url('../images/medsci.jpg'); 
 
-background-size: cover; /* ปรับขนาดให้เต็มพื้นที่ */
+background-size: 1590px 905px; /* ปรับขนาดให้เต็มพื้นที่ */
 background-repeat: no-repeat; /* ไม่ให้ภาพซ้ำ */
-background-position: center; /* จัดภาพให้อยู่กลาง */
+/* background-position: center; */
 font-family: Arial, sans-serif; /* ฟอนต์ที่ใช้ในหน้าเว็บ */
 
 }
@@ -47,7 +47,13 @@ background-color: #FFF9E6; /* สีพื้นหลังเหลือง�
 background-color: #FFECB3; /* สีเหลืองพาสเทลสำหรับ dropdown item เมื่อเอาเมาส์ไปวาง */
 }
 
+.image-medsci-navbar{
+    display:flex;
+    
+   }
+   
 .navbar-brand {
+display: flex;
 text-decoration: none; /* ลบขีดเส้นใต้ */
 color: #333; /* สีข้อความ */
 display: inline-block; /* ทำให้สามารถจัดระยะห่างด้านในได้ */
@@ -162,11 +168,11 @@ width: 100%;
 
 .title-welcome {
     
-    backdrop-filter: blur(2px);
+    /* backdrop-filter: blur(2px); */
     height: 200px;
     width: 400px;
     
-    margin-left:60%;
+    margin-left:50%;
     right: 20px; /* ตำแหน่งชิดขวา */
     padding: 20px;
     border-radius: 8px;
@@ -178,13 +184,13 @@ width: 100%;
 
 .title-welcome h1 {
     font-size: 36px; /* ขนาดตัวอักษรใหญ่ขึ้น */
-    color: #FFD966;
+    color: #c5a33d;
     
 }
 
 .title-welcome p {
     font-size: 22px; /* ขนาดตัวอักษรใหญ่ขึ้น */
-    color: #FFD966;
+    color: #78621f;
         /* ระยะเยื้องขวาเล็กน้อย */
 }
 
@@ -241,82 +247,91 @@ width: 100%;
 
 .search-bars{
     display: flex;
-    justify-content: center; /* จัดให้อยู่กึ่งกลางแนวนอน */
-    align-items: center; /* จัดให้อยู่กึ่งกลางแนวตั้ง */
-    gap: 10px; /* เพิ่มช่องว่างระหว่างแต่ละ search-bar */
-    margin-bottom: 4px;
+    justify-content: center;
+    align-items: center; 
+    gap: 10px; 
+    margin-bottom: 10px;
 }
 .search-bar .form-control{
     width:300px;
 }
-.search-bar-btn{
-    background: -webkit-linear-gradient(to right, #FF4B2B, #FF416C);
-	background: linear-gradient(to right, #FF4B2B, #FF416C);
-    margin-bottom: 40px;
+.search-bar-btn {
+    background: -webkit-linear-gradient(135deg, #FF4B2B, #FF416C); /* สี gradient แบบมุมเฉียง */
+    background: linear-gradient(135deg, #FF4B2B, #FF416C);
+    padding: 10px 28px; /* ขนาดปุ่มที่เหมาะสม */
+    border: none;
+    color: white;
+    font-size: 15px;
+    font-weight: bold;
+    border-radius: 30px; /* ขอบโค้งมน */
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0px 4px 10px rgba(255, 65, 108, 0.3); /* เงาแบบ gradient */
+    margin-bottom: 15px;
 
+    /* เงาเบาๆ รอบปุ่ม */
+    position: relative;
+    overflow: hidden;
 }
 
+.search-bar-btn:hover {
+    background: -webkit-linear-gradient(135deg, #FF416C, #FF4B2B); /* เปลี่ยนทิศทาง gradient เมื่อ hover */
+    background: linear-gradient(135deg, #FF416C, #FF4B2B);
+    transform: translateY(-2px); /* เลื่อนขึ้นเล็กน้อยเมื่อ hover */
+    box-shadow: 0px 8px 15px rgba(255, 65, 108, 0.4); /* เพิ่มเงา */
+}
+
+.search-bar-btn:active {
+    background: linear-gradient(135deg, #FF416C, #FF4B2B); /* คง gradient เดิมเมื่อคลิก */
+    transform: translateY(1px); /* เลื่อนลงเล็กน้อยเมื่อคลิก */
+    box-shadow: 0px 4px 10px rgba(255, 65, 108, 0.3); /* เงาเบาลง */
+}
+
+
 /* button */
-.button-20 {
+.button-modify{
     z-index: 5;
-    appearance: button;
-    background-color: #ded127;
-    background-image: linear-gradient(180deg, rgba(255, 255, 255, .15), rgba(255, 255, 255, 0));
-    border: 1px solid #4D4AE8;
-    border-radius: 1rem;
-    box-shadow: rgba(255, 255, 255, 0.15) 0 1px 0 inset,rgba(46, 54, 80, 0.075) 0 1px 1px;
-    box-sizing: border-box;
-    color: #FFFFFF;
-    cursor: pointer;
-    display: flex;
     position: absolute;
     right: 125px;
     transform: translateY(40px);
-    font-family: Inter,sans-serif;
+}
+
+.button-20 {
+    
+    
+    appearance: button;
+    background-color: #ffd700; /* สีเหลืองทอง */
+    background-image: linear-gradient(145deg, #FFD700, #FFA500); /* gradient ที่มีสีทองผสมส้ม */
+    border: none;
+    border-radius: 20px; /* ทำขอบให้โค้งมนมากขึ้น */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* เพิ่มเงาให้ดูโดดเด่น */
+    color: #ffffff; /* ตัวหนังสือสีขาว */
+    cursor: pointer;
+    
+    transform: translateY(40px);
+    font-family: 'Inter', sans-serif;
     font-size: 1rem;
-    font-weight: 500;
-    line-height: 1.5;
-    margin: 0;
-    padding: .5rem 1rem;
-    text-align: center;
-    text-transform: none;
-    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
-    user-select: none;
-    -webkit-user-select: none;
-    touch-action: manipulation;
-    /* vertical-align: middle; */
-  }
-  
-  .button-20:focus:not(:focus-visible),
-  .button-20:focus {
-    outline: 0;
-  }
-  
-  .button-20:hover {
-    background-color: #9b7c15;
-    border-color: #3733E5;
-  }
-  
-  .button-20:focus {
-    background-color: #ded127;
-    border-color: #3E3BBA;
-    box-shadow: rgba(255, 255, 255, 0.15) 0 1px 0 inset, rgba(46, 54, 80, 0.075) 0 1px 1px, rgba(104, 101, 235, 0.5) 0 0 0 .2rem;
-  }
-  
-  .button-20:active {
-    background-color: #ded127;
-    background-image: none;
-    border-color: #3A38AE;
-    box-shadow: rgba(46, 54, 80, 0.125) 0 3px 5px inset;
-  }
-  
-  .button-20:active:focus {
-    box-shadow: rgba(46, 54, 80, 0.125) 0 3px 5px inset, rgba(104, 101, 235, 0.5) 0 0 0 .2rem;
-  }
-  
-  .button-20:disabled {
-    background-image: none;
-    box-shadow: none;
-    opacity: .65;
-    pointer-events: none;
-  }
+    font-weight: 600; /* เพิ่มความหนาของตัวหนังสือ */
+    padding: 12px 24px; /* เพิ่มขนาด padding */
+
+}
+
+.button-20:hover {
+    background-color: #ff9f00;
+    background-image: linear-gradient(145deg, #FF8C00, #FFA500); /* สี gradient ใหม่เมื่อ hover */
+    transform: translateY(35px); /* ปรับตำแหน่งให้เลื่อนขึ้นเมื่อ hover */
+    color: black;
+    box-shadow: 0 6px 12px rgba(34, 32, 30, 0.3); /* เพิ่มเงาเมื่อ hover */
+}
+
+.button-20:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(255, 159, 0, 0.5); /* เงารอบนอกเมื่อ focus */
+}
+
+.button-20:active {
+    background-color: #FFA500;
+    transform: translateY(37px); /* เลื่อนลงเล็กน้อยเมื่อ active */
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.2); /* เงาด้านในเมื่อ active */
+}
+
