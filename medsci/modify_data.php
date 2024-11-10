@@ -16,7 +16,7 @@ $gettype =  isset($_GET['type']) ? $_GET['type'] : '';
 if($gettype){
     $type = $gettype;
 }
-$result = $query->selectAllDetail($type);
+$result = $query->selectAllDetail($type,null,null);
 $id = $result['id'];
 
 $fucn_query = $query->selectFacuty();
@@ -66,11 +66,11 @@ $func_province = $query->selectProvince();
             <select class="form-select" aria-label="Default select example" name="_province">
                 <option value="noselect" selected>เลือกจังหวัด</option>
                 <?php 
-                        echo '<option selected value='.$result['id'].'>'.$result['province'].'</option>';
+                        echo '<option selected value='.$result['province'].'>'.$result['province'].'</option>';
                  ?>
                 <?php foreach ($func_province as $province): ?>
                     <?php if($province['province_name'] == $result['province']){ }else{?>
-                    <option value="<?php echo $province['province_id']; ?>">
+                    <option value="<?php echo $province['province_name']; ?>">
                         <?php echo $province['province_name']; ?>
                     </option>
                 <?php }endforeach; ?>

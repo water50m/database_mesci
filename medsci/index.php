@@ -1,4 +1,4 @@
 <?php 
-include 'Thaimap.php'
+include 'Thaimap_new.php'
 
 ?>

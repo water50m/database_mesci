@@ -5,6 +5,7 @@ $query = new SQLquery();
 $data = $query->selectCoordinate();
 $jsonData = json_encode($data);
 
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -63,6 +64,7 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 // ------------------------------------------------------------------------------------------------------------------marker
 var coordinate = <?php echo $jsonData; ?>;
+
 
 
 const regionData = [

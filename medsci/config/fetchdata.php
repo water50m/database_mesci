@@ -125,4 +125,33 @@ function func3($id){
 }
 
 
+if (isset($_GET['func']) && $_GET['func']==4){
+    $id =  $_GET['value'] ?? null;
+
+    $newQuery = new SQLquery();
+    $data = $newQuery->selectAllreceive_year($id);
+    echo json_encode([
+        'value' => $data
+    ]);
+}
+
+
+if (isset($_GET['func']) && $_GET['func']==5){
+    $province = $_POST['province'] ?? null;
+    $region = $_POST['region'] ?? null;
+    $newQuery = new SQLquery();
+
+    if($region=='north'){$region=1;}
+    else if($region=='northeast'){$region=2;}
+    else if($region=='central'){$region=4;}
+    else if($region=='south'){$region=6;}
+    else if($region=='east'){$region=5;}
+    else if($region=='west'){$region=3;}
+
+
+    echo json_encode([
+        'value' => $newQuery->selectToMap($region,$province)
+    ]);;
+
+}
 ?>

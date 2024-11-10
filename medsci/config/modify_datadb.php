@@ -41,7 +41,7 @@
             coordinator = ?, Scope_work = ?, province = ?,
             latitude = ?, longtitude = ? 
         WHERE id = ?");
-        $stmt1->bind_param("iisssssi", $region, $faculty, $department, $address, $sendTo, $coordinator, $scope, $location, $province, $latitude, $longitude);
+        $stmt1->bind_param("iissssssdds", $region, $faculty, $department, $address, $sendTo, $coordinator, $scope, $province, $latitude, $longitude, $location);
 
         // รันคำสั่ง
         if (!$stmt1->execute()) {

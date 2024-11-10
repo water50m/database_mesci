@@ -54,7 +54,7 @@ $func_province = $query->selectProvince();
             <select class="form-select" aria-label="Default select example" name="_province">
                 <option value="noselect" selected>เลือกจังหวัด</option>
                 <?php foreach ($func_province as $province): ?>
-                    <option value="<?php echo $province['province_id']; ?>">
+                    <option value="<?php echo $province['province_name']; ?>">
                         <?php echo $province['province_name']; ?>
                     </option>
                 <?php endforeach; ?>

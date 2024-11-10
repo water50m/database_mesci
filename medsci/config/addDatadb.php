@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // ผูกค่ากับคำสั่ง
-    $stmt1->bind_param("ssssssss", $region, $faculty, $location, $department, $address, $sendTo, $coordinator, $scope, $province, $latitude, $longitude);
+    $stmt1->bind_param("sssssssssss", $region, $faculty, $location, $department, $address, $sendTo, $coordinator, $scope, $province, $latitude, $longitude);
     
     // รันคำสั่ง
     if (!$stmt1->execute()) {
