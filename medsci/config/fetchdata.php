@@ -140,7 +140,7 @@ if (isset($_GET['func']) && $_GET['func']==5){
     $province = $_POST['province'] ?? null;
     $region = $_POST['region'] ?? null;
     $newQuery = new SQLquery();
-
+    $provinceWithoutSuffix = explode(' (', $province)[0]; 
     if($region=='north'){$region=1;}
     else if($region=='northeast'){$region=2;}
     else if($region=='central'){$region=4;}
@@ -150,7 +150,7 @@ if (isset($_GET['func']) && $_GET['func']==5){
 
 
     echo json_encode([
-        'value' => $newQuery->selectToMap($region,$province)
+        'value' => $newQuery->selectToMap($region,$provinceWithoutSuffix)
     ]);;
 
 }

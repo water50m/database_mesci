@@ -1,0 +1,61 @@
+function updateProvinces(coordinate__) {
+    console.log(coordinate__);
+    const regionData = [
+    { id: 1, name: 'ภาคเหนือ' },
+    { id: 2, name: 'ภาคตะวันออกเฉียงเหนือ' },
+    { id: 3, name: 'ภาคตะวันตก' },
+    { id: 4, name: 'ภาคกลาง' },
+    { id: 5, name: 'ภาคตะวันออก' },
+    { id: 6, name: 'ภาคใต้' },
+    { id: 7, name: 'ภาคกลาง' },
+    { id: 8, name: 'ภาคกลาง' },
+    { id: 9, name: 'ภาคกลาง' }
+];
+
+// สร้าง object เพื่อเก็บ LayerGroup สำหรับแต่ละ region
+var regionGroups = {};
+
+// ลูปข้อมูลแต่ละ item (ข้อมูลแต่ละภูมิภาค)
+coordinate__.forEach(function (item) {
+   
+    // Find the matching region by id
+    const region = regionData.find(r => r.id === item.rid);
+    
+    if (region) {
+        item.rid = region.name; 
+        // Replace region_id with the name
+    }
+
+    // Check if LayerGroup exists for the region_id, create it if not
+    if (!regionGroups[item.rid]) {
+        regionGroups[item.rid] = L.layerGroup().addTo(map);
+    }
+
+    // Create marker for the specified region
+    var marker = L.marker([item.latitude, item.longtitude])
+        .bindPopup(item.location + '<br>จังหวัด ' + item.province + 
+                   '<br><a href="search.php?func=3&type=' + item.id + '" target="_blank">รายละเอียดเพิ่มเติม</a>')
+        .on('mouseover', function () {
+            this.openPopup();
+        })
+        .on('mouseout', function () {
+            if (!this.isPopupOpen) {
+                this.closePopup();
+            }
+        })
+        .on('click', function (e) {
+            this.isPopupOpen = true;
+            this.openPopup();
+        })
+        .on('popupclose', function () {
+            this.isPopupOpen = false;
+        });
+
+    // Add marker to the appropriate LayerGroup
+    regionGroups[item.rid].addLayer(marker);
+});
+
+// Add layer control with named LayerGroups to the map
+L.control.layers(null, regionGroups).addTo(map);
+
+}

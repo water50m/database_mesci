@@ -4,12 +4,17 @@ require 'config/querySQL.php';
 $query = new SQLquery();
 $data = $query->selectCoordinate();
 $jsonData = json_encode($data);
+$region_province = $query->selectProvince();
+$jsonData_RP = json_encode($region_province);
+
 
 
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Polygon Display on Map</title>
@@ -41,6 +46,15 @@ $jsonData = json_encode($data);
             opacity: 0.7;
         }
 
+        .leaflet-control-custom {
+            background-color: white;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: Arial, sans-serif;
+        }
+        select {
+            font-size: 16px;
+        }
             </style>
 </head>
 <body>
@@ -62,71 +76,188 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 }).addTo(map);
 
 
-// ------------------------------------------------------------------------------------------------------------------marker
+//---------------------------------------------------------------------------------------------------testLayer 
 var coordinate = <?php echo $jsonData; ?>;
+var region_province = <?php echo $jsonData_RP; ?>;
+const regions = {
+    allRegion:[],
+    north: [],
+    northeast: [],
+    central: [],
+    south:[],
+    east:[],
+    west : []
+}
 
-
-
-const regionData = [
-    { id: '1', name: 'ภาคเหนือ' },
-    { id: '2', name: 'ภาคตะวันออกเฉียงเหนือ' },
-    { id: '3', name: 'ภาคตะวันตก' },
-    { id: '4', name: 'ภาคกลาง' },
-    { id: '5', name: 'ภาคตะวันออก' },
-    { id: '6', name: 'ภาคใต้' },
-    { id: '7', name: 'ภาคกลาง' },
-    { id: '8', name: 'ภาคกลาง' },
-    { id: '9', name: 'ภาคกลาง' }
-];
-// สร้าง object เพื่อเก็บ LayerGroup สำหรับแต่ละ region
-var regionGroups = {};
-
-// ลูปข้อมูลแต่ละ item (ข้อมูลแต่ละภูมิภาค)
-coordinate.forEach(function(item) {
+const countedProvince = coordinate.reduce((acc, value) => {
     
-    coordinate.forEach((item) => {
-    // Find the matching region by id
-    const region = regionData.find(r => r.id === item.region_id);
-    
-    if (region) {
-        item.region_id = region.name;  // Replace region_id with the name
-         
-    }else{
+    acc[value.province] = (acc[value.province] || 0) + 1;
+    return acc;
+}, {});
+
+region_province.forEach( item =>{
+if(item.province_name in countedProvince){
+    item.province_name = item.province_name+' ('+ countedProvince[item.province_name]+')';
+}
+
+regions['allRegion'].push(item.province_name)
+if (regions[item.region_category]) {
+    regions[item.region_category].push(item.province_name)
+}}) 
+
+
+    // Create a custom control
+    const regionControl = L.control({position: 'topright'});
+
+    regionControl.onAdd = function(map) {
+        const div = L.DomUtil.create('div', 'leaflet-control-custom');
+        div.innerHTML = `
+            <label for="region">เลือกภูมิภาค:</label>
+            <select id="regionSelect" onchange="updateProvinces();watchWithRegion();">
+                <option value="allRegion">เลือกภูมิภาค(ทั้งหมด)</option>
+                <option value="north">ภาคเหนือ</option>
+                <option value="northeast">ภาคตะวันออกเฉียงเหนือ</option>
+                <option value="central">ภาคกลาง</option>
+                <option value="south">ภาคใต้</option>
+                <option value="west">ภาคตะวันตก</option>
+                <option value="east">ภาคตะวันออก</option>
+            </select>
+            <br />
+            <label for="province">เลือกจังหวัด:</label>
+            <select id="province" onchange="watchWithRegion();">
+                <option value="allProvince">เลือกจังหวัด(ทั้งหมด)</option>
+                
+            </select>
+        `;
         
+        return div;
+    };
+
+    regionControl.addTo(map);
+    updateProvinces()
+    // Update provinces based on selected region
+    function updateProvinces() {
+        const region = document.getElementById('regionSelect').value;
+        const provinceSelect = document.getElementById('province');
+        provinceSelect.innerHTML = '<option value="allProvince">เลือกจังหวัด(ทั้งหมด)</option>'; // Clear previous options
+
+        if (regions[region]) {
+            regions[region].forEach(province => {
+                const option = document.createElement('option');
+                option.value = province;
+                option.textContent = province;
+                provinceSelect.appendChild(option);
+            });
+        }
     }
-});
-    // ตรวจสอบว่ามี LayerGroup สำหรับ region_id นี้หรือยัง
-    if (!regionGroups[item.region_id]) {
-        
-        regionGroups[item.region_id] = L.layerGroup().addTo(map); // สร้าง LayerGroup ใหม่ถ้ายังไม่มี
-    }
-    
-    // สร้าง marker สำหรับภูมิภาคที่กำหนด
-    var marker = L.marker([item.latitude, item.longtitude])
-    .bindPopup(item.location+'<br>จังหวัด '+item.province + '<br><a href="search.php?func=3&type='+item.id+'" target="_blank">รายละเอียดเพิ่มเติม</a>')
-    .on('mouseover', function () {
-        this.openPopup();
+
+    let new_coordinate = '';
+
+function watchWithRegion() {
+    const province = document.getElementById('province').value;
+    const regionSelect = document.getElementById('regionSelect').value;
+
+    fetch(`config/fetchdata.php?func=5`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `&province=${encodeURIComponent(province)}&region=${encodeURIComponent(regionSelect)}`
     })
-    .on('mouseout', function () {
-        if (!this.isPopupOpen) { // ถ้าไม่ใช่การเปิดจากการคลิกให้ปิด
-            this.closePopup();
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data)
+        new_coordinate = data.value;
+
+        // Check if new_coordinate is an array
+        if (Array.isArray(new_coordinate) && new_coordinate.length > 0) {
+            onmap = '';
+            updateSelecting(new_coordinate); // Call updateProvinces with new data
+        } else {
+            alert("ไม่มีสถานที่ฝึกงานในจังหวัด หรือ ในภูมิภาคนี้");
         }
     })
-    .on('click', function (e) {
-        this.isPopupOpen = true; // ตั้งค่าว่า popup ถูกเปิดจากการคลิก
-        this.openPopup(); // เปิด Popup ค้างไว้
-        // map.setView(e.latlng, map.getZoom() + 1); // ซูมเข้าหา marker เมื่อคลิก
-    })
-    .on('popupclose', function () {
-        this.isPopupOpen = false; // รีเซ็ตสถานะเมื่อปิด Popup
+    .catch(error => {
+        console.error("Fetch error:", error);
+    });
+}
+
+// Initial call with PHP data (assuming $jsonData is a valid JSON array)
+
+let previousLayers = []; 
+updateSelecting(coordinate);
+function updateSelecting(new_coordinate) {
+    
+    // Remove previous layers if any
+    if (previousLayers.length > 0) {
+        previousLayers.forEach(layer => {
+            map.removeLayer(layer); // Remove the layer from the map
+        });
+        previousLayers = []; // Clear the array of layers
+    }
+
+    if (!new_coordinate || !Array.isArray(new_coordinate)) {
+        console.error('Invalid new_coordinate data:', new_coordinate);
+        return; // Exit function if data is invalid
+    }
+
+    const regionData = [
+        { id: 1, name: 'ภาคเหนือ' },
+        { id: 2, name: 'ภาคตะวันออกเฉียงเหนือ' },
+        { id: 3, name: 'ภาคตะวันตก' },
+        { id: 4, name: 'ภาคกลาง' },
+        { id: 5, name: 'ภาคตะวันออก' },
+        { id: 6, name: 'ภาคใต้' },
+        { id: 7, name: 'ภาคกลาง' },
+        { id: 8, name: 'ภาคกลาง' },
+        { id: 9, name: 'ภาคกลาง' }
+    ];
+
+    var regionGroups = {};
+    
+
+    new_coordinate.forEach(function (item) {
+        const region = regionData.find(r => r.id === item.rid);
+        if (region) {
+            item.rid = region.name; // Replace region_id with the name
+        }
+
+        if (!regionGroups[item.rid]) {
+            regionGroups[item.rid] = L.layerGroup().addTo(map);
+        }
+
+        var marker = L.marker([item.latitude, item.longtitude])
+            .bindPopup(item.location + '<br>จังหวัด ' + item.province + 
+                       '<br><a href="search.php?func=3&type=' + item.id + '" target="_blank">รายละเอียดเพิ่มเติม</a>')
+            .on('mouseover', function () {
+                this.openPopup();
+            })
+            .on('mouseout', function () {
+                if (!this.isPopupOpen) {
+                    this.closePopup();
+                }
+            })
+            .on('click', function (e) {
+                this.isPopupOpen = true;
+                this.openPopup();
+            })
+            .on('popupclose', function () {
+                this.isPopupOpen = false;
+            });
+
+        regionGroups[item.rid].addLayer(marker);
+        
+        // Add this marker to the previousLayers array
+        previousLayers.push(marker);
     });
 
-    // เพิ่ม marker เข้า LayerGroup ที่ตรงกับ region_id
-    regionGroups[item.region_id].addLayer(marker);
-});
-
-// เพิ่มตัวเลือกการแสดงผลของ LayerGroup ใน layer control
-L.control.layers(null, regionGroups).addTo(map);
+    // L.control.layers(null, regionGroups).addTo(map);
+}
 
 
 // ------------------------------------------------------------------------------------------------------------------
@@ -208,25 +339,7 @@ info.update = function (props) {
 // info.addTo(map);
 
 // -------------------------------------------------------------------------------------------------------------------
-var legend = L.control({position: 'bottomright'});
 
-legend.onAdd = function (map) {
-
-    var div = L.DomUtil.create('div', 'info legend'),
-        grades = [0, 10, 20, 50, 100, 200, 500, 1000],
-        labels = [];
-
-    // loop through our density intervals and generate a label with a colored square for each interval
-    for (var i = 0; i < grades.length; i++) {
-        div.innerHTML +=
-            '<i style="background:' + getColor(grades[i] + 1) + '"></i> ' +
-            grades[i] + (grades[i + 1] ? '&ndash;' + grades[i + 1] + '<br>' : '+');
-    }
-
-    return div;
-};
-
-legend.addTo(map);
 // ---------------------------------------------------------------------------------------------------------------------
 
 

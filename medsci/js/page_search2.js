@@ -13,6 +13,7 @@
             }
             return response.json(); // แปลง JSON จากการตอบกลับ
         })
+        
         .then(data => {
             
             
@@ -180,11 +181,13 @@ function handleCardClick(data) {
     return response.json();
 })
 .then(data2 => {
+    console.log(data2)
+
     // ตรวจสอบข้อมูลที่ได้มา
     const headers = ['ปีการศึกษา'];
     const body = ['จำนวนรับ(คน)'];
     data2.value.forEach(item=>{
-        headers.push(item.year)
+        headers.push(item.term+'/'+item.year)
         body.push(item.received)
     })
     
@@ -202,6 +205,7 @@ function createTable() {
     const headerRow = document.createElement('tr');
     
     headers.forEach(headerText => {
+        
         const th = document.createElement('th');
         th.textContent = headerText;
         headerRow.appendChild(th);

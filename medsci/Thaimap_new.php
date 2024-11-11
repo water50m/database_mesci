@@ -1,5 +1,5 @@
 <?php 
-// include 'navbar.php';
+include 'navbar.php';
 require 'config/querySQL.php';
 $query = new SQLquery();
 $data = $query->selectCoordinate();
@@ -61,6 +61,11 @@ $jsonData_RP = json_encode($region_province);
 
 <div id="map"></div>
 <div id='decorative-map' inert></div>
+<!-- Include Leaflet.markercluster.js and its CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
+<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
+<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
 <script src='https://unpkg.com/wicg-inert@latest/dist/inert.min.js'></script>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="js/th-new.js"></script>
@@ -77,9 +82,10 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 
 //---------------------------------------------------------------------------------------------------testLayer 
-
+var coordinate = <?php echo $jsonData; ?>;
 var region_province = <?php echo $jsonData_RP; ?>;
 const regions = {
+    allRegion:[],
     north: [],
     northeast: [],
     central: [],
@@ -88,11 +94,22 @@ const regions = {
     west : []
 }
 
+const countedProvince = coordinate.reduce((acc, value) => {
+    
+    acc[value.province] = (acc[value.province] || 0) + 1;
+    return acc;
+}, {});
+
 region_province.forEach( item =>{
-// console.log(item)
+if(item.province_name in countedProvince){
+    item.province_name = item.province_name+' ('+ countedProvince[item.province_name]+')';
+}
+
+regions['allRegion'].push(item.province_name)
 if (regions[item.region_category]) {
     regions[item.region_category].push(item.province_name)
-}})
+}}) 
+
 
     // Create a custom control
     const regionControl = L.control({position: 'topright'});
@@ -102,7 +119,7 @@ if (regions[item.region_category]) {
         div.innerHTML = `
             <label for="region">เลือกภูมิภาค:</label>
             <select id="regionSelect" onchange="updateProvinces();watchWithRegion();">
-                <option value="allRegion">เลือกภูมิภาค</option>
+                <option value="allRegion">เลือกภูมิภาค(ทั้งหมด)</option>
                 <option value="north">ภาคเหนือ</option>
                 <option value="northeast">ภาคตะวันออกเฉียงเหนือ</option>
                 <option value="central">ภาคกลาง</option>
@@ -113,32 +130,21 @@ if (regions[item.region_category]) {
             <br />
             <label for="province">เลือกจังหวัด:</label>
             <select id="province" onchange="watchWithRegion();">
-                <option value="allProvince">เลือกจังหวัด</option>
+                <option value="allProvince">เลือกจังหวัด(ทั้งหมด)</option>
                 
             </select>
         `;
-        // Wait until the control is added to the DOM
-        setTimeout(() => {
-        const provinceSelect = div.querySelector('#province'); // Use div scope
-
-        region_province.forEach(province => {
-            const option = document.createElement('option');
-            option.value = province.province_name;
-            option.textContent = province.province_name;
-            provinceSelect.appendChild(option);
-        });
-    }, 0);
         
         return div;
     };
 
     regionControl.addTo(map);
-
+    updateProvinces()
     // Update provinces based on selected region
     function updateProvinces() {
         const region = document.getElementById('regionSelect').value;
         const provinceSelect = document.getElementById('province');
-        provinceSelect.innerHTML = '<option value="allProvince">เลือกจังหวัด</option>'; // Clear previous options
+        provinceSelect.innerHTML = '<option value="allProvince">เลือกจังหวัด(ทั้งหมด)</option>'; // Clear previous options
 
         if (regions[region]) {
             regions[region].forEach(province => {
@@ -170,6 +176,7 @@ function watchWithRegion() {
         return response.json();
     })
     .then(data => {
+        console.log(data)
         new_coordinate = data.value;
 
         // Check if new_coordinate is an array
@@ -186,11 +193,11 @@ function watchWithRegion() {
 }
 
 // Initial call with PHP data (assuming $jsonData is a valid JSON array)
-var coordinate = <?php echo $jsonData; ?>;
+
 let previousLayers = []; 
 updateSelecting(coordinate);
 function updateSelecting(new_coordinate) {
-    
+    const markerClusterGroup = L.markerClusterGroup();
     // Remove previous layers if any
     if (previousLayers.length > 0) {
         previousLayers.forEach(layer => {
@@ -247,13 +254,14 @@ function updateSelecting(new_coordinate) {
             .on('popupclose', function () {
                 this.isPopupOpen = false;
             });
-
+            
         regionGroups[item.rid].addLayer(marker);
         
         // Add this marker to the previousLayers array
         previousLayers.push(marker);
+        markerClusterGroup.addLayer(marker);
     });
-
+map.addLayer(markerClusterGroup);
     // L.control.layers(null, regionGroups).addTo(map);
 }
 

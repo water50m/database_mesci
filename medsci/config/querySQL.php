@@ -194,7 +194,7 @@ class SQLquery {
         }
 
         if (isset($province) && $province != "" && $province != "allProvince") {
-            $mainWordQuery .= (empty($mainWordQuery) ? " WHERE" : " AND") . " d.province = " . "'$province'";
+            $mainWordQuery .= (empty($mainWordQuery) ? " WHERE" : " AND") . " d.province =  " . "'$province'";
         }
 
         // เพิ่มเงื่อนไขเพิ่มเติมในคำสั่ง SQL
