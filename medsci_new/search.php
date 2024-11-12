@@ -1,5 +1,5 @@
 <?php 
-
+session_start();
 require 'config/querySQL.php';
 $query = new SQLquery();
 $fucn_query = $query->selectFacuty();
@@ -11,7 +11,13 @@ if (isset($_GET['func']) && $_GET['func'] == 3 ) {
     
 }
 
+$isUserLoggedInAndBig =  'false';
 
+if(isset($_SESSION['DoYouKnowImSoBig']) ){
+    $isUserLoggedInAndBig = 'true';
+    
+}
+header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
 ?>
 
 <!DOCTYPE html>
@@ -39,8 +45,15 @@ if (isset($_GET['func']) && $_GET['func'] == 3 ) {
             <p>มหาวิทยาลัยนเรศวร</p>
         </div>
         <div class="rectangle-container">
+            <?php $i = 1; ?>
             <?php foreach ($fucn_query as $facuty) {
-                    echo "<a onclick='fetchData(this)' class='rectangle' value='".htmlspecialchars($facuty['fid'])."'><h3>".htmlspecialchars($facuty['f_major'])."</h3><p>รับแล้ว ".htmlspecialchars($facuty['total'])." ตำแหน่ง</p></a>";
+                if ($i > 6){
+                    break;
+                }
+                    echo "<a onclick='fetchData(this)' class='rectangle' 
+                    value='".htmlspecialchars($facuty['fid'])."'><h3>".htmlspecialchars($facuty['f_major']).
+                    "</h3><p>รับแล้ว ".htmlspecialchars($facuty['total'])." ตำแหน่ง</p></a>";
+                    $i++;
                     }
                 ?>                
         </div>
@@ -231,6 +244,8 @@ if (isset($_GET['func']) && $_GET['func'] == 3 ) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
     
     <script>
+         const isUserLoggedIn = <?php echo $isUserLoggedInAndBig; ?>;
+         
       var dataFromMap = <?php echo isset($datafrommap) ? json_encode($datafrommap) : 'null'; ?>;
       if (dataFromMap){
     document.getElementById('detail_internship').scrollIntoView({ behavior: 'smooth' });

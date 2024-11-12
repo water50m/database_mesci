@@ -46,15 +46,69 @@ $jsonData_RP = json_encode($region_province);
             opacity: 0.7;
         }
 
-        .leaflet-control-custom {
-            background-color: white;
-            padding: 10px;
-            border-radius: 5px;
+        /* Container for styling and alignment */
+        form {
+            max-width: 300px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #FFF7E1; /* Soft yellow background */
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
             font-family: Arial, sans-serif;
         }
-        select {
-            font-size: 16px;
+
+        /* Style for labels */
+        label {
+            display: block;
+            font-weight: bold;
+            margin-top: 15px;
+            color: #B84545; /* Soft red text color */
         }
+
+        /* Style for dropdowns */
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 2px solid #FFD3B5; /* Light pastel red border */
+            border-radius: 4px;
+            background-color: #FFF3E2; /* Soft pastel yellow */
+            color: #B84545; /* Soft red text */
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        /* Hover and focus states */
+        select:hover,
+        select:focus {
+            border-color: #FFAD90; /* Darker pastel red for focus */
+        }
+
+        /* Optional: add space between dropdowns and buttons */
+        select + select,
+        label + select {
+            margin-top: 10px;
+        }
+
+        /* Add some styling for the 'submit' button if there is one */
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #FFAD90; /* Soft pastel red */
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #FF7A60; /* Darker red for hover */
+        }
+
             </style>
 </head>
 <body>
@@ -78,7 +132,9 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 //---------------------------------------------------------------------------------------------------testLayer 
 var coordinate = <?php echo $jsonData; ?>;
+
 var region_province = <?php echo $jsonData_RP; ?>;
+
 const regions = {
     allRegion:[],
     north: [],
@@ -89,18 +145,23 @@ const regions = {
     west : []
 }
 
+
+// นับจำนวนว่ามีสถานที่ฝึกงานกี่แห่งในจังหวัดนั้นๆ
 const countedProvince = coordinate.reduce((acc, value) => {
     
     acc[value.province] = (acc[value.province] || 0) + 1;
     return acc;
 }, {});
 
+
+// บอกว่าในจังหวัดนั้นๆมีกี่ location
 region_province.forEach( item =>{
 if(item.province_name in countedProvince){
     item.province_name = item.province_name+' ('+ countedProvince[item.province_name]+')';
 }
+regions['allRegion'].push(item.province_name)//แก้ไขชื่อ
 
-regions['allRegion'].push(item.province_name)
+// เตรียมจังหวัดไว้ให้เลือก
 if (regions[item.region_category]) {
     regions[item.region_category].push(item.province_name)
 }}) 
@@ -122,11 +183,21 @@ if (regions[item.region_category]) {
                 <option value="west">ภาคตะวันตก</option>
                 <option value="east">ภาคตะวันออก</option>
             </select>
-            <br />
+            <br/>
             <label for="province">เลือกจังหวัด:</label>
             <select id="province" onchange="watchWithRegion();">
-                <option value="allProvince">เลือกจังหวัด(ทั้งหมด)</option>
-                
+                <option value="allProvince">เลือกจังหวัด(ทั้งหมด)</option>  
+            </select>
+            <br/>
+                <label for="facuty">เลือกคณะ:</label>
+            <select id="facuty" onchange="updateMajorSubjects();watchWithRegion();">
+                <option value="">เลือกคณะ(ทั้งหมด)</option>
+
+            </select>
+            <br/>
+            <label for="major_subject">เลือกสาขาวิชา:</label>
+            <select id="major_subject" onchange="watchWithRegion();">
+                <option value="allProvince">เลือกสาขาวิชา(ทั้งหมด)</option>  
             </select>
         `;
         
@@ -135,12 +206,12 @@ if (regions[item.region_category]) {
 
     regionControl.addTo(map);
     updateProvinces()
-    // Update provinces based on selected region
+
+// Update provinces based on selected region
     function updateProvinces() {
         const region = document.getElementById('regionSelect').value;
         const provinceSelect = document.getElementById('province');
         provinceSelect.innerHTML = '<option value="allProvince">เลือกจังหวัด(ทั้งหมด)</option>'; // Clear previous options
-
         if (regions[region]) {
             regions[region].forEach(province => {
                 const option = document.createElement('option');
@@ -151,18 +222,63 @@ if (regions[item.region_category]) {
         }
     }
 
+    // select facuty-------------------------------------------------------------------------------
+    function updateFacuty() {
+    const facuty = document.getElementById('facuty');
+    facuty.innerHTML = '<option value="">เลือกคณะ(ทั้งหมด)</option>'; // Clear previous options
+    const unique_Faculty = [...new Set(coordinate.map(item => item.facuty))];
+    unique_Faculty.forEach(item => {
+        const facuty_option = document.createElement('option');
+        facuty_option.value = item;
+        facuty_option.textContent = item;
+        facuty.appendChild(facuty_option);
+    });
+
+    // Call the update function when a faculty is selected
+    facuty.addEventListener('change', updateMajorSubjects);
+    
+    // Initialize major subjects based on the initial faculty selection
+    updateMajorSubjects();
+    }
+    // update major from selecting facuty-------------------------------------------------------------------------------
+    function updateMajorSubjects() {
+        const facuty_selected = document.getElementById('facuty').value;
+        const major_subject = document.getElementById('major_subject');
+        major_subject.innerHTML = '<option value="">สาขาวิชา(ทั้งหมด)</option>'; // Clear previous options
+        
+        const unique_MajorNames = [
+            ...new Set(
+                coordinate
+                    .filter(item => (!facuty_selected || item.facuty === facuty_selected) || (item.facuty === ""))
+                    .map(item => item.majorName)
+            )
+        ];
+        
+        
+        unique_MajorNames.forEach(item => {
+            const major_option = document.createElement('option');
+            major_option.value = item;
+            major_option.textContent = item;
+            major_subject.appendChild(major_option);
+        });
+    }
+    updateFacuty()
+    
     let new_coordinate = '';
 
+// เตรียมข้อมูลสำหรับสร้าง marker หลังจากเลือกจังหวัดหรือภาคแล้ว-----------------------------------------------------------------
 function watchWithRegion() {
     const province = document.getElementById('province').value;
     const regionSelect = document.getElementById('regionSelect').value;
+    const facuty = document.getElementById('facuty').value;
+    const major_subject = document.getElementById('major_subject').value;
 
     fetch(`config/fetchdata.php?func=5`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `&province=${encodeURIComponent(province)}&region=${encodeURIComponent(regionSelect)}`
+        body: `&province=${encodeURIComponent(province)}&region=${encodeURIComponent(regionSelect)}&facuty=${encodeURIComponent(facuty)}&major_subject=${encodeURIComponent(major_subject)}`
     })
     .then(response => {
         if (!response.ok) {
@@ -171,7 +287,7 @@ function watchWithRegion() {
         return response.json();
     })
     .then(data => {
-        console.log(data)
+
         new_coordinate = data.value;
 
         // Check if new_coordinate is an array
@@ -179,7 +295,7 @@ function watchWithRegion() {
             onmap = '';
             updateSelecting(new_coordinate); // Call updateProvinces with new data
         } else {
-            alert("ไม่มีสถานที่ฝึกงานในจังหวัด หรือ ในภูมิภาคนี้");
+            alert("ไม่มีข้อมูล");
         }
     })
     .catch(error => {
@@ -191,6 +307,7 @@ function watchWithRegion() {
 
 let previousLayers = []; 
 updateSelecting(coordinate);
+// สร้าง marker
 function updateSelecting(new_coordinate) {
     
     // Remove previous layers if any
