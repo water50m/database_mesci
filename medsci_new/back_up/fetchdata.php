@@ -39,7 +39,7 @@ $details = $stmt->fetchAll(PDO::FETCH_ASSOC);
 if (isset($_GET['func']) && $_GET['func'] == 2 ) {
     $location = $_POST['location'] ?? null;
     $region = $_POST['region'] ?? null;
-    $facuty_Select = $_POST['facuty_Select'] ?? null;
+    $department = $_POST['department'] ?? null;
     $branch = $_POST['branch'] ?? null;
     
 
@@ -62,10 +62,10 @@ if (isset($_GET['func']) && $_GET['func'] == 2 ) {
         $mainWordQuery .= " AND r.name LIKE :region";
         $params[':region'] = '%' . $region . '%';
     }
-    if ($facuty_Select && $facuty_Select != 'allf' && $facuty_Select != 'noselect') {
+    if ($department && $department != 'noselect') {
         
-        $mainWordQuery .= " AND f.facuty LIKE :facuty";
-        $params[':facuty'] = '%' . $facuty_Select . '%';
+        $mainWordQuery .= " AND d.department LIKE :department";
+        $params[':department'] = '%' . $department . '%';
     }
     if ($branch && $branch != 'noselect' && $branch != 'allp') {
         $mainWordQuery .= " AND f.major_subject LIKE :branch";

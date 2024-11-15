@@ -79,9 +79,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $count1 = $_POST['_count1'];
         $year2 = $_POST['_year2'];
         $count2 = $_POST['_count2'];
-        if(isset($_GET['newlocation'])){
-            $location = $_GET['newlocation'];
-        }
+
         // เช็ค id จาก คณะและสาขา
         // เตรียมคำสั่ง SQL สำหรับการตรวจสอบค่า
         $stmt_checkid = $conn->prepare("SELECT id FROM facuty WHERE major_subject = ? AND facuty = ?");

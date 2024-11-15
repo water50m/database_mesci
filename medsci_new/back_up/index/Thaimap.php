@@ -7,7 +7,7 @@ $jsonData = json_encode($data);
 $region_province = $query->selectProvince();
 $jsonData_RP = json_encode($region_province);
 
-header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
+
 
 ?>
 
@@ -20,9 +20,6 @@ header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
     <title>Polygon Display on Map</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
-    <script src="https://cdn.jsdelivr.net/npm/leaflet-rotatedmarker@0.2.0/leaflet.rotatedMarker.min.js"></script>
     <style>
         #map { height: 600px; width: 100%; }
         .info {
@@ -120,7 +117,6 @@ header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
 <div id='decorative-map' inert></div>
 <script src='https://unpkg.com/wicg-inert@latest/dist/inert.min.js'></script>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 <script src="js/th-new.js"></script>
 <script>
 
@@ -352,9 +348,7 @@ function updateSelecting(new_coordinate) {
             regionGroups[item.rid] = L.layerGroup().addTo(map);
         }
 
-        var marker = L.marker([item.latitude, item.longtitude], {
-            rotationAngle: 45  // กำหนดมุมหมุน 45 องศา
-        })
+        var marker = L.marker([item.latitude, item.longtitude])
             .bindPopup(item.location + '<br>จังหวัด ' + item.province + 
                        '<br><a href="search.php?func=3&type=' + item.id + '" target="_blank">รายละเอียดเพิ่มเติม</a>')
             .on('mouseover', function () {
@@ -365,9 +359,9 @@ function updateSelecting(new_coordinate) {
                     this.closePopup();
                 }
             })
-            .on('click', function() {
+            .on('click', function (e) {
                 this.isPopupOpen = true;
-                this.openPopup(); 
+                this.openPopup();
             })
             .on('popupclose', function () {
                 this.isPopupOpen = false;
@@ -384,7 +378,31 @@ function updateSelecting(new_coordinate) {
 
 
 // ------------------------------------------------------------------------------------------------------------------
+function getColor(d) {
+    return d > 1000 ? '#800026' :
+           d > 500  ? '#BD0026' :
+           d > 200  ? '#E31A1C' :
+           d > 100  ? '#FC4E2A' :
+           d > 50   ? '#FD8D3C' :
+           d > 20   ? '#FEB24C' :
+           d > 10   ? '#FED976' :
+                      '#FFEDA0';
+}
 
+// L.geoJson(province).addTo(map);
+    // Add the GeoJSON feature to the map
+    function style(feature) {
+    return {
+        fillColor: getColor(feature.properties.density),
+        weight: 2,
+        opacity: 1,
+        color: 'white',
+        dashArray: '3',
+        fillOpacity: 0.7
+    };
+}
+
+// L.geoJson(province, {style: style}).addTo(map);
 // -------------------------------------------------------------------------------------add province on map
 function highlightFeature(e) {
     var layer = e.target;

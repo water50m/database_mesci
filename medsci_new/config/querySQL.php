@@ -39,6 +39,8 @@ class SQLquery {
                 p.name AS province_name, 
                 g.name AS region_name,
                 g.id AS region_id,
+                p.latitude,
+                p.longitude,
                 CASE 
                     WHEN g.id = 1 THEN 'north'
                     WHEN g.id = 2 THEN 'northeast' 
@@ -74,7 +76,7 @@ class SQLquery {
 
     public function selectFacuty(){
         try {
-            $sql = "SELECT 
+            $sql = "SELECT f.facuty,
                 f.id AS fid,
                 f.facuty,
                 f.major_subject AS f_major,

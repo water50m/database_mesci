@@ -3,7 +3,7 @@
    function fetchData(element) {
     // ดึงค่า attribute 'value' จาก element ที่ถูกคลิก
     const value = element.getAttribute('value');
-    rights = ` no`;
+    rights= ``;
     if (isUserLoggedIn === 'true' || isUserLoggedIn === true) {
         rights= `<div class="button-modify">
                          <button class="button-20 form-control" role="button">แก้ไข</button>
@@ -83,9 +83,10 @@ function handleSubmit(event) {
     // ดึงค่าจาก input และ select
     const location = document.getElementById('location').value;
     const region = document.getElementById('regionSelect').value;
-    const department = 'noselect';//document.getElementById('departmentSelect').value;
+    const facuty_Select = document.getElementById('facuty_Select').value;
     const branch = document.getElementById('branchSelect').value;
-    rights = ` no`;
+    
+    rights = ``;
     if (isUserLoggedIn === 'true' || isUserLoggedIn === true) {
         rights= `<div class="button-modify">
                          <button class="button-20 form-control" role="button">แก้ไข</button>
@@ -97,7 +98,7 @@ function handleSubmit(event) {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `&location=${encodeURIComponent(location)}&region=${encodeURIComponent(region)}&department=${encodeURIComponent(department)}&branch=${encodeURIComponent(branch)}`
+        body: `&location=${encodeURIComponent(location)}&region=${encodeURIComponent(region)}&department=${encodeURIComponent(facuty_Select)}&branch=${encodeURIComponent(branch)}`
     })
     .then(response => {
         if (!response.ok) {
