@@ -39,7 +39,7 @@ $details = $stmt->fetchAll(PDO::FETCH_ASSOC);
 if (isset($_GET['func']) && $_GET['func'] == 2 ) {
     $location = $_POST['location'] ?? null;
     $region = $_POST['region'] ?? null;
-    $department = $_POST['department'] ?? null;
+    $facuty_Select = $_POST['facuty_Select'] ?? null;
     $branch = $_POST['branch'] ?? null;
     
 
@@ -62,10 +62,10 @@ if (isset($_GET['func']) && $_GET['func'] == 2 ) {
         $mainWordQuery .= " AND r.name LIKE :region";
         $params[':region'] = '%' . $region . '%';
     }
-    if ($department && $department != 'noselect') {
+    if ($facuty_Select && $facuty_Select != 'allf' && $facuty_Select != 'noselect') {
         
-        $mainWordQuery .= " AND d.department LIKE :department";
-        $params[':department'] = '%' . $department . '%';
+        $mainWordQuery .= " AND f.facuty LIKE :facuty";
+        $params[':facuty'] = '%' . $facuty_Select . '%';
     }
     if ($branch && $branch != 'noselect' && $branch != 'allp') {
         $mainWordQuery .= " AND f.major_subject LIKE :branch";
@@ -139,6 +139,8 @@ if (isset($_GET['func']) && $_GET['func']==4){
 if (isset($_GET['func']) && $_GET['func']==5){
     $province = $_POST['province'] ?? null;
     $region = $_POST['region'] ?? null;
+    $major_subject = $_POST['major_subject'] ?? null;
+    $facuty = $_POST['facuty'] ?? null;
     $newQuery = new SQLquery();
     $provinceWithoutSuffix = explode(' (', $province)[0]; 
     if($region=='north'){$region=1;}
@@ -150,7 +152,7 @@ if (isset($_GET['func']) && $_GET['func']==5){
 
 
     echo json_encode([
-        'value' => $newQuery->selectToMap($region,$provinceWithoutSuffix)
+        'value' => $newQuery->selectToMap($region,$provinceWithoutSuffix,$facuty,$major_subject)
     ]);;
 
 }

@@ -7,7 +7,7 @@ $jsonData = json_encode($data);
 $region_province = $query->selectProvince();
 $jsonData_RP = json_encode($region_province);
 
-
+header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
 
 ?>
 
@@ -20,6 +20,9 @@ $jsonData_RP = json_encode($region_province);
     <title>Polygon Display on Map</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet-rotatedmarker@0.2.0/leaflet.rotatedMarker.min.js"></script>
     <style>
         #map { height: 600px; width: 100%; }
         .info {
@@ -46,28 +49,78 @@ $jsonData_RP = json_encode($region_province);
             opacity: 0.7;
         }
 
-        .leaflet-control-custom {
-            background-color: white;
-            padding: 10px;
-            border-radius: 5px;
+        /* Container for styling and alignment */
+        form {
+            max-width: 300px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #FFF7E1; /* Soft yellow background */
+            border-radius: 8px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
             font-family: Arial, sans-serif;
         }
-        select {
-            font-size: 16px;
+
+        /* Style for labels */
+        label {
+            display: block;
+            font-weight: bold;
+            margin-top: 15px;
+            color: #B84545; /* Soft red text color */
         }
+
+        /* Style for dropdowns */
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 2px solid #FFD3B5; /* Light pastel red border */
+            border-radius: 4px;
+            background-color: #FFF3E2; /* Soft pastel yellow */
+            color: #B84545; /* Soft red text */
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        /* Hover and focus states */
+        select:hover,
+        select:focus {
+            border-color: #FFAD90; /* Darker pastel red for focus */
+        }
+
+        /* Optional: add space between dropdowns and buttons */
+        select + select,
+        label + select {
+            margin-top: 10px;
+        }
+
+        /* Add some styling for the 'submit' button if there is one */
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            background-color: #FFAD90; /* Soft pastel red */
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #FF7A60; /* Darker red for hover */
+        }
+
             </style>
 </head>
 <body>
 
 <div id="map"></div>
 <div id='decorative-map' inert></div>
-<!-- Include Leaflet.markercluster.js and its CSS -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
-<script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
-
 <script src='https://unpkg.com/wicg-inert@latest/dist/inert.min.js'></script>
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 <script src="js/th-new.js"></script>
 <script>
 
@@ -83,7 +136,9 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 //---------------------------------------------------------------------------------------------------testLayer 
 var coordinate = <?php echo $jsonData; ?>;
+
 var region_province = <?php echo $jsonData_RP; ?>;
+
 const regions = {
     allRegion:[],
     north: [],
@@ -94,18 +149,23 @@ const regions = {
     west : []
 }
 
+
+// นับจำนวนว่ามีสถานที่ฝึกงานกี่แห่งในจังหวัดนั้นๆ
 const countedProvince = coordinate.reduce((acc, value) => {
     
     acc[value.province] = (acc[value.province] || 0) + 1;
     return acc;
 }, {});
 
+
+// บอกว่าในจังหวัดนั้นๆมีกี่ location
 region_province.forEach( item =>{
 if(item.province_name in countedProvince){
     item.province_name = item.province_name+' ('+ countedProvince[item.province_name]+')';
 }
+regions['allRegion'].push(item.province_name)//แก้ไขชื่อ
 
-regions['allRegion'].push(item.province_name)
+// เตรียมจังหวัดไว้ให้เลือก
 if (regions[item.region_category]) {
     regions[item.region_category].push(item.province_name)
 }}) 
@@ -127,11 +187,21 @@ if (regions[item.region_category]) {
                 <option value="west">ภาคตะวันตก</option>
                 <option value="east">ภาคตะวันออก</option>
             </select>
-            <br />
+            <br/>
             <label for="province">เลือกจังหวัด:</label>
             <select id="province" onchange="watchWithRegion();">
-                <option value="allProvince">เลือกจังหวัด(ทั้งหมด)</option>
-                
+                <option value="allProvince">เลือกจังหวัด(ทั้งหมด)</option>  
+            </select>
+            <br/>
+                <label for="facuty">เลือกคณะ:</label>
+            <select id="facuty" onchange="updateMajorSubjects();watchWithRegion();">
+                <option value="">เลือกคณะ(ทั้งหมด)</option>
+
+            </select>
+            <br/>
+            <label for="major_subject">เลือกสาขาวิชา:</label>
+            <select id="major_subject" onchange="watchWithRegion();">
+                <option value="allProvince">เลือกสาขาวิชา(ทั้งหมด)</option>  
             </select>
         `;
         
@@ -140,12 +210,12 @@ if (regions[item.region_category]) {
 
     regionControl.addTo(map);
     updateProvinces()
-    // Update provinces based on selected region
+
+// Update provinces based on selected region
     function updateProvinces() {
         const region = document.getElementById('regionSelect').value;
         const provinceSelect = document.getElementById('province');
         provinceSelect.innerHTML = '<option value="allProvince">เลือกจังหวัด(ทั้งหมด)</option>'; // Clear previous options
-
         if (regions[region]) {
             regions[region].forEach(province => {
                 const option = document.createElement('option');
@@ -156,18 +226,63 @@ if (regions[item.region_category]) {
         }
     }
 
+    // select facuty-------------------------------------------------------------------------------
+    function updateFacuty() {
+    const facuty = document.getElementById('facuty');
+    facuty.innerHTML = '<option value="">เลือกคณะ(ทั้งหมด)</option>'; // Clear previous options
+    const unique_Faculty = [...new Set(coordinate.map(item => item.facuty))];
+    unique_Faculty.forEach(item => {
+        const facuty_option = document.createElement('option');
+        facuty_option.value = item;
+        facuty_option.textContent = item;
+        facuty.appendChild(facuty_option);
+    });
+
+    // Call the update function when a faculty is selected
+    facuty.addEventListener('change', updateMajorSubjects);
+    
+    // Initialize major subjects based on the initial faculty selection
+    updateMajorSubjects();
+    }
+    // update major from selecting facuty-------------------------------------------------------------------------------
+    function updateMajorSubjects() {
+        const facuty_selected = document.getElementById('facuty').value;
+        const major_subject = document.getElementById('major_subject');
+        major_subject.innerHTML = '<option value="">สาขาวิชา(ทั้งหมด)</option>'; // Clear previous options
+        
+        const unique_MajorNames = [
+            ...new Set(
+                coordinate
+                    .filter(item => (!facuty_selected || item.facuty === facuty_selected) || (item.facuty === ""))
+                    .map(item => item.majorName)
+            )
+        ];
+        
+        
+        unique_MajorNames.forEach(item => {
+            const major_option = document.createElement('option');
+            major_option.value = item;
+            major_option.textContent = item;
+            major_subject.appendChild(major_option);
+        });
+    }
+    updateFacuty()
+    
     let new_coordinate = '';
 
+// เตรียมข้อมูลสำหรับสร้าง marker หลังจากเลือกจังหวัดหรือภาคแล้ว-----------------------------------------------------------------
 function watchWithRegion() {
     const province = document.getElementById('province').value;
     const regionSelect = document.getElementById('regionSelect').value;
+    const facuty = document.getElementById('facuty').value;
+    const major_subject = document.getElementById('major_subject').value;
 
     fetch(`config/fetchdata.php?func=5`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `&province=${encodeURIComponent(province)}&region=${encodeURIComponent(regionSelect)}`
+        body: `&province=${encodeURIComponent(province)}&region=${encodeURIComponent(regionSelect)}&facuty=${encodeURIComponent(facuty)}&major_subject=${encodeURIComponent(major_subject)}`
     })
     .then(response => {
         if (!response.ok) {
@@ -176,7 +291,7 @@ function watchWithRegion() {
         return response.json();
     })
     .then(data => {
-        console.log(data)
+
         new_coordinate = data.value;
 
         // Check if new_coordinate is an array
@@ -184,7 +299,7 @@ function watchWithRegion() {
             onmap = '';
             updateSelecting(new_coordinate); // Call updateProvinces with new data
         } else {
-            alert("ไม่มีสถานที่ฝึกงานในจังหวัด หรือ ในภูมิภาคนี้");
+            alert("ไม่มีข้อมูล");
         }
     })
     .catch(error => {
@@ -196,8 +311,9 @@ function watchWithRegion() {
 
 let previousLayers = []; 
 updateSelecting(coordinate);
+// สร้าง marker
 function updateSelecting(new_coordinate) {
-    const markerClusterGroup = L.markerClusterGroup();
+    
     // Remove previous layers if any
     if (previousLayers.length > 0) {
         previousLayers.forEach(layer => {
@@ -236,7 +352,9 @@ function updateSelecting(new_coordinate) {
             regionGroups[item.rid] = L.layerGroup().addTo(map);
         }
 
-        var marker = L.marker([item.latitude, item.longtitude])
+        var marker = L.marker([item.latitude, item.longtitude], {
+            rotationAngle: 45  // กำหนดมุมหมุน 45 องศา
+        })
             .bindPopup(item.location + '<br>จังหวัด ' + item.province + 
                        '<br><a href="search.php?func=3&type=' + item.id + '" target="_blank">รายละเอียดเพิ่มเติม</a>')
             .on('mouseover', function () {
@@ -247,51 +365,26 @@ function updateSelecting(new_coordinate) {
                     this.closePopup();
                 }
             })
-            .on('click', function (e) {
+            .on('click', function() {
                 this.isPopupOpen = true;
-                this.openPopup();
+                this.openPopup(); 
             })
             .on('popupclose', function () {
                 this.isPopupOpen = false;
             });
-            
+
         regionGroups[item.rid].addLayer(marker);
         
         // Add this marker to the previousLayers array
         previousLayers.push(marker);
-        markerClusterGroup.addLayer(marker);
     });
-map.addLayer(markerClusterGroup);
+
     // L.control.layers(null, regionGroups).addTo(map);
 }
 
 
 // ------------------------------------------------------------------------------------------------------------------
-function getColor(d) {
-    return d > 1000 ? '#800026' :
-           d > 500  ? '#BD0026' :
-           d > 200  ? '#E31A1C' :
-           d > 100  ? '#FC4E2A' :
-           d > 50   ? '#FD8D3C' :
-           d > 20   ? '#FEB24C' :
-           d > 10   ? '#FED976' :
-                      '#FFEDA0';
-}
 
-// L.geoJson(province).addTo(map);
-    // Add the GeoJSON feature to the map
-    function style(feature) {
-    return {
-        fillColor: getColor(feature.properties.density),
-        weight: 2,
-        opacity: 1,
-        color: 'white',
-        dashArray: '3',
-        fillOpacity: 0.7
-    };
-}
-
-// L.geoJson(province, {style: style}).addTo(map);
 // -------------------------------------------------------------------------------------add province on map
 function highlightFeature(e) {
     var layer = e.target;

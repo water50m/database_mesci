@@ -1,8 +1,9 @@
 <?php 
-
+session_start();
 require 'config/querySQL.php';
 $query = new SQLquery();
 $fucn_query = $query->selectFacuty();
+$jsonDataFacuty = json_encode($fucn_query);
 $region = $query->selectRegion();
 if (isset($_GET['func']) && $_GET['func'] == 3 ) {
     require 'config/fetchdata.php';
@@ -11,7 +12,13 @@ if (isset($_GET['func']) && $_GET['func'] == 3 ) {
     
 }
 
+$isUserLoggedInAndBig =  'false';
 
+if(isset($_SESSION['DoYouKnowImSoBig']) ){
+    $isUserLoggedInAndBig = 'true';
+    
+}
+header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
 ?>
 
 <!DOCTYPE html>
@@ -39,8 +46,15 @@ if (isset($_GET['func']) && $_GET['func'] == 3 ) {
             <p>มหาวิทยาลัยนเรศวร</p>
         </div>
         <div class="rectangle-container">
+            <?php $i = 1; ?>
             <?php foreach ($fucn_query as $facuty) {
-                    echo "<a onclick='fetchData(this)' class='rectangle' value='".htmlspecialchars($facuty['fid'])."'><h3>".htmlspecialchars($facuty['f_major'])."</h3><p>รับแล้ว ".htmlspecialchars($facuty['total'])." ตำแหน่ง</p></a>";
+                if ($i > 6){
+                    break;
+                }
+                    echo "<a onclick='fetchData(this)' class='rectangle' 
+                    value='".htmlspecialchars($facuty['fid'])."'><h3>".htmlspecialchars($facuty['f_major']).
+                    "</h3><p>รับแล้ว ".htmlspecialchars($facuty['total'])." ตำแหน่ง</p></a>";
+                    $i++;
                     }
                 ?>                
         </div>
@@ -58,7 +72,7 @@ if (isset($_GET['func']) && $_GET['func'] == 3 ) {
                         <div class="search-bars">
                             <div class="search-bar">
                                     
-                            <input type="text" class="form-control" id="location" placeholder="สถานที่..." aria-label="Text input">
+                            <input type="text" class="form-control" id="location" placeholder="ชื่อสถานที่..." aria-label="Text input">
                                     </div>
                                 <div class="search-bar">
                                     <select class="form-control" id="regionSelect">
@@ -76,32 +90,28 @@ if (isset($_GET['func']) && $_GET['func'] == 3 ) {
                                 
                                
                                 <div class="search-bar">
-                                    <select class="form-control" id="departmentSelect">
-                                        <option value="allp">ภาควิชา(ทั้งหมด)</option>
-                                        <?php 
-
+                                    <select class="form-control" id="facuty_Select" >
+                                        <option value="allf">ภาควิชา(ทั้งหมด)</option>
+                                        <?php  
+                                        $unique_faculties = array();
+                                        foreach ($fucn_query as $facuty) {
+                                            if (!in_array($facuty['facuty'], $unique_faculties)) {
+                                                $unique_faculties[] = $facuty['facuty'];
+                                                echo "<option value='".$facuty['facuty']."'>".$facuty['facuty']."</option>";
+                                            }
+                                        }
                                         ?>
                                     </select>
                         
                                 </div>
                                 <div class="search-bar">
                                     <select class="form-control select-branch" id="branchSelect">
-                                        <option value="allp">ด้านการฝึกงาน(ทั้งหมด)</option>
-                                        <?php 
-                                            foreach ($fucn_query as $facuty) {
-                                                echo "<option  value='".$facuty['f_major']."' >".$facuty['f_major']."</option>";
-                                             }
-                                        ?>
+                                        <option value="allp">สาขาวิชา(ทั้งหมด)</option>
 
                                     </select>
                         
                                 </div>
-                                <!-- <div class="search-bars">
-                                    <input type="text" placeholder="ชื่อ หรือ รหัสนิสิต" class="form-control" id="search" name="search">
-                                    
-                                </div> -->
-                                
-                                
+ 
                         </div>
                         <button type="submit" class="btn btn-base search-bar-btn">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -231,6 +241,8 @@ if (isset($_GET['func']) && $_GET['func'] == 3 ) {
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
     
     <script>
+         const isUserLoggedIn = <?php echo $isUserLoggedInAndBig; ?>;
+         
       var dataFromMap = <?php echo isset($datafrommap) ? json_encode($datafrommap) : 'null'; ?>;
       if (dataFromMap){
     document.getElementById('detail_internship').scrollIntoView({ behavior: 'smooth' });
@@ -246,7 +258,29 @@ document.getElementById('exampleModal').addEventListener('hidden.bs.modal', func
     deleteTable(); // ลบตารางเมื่อปิด modal
 });
 
+        var facuty = <?php echo $jsonDataFacuty; ?>;
+        
+        var facultySelect = document.getElementById('facuty_Select');
+        var majorSelect = document.getElementById('branchSelect');
 
+        facultySelect.addEventListener('change', function() {
+            // เคลียร์ตัวเลือกเก่า
+            majorSelect.innerHTML = '<option value="noselect" selected>เลือกสาขาวิชา(ทั้งหมด)</option>';
+            
+            // ดึงค่าคณะที่เลือกปัจจุบัน
+            var selectedFaculty_value = this.value;
+            
+            
+            // กรองและเพิ่มสาขาที่ตรงกับคณะ
+            facuty.forEach(function(faculty) {
+                if(faculty.facuty === selectedFaculty_value && faculty.f_major !== '') {
+                    const option = document.createElement('option');
+                    option.value = faculty.f_major;
+                    option.text = faculty.f_major;
+                    majorSelect.appendChild(option);
+                }
+            });
+        });
 </script>
 </body>
 </html>

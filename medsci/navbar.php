@@ -39,17 +39,26 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="Thaimap.php">ดูในโหมดแผนที่</a>
+                        <a class="nav-link active" aria-current="page" href="Thaimap_new.php">ดูในโหมดแผนที่</a>
                     </li>
 
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="search.php">ค้นหา</a>
                     </li>
+                    <?php 
+                        
+                        if(isset($_SESSION['DoYouKnowImSoBig']) ){
+                            
                     
+                    ?>
                     <li class="nav-item">
                         <a  href="addData.php" aria-current="page" class="nav-link active">
                             เพิ่มข้อมูล
                         </a>
+                    </li>
+                    <?php }?>
+                    <li class="nav-item">
+                        <a class="nav-link " href="login.php" aria-disabled="true">Login</a>
                     </li>
 
                     <li class="nav-item">

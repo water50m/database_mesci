@@ -28,11 +28,11 @@
                 
                 if (mysqli_query($conn, $sql_insert)) {
                     echo "ลงทะเบียนสำเร็จ" . mysqli_error($conn);
-                    header("Location: ../login.php?status=$hashed_password");
+                    header("Location: ../alert.php?func=4&message=ลงทะเบียนสำเร็จ");
                     exit();
             } else {
                 echo "เกิดข้อผิดพลาดในการลงทะเบียน";
-                header("Location: ../login.php?status=false");
+                header("Location: ../alert.php?func=4&message=ลงทะเบียนไม่สำเร็จ");
                 exit();
             }
             }
@@ -53,27 +53,31 @@
     
                 // ตรวจสอบรหัสผ่านว่าถูกต้องหรือไม่
                 
-                if (password_verify(1234,$user['password'])) {
+                if (password_verify($password_sin,$user['password'])) {
                     // ล็อกอินสำเร็จ
+                    ini_set('session.gc_maxlifetime', 1800);
                     session_start();
-
+                    
+                    if($user && $user['role_'] == 'admin'){
+                        $_SESSION['DoYouKnowImSoBig'] = $user['role_'];
+                    };
                     // เก็บค่าลงในตัวแปรเซสชัน
                     $_SESSION['whoareyou'] = $email_sin;
-                    header("Location: ../search.php");
+                    header("Location: ../search.php?func=4&message=เข้าสู่ระบบสำเร็จ");
                     exit();
                     // เพิ่มโค้ดสำหรับการจัดการเมื่อผู้ใช้ล็อกอินสำเร็จ (เช่น สร้าง session)
                 } else {
                     
                     // รหัสผ่านไม่ถูกต้อง
-                    echo "รหัสผ่านไม่ถูกต้อง!";
-                    header("Location: ../login.php?pass=");
+                   
+                    header("Location: ../alert.php?func=4&message=รหัสผ่านไม่ถูกต้อง");
                     exit();
                 }
 
             } else {
                 // ไม่พบผู้ใช้ที่ตรงกับอีเมลที่ให้มา
-                echo "ไม่พบบัญชีผู้ใช้ที่ตรงกับอีเมลนี้!";
-                header("Location: ../login.php?email=");
+                
+                header("Location: ../alert.php?func=4&message=" . urlencode("ไม่พบบัญชีผู้ใช้"));
                 exit();
             }
         }
