@@ -58,8 +58,9 @@ $jsonDataProvince = json_encode($func_province);
                
 
                 <div class="mb-3">
-                    <h5 class="form-label">คณะ</h5>
+                    
                     <div class="input-group">
+                    <span class="input-group-text">ภาควิชา</span>   
                         <select class="form-select" aria-label="เลือกสาขาวิชา" id="facultyName" name="_facultyname">
                             <!-- <option value="" selected>เลือกคณะ</option> -->
                             <?php
@@ -77,27 +78,29 @@ $jsonDataProvince = json_encode($func_province);
                             ?>
                         </select>
                         <button type="button" class="btn btn-outline-primary" style="width: 150px;" data-bs-toggle="modal" data-bs-target="#addFacultyNameModal">
-                            เพิ่มคณะ 
+                            เพิ่มใหม่
                         </button>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <h5 class="form-label">สาขาวิชา</h5>
+                    
                     <div class="input-group">
+                    <span class="input-group-text">สาขาวิชา</span>   
                         <select class="form-select" aria-label="เลือกสาขาวิชา" name="_facultymajor" id="facultyMajor">
                             <option value="" selected>เลือกสาขาวิชา</option>
                             
                         </select>
                         <button type="button" class="btn btn-outline-primary" style="width: 150px;" data-bs-toggle="modal" data-bs-target="#addFacultyModal">
-                            เพิ่มสาขาวิชา
+                        เพิ่มใหม่
                         </button>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <h5 class="form-label">แผนก</h5>
+                    
                     <div class="input-group">
+                    <span class="input-group-text">แผนก</span>   
                         <input type="text" class="form-control" aria-label="Text input" name="_department">
                     </div>
                 </div>
@@ -141,8 +144,9 @@ $jsonDataProvince = json_encode($func_province);
                 </div>
 
                 <div class="mb-3">
-                    <h5 class="form-label">ผู้ประสานงาน</h5>
+                    
                     <div class="input-group">
+                    <span class="input-group-text">ผู้ประสานงาน</span>   
                         <input type="text" class="form-control" aria-label="Text input" name="_coordinator">           
                     </div>
                 </div>
@@ -407,6 +411,7 @@ $jsonDataProvince = json_encode($func_province);
                                 searchInput.value = item.d;
                                 
                                 map.Search.search(item.w);
+                                
                                 fetch('proxy.php?keyword=' + item.w)
                                 .then(response => response.json())
                                 .then(data => {
@@ -425,7 +430,14 @@ $jsonDataProvince = json_encode($func_province);
                                        
                                         document.getElementById('provinceSelect').value = province_value;
                                         updateProvinceInfo(province_value);
-        
+                                        map.Event.bind('click', function() {
+                                            map.Overlays.clear();
+                                            var mouseLocation = map.location(longdo.LocationMode.Pointer);
+                                            document.getElementById('latitude').value = mouseLocation.lat;
+                                            document.getElementById('longitude').value = mouseLocation.lon;
+                                            map.Overlays.add(new longdo.Marker(mouseLocation));
+                                            
+                                        });         
                                     }else{
                                         var provincePart = provinceParts[0];
                                         document.getElementById('provinceSelect').value = provincePart;
@@ -445,23 +457,24 @@ $jsonDataProvince = json_encode($func_province);
                             suggestDiv.appendChild(link);
                         });
                         
-                        suggestDiv.style.display = 'block';
+                        
                     }
                 });
             });
         });
 
-        // ฟังก์ชันสำหรับเติมค่าลงใน input และ textarea
-        function fillInputAndTextarea() {
-            
-            
-
+        // ฟังก์ชันสำหรับเคลียร์ข้อมูลใน modal
+        function clearModalData() {
+            document.getElementById('searchInput').value = ''; // เคลียร์ช่องค้นหา
+            document.getElementById('suggest').innerHTML = ''; // เคลียร์ผลลัพธ์การแนะนำ
+            document.getElementById('suggest').style.display = 'none'; // ซ่อนผลลัพธ์การแนะนำ
+            map.Overlays.clear(); // เคลียร์มาร์กเกอร์บนแผนที่
         }
 
         // จับเหตุการณ์เมื่อ modal ถูกปิด
         var mapModal = document.getElementById('mapModal');
         mapModal.addEventListener('hidden.bs.modal', function () {
-            fillInputAndTextarea();
+            clearModalData();
         });
 
 
