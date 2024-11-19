@@ -3,7 +3,7 @@ require 'condb.php';
 
 $db = new connectdb();
 $conn = $db->connectMySQL();
- 
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // ตรวจสอบว่ามีการส่งค่าจาก modal `_addfacultymajor` หรือไม่
@@ -63,6 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt_addfac2->close();
 
     } else {
+        
         $province = $_POST['_province'];
         $latitude = $_POST['_latitude'];
         $longitude = $_POST['_longitude'];
@@ -71,6 +72,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $faculty_major = $_POST['_facultymajor'];
         $faculty_name = $_POST['_facultyname'];
         $region = $_POST['_region'];
+        if($region == 'ภาคเหนือ') {
+            $region = 1;
+        } else if($region == 'ภาคตะวันออกเฉียงเหนือ') {
+            $region = 2;
+        } else if($region == 'ภาคตะวันตก') {
+            $region = 3;
+        } else if($region == 'ภาคกลาง') {
+            $region = 4;
+        } else if($region == 'ภาคตะวันออก') {
+            $region = 5;
+        } else if($region == 'ภาคใต้') {
+            $region = 6;
+        } else {
+            $region = 0;
+        }
         $address = $_POST['_address'];
         $sendTo = $_POST['_sendto'];
         $coordinator = $_POST['_coordinator'];
@@ -82,6 +98,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if(isset($_GET['newlocation'])){
             $location = $_GET['newlocation'];
         }
+       
         // เช็ค id จาก คณะและสาขา
         // เตรียมคำสั่ง SQL สำหรับการตรวจสอบค่า
         $stmt_checkid = $conn->prepare("SELECT id FROM facuty WHERE major_subject = ? AND facuty = ?");
@@ -104,24 +121,61 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt_checkid->close();
 
         // เพิ่มข้อมูลในตาราง detail
-        $stmt1 = $conn->prepare("INSERT INTO detail (region_id, facuty_id, location, department, address, sendto, coordinator, Scope_work, province, latitude, longtitude) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt1 = $conn->prepare("INSERT INTO detail (region_id, facuty_id, location, department, address, sendto, coordinator, Scope_work, province, latitude, longtitude) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         if ($stmt1 === false) {
             die("Prepare failed: " . htmlspecialchars($conn->error));
         }
+
+        // กำหนดค่าเริ่มต้นสำหรับ picture_path
+        $picture_path = null;
+        
+        // ย้าย bind_param มาก่อนการ execute
         $stmt1->bind_param("sssssssssss", $region, $faculty_id, $location, $department, $address, $sendTo, $coordinator, $scope, $province, $latitude, $longitude);
 
         if (!$stmt1->execute()) {
-            echo "Error executing query: " . htmlspecialchars($stmt1->error);
+            echo "Error query";
+            // echo "Error executing query: " . htmlspecialchars($stmt1->error);
         }
 
-        // ดึง max id หลังจากการเพิ่มข้อมูล
+        // ดึง max_id ทันทีหลังจาก execute
         $max_id = $conn->insert_id;
+        
+        // จัดการอัปโหลดรูปภาพ
+        if (isset($_FILES['picture_']) && $_FILES['picture_']['error'] == 0) {
+            
+            $targetDir = "images/picture/"; // โฟลเดอร์เก็บรูปภาพ
+            $fileExtension = pathinfo($_FILES["picture_"]["name"], PATHINFO_EXTENSION);
+            $targetFilePath = $targetDir .'location_'. $max_id . '.' . $fileExtension;
+            
+            echo $targetFilePath;
+            $fileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
+            $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
+            if (in_array($fileType, $allowedTypes)) {
+                // ย้ายไฟล์ไปยังโฟลเดอร์เป้าหมาย
+                if (move_uploaded_file($_FILES["picture_"]["tmp_name"],'../'. $targetFilePath)) {
+                    // บันทึกข้อมูลลงในฐานข้อมูล
+                    $update_stmt = $conn->prepare("UPDATE detail SET picture_path = ? WHERE id = ?");
+                    $update_stmt->bind_param("si", $targetFilePath, $max_id);
+                    
+                    if ($update_stmt->execute() === TRUE) {
+                        echo "The file has been uploaded and data saved.";
+                    } else {
+                        echo "Database error: "; //. $conn->error;
+                    }
+                } else {
+                    echo "Sorry, there was an error uploading your file.";
+                }
+            } else {
+                echo "Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed.";
+            }
+        }
+        
 
         // เพิ่มข้อมูลในตาราง recieve_year
         $stmt2 = $conn->prepare("INSERT INTO recieve_year (location_id, year, received, term) VALUES (?, ?, ?, ?)");
         if ($stmt2 === false) {
             die("Prepare failed: " . htmlspecialchars($conn->error));
-        }
+        }   
 
         // เพิ่มข้อมูลภาคการศึกษาที่ 1
         $term1 = 1;

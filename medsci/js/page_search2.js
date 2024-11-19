@@ -34,7 +34,7 @@
     
             // ใช้ forEach เพื่อวนลูปตามข้อมูลใน data
             data.value.forEach(single_data => {
-               
+                
                
                 
                    
@@ -44,20 +44,25 @@
                             <input type="text" id="inputGroupFile01" name="_id" value="${single_data.id}" style="display: none;">
                         </form>
                         <div class="card" onclick='handleCardClick(${JSON.stringify(single_data)})'>
-                            <div class="row">
-                                <div class="col">
-                                    <div class="avatar"></div>
+                            <div class="row g-0 align-items-center">
+                                <div class="col-md-4">
+                                    <div class="avatar">
+                                        ${single_data.picture_path ? 
+                                            `<img src="${single_data.picture_path}" class="img-fluid" alt="รูปภาพสถานที่ฝึกงาน">` : 
+                                            `<img src="images/Medscinu-01.png" class="img-fluid" alt="ไม่มีรูปภาพ">`
+                                        }
+                                    </div>
                                     <div class="info">
                                         <p class="title">${single_data.location}</p>
                                     </div>
                                 </div>
-                                <div class="col">
+                                <div class="col-md-4">
                                     <div class="detail">
                                         <p>ด้าน: ${single_data.majorName}</p>
                                         <p>แผนก: ${single_data.department}</p>
                                     </div>
                                 </div>
-                                <div class="col">
+                                <div class="col-md-4">
                                     <div class="detail">
                                         <p>${single_data.regionName}</p>
                                     </div>
@@ -82,6 +87,8 @@ function handleSubmit(event) {
 
     // ดึงค่าจาก input และ select
     const location = document.getElementById('location').value;
+    console.log('location:')
+    console.log(location)
     const region = document.getElementById('regionSelect').value;
     const facuty_Select = document.getElementById('facuty_Select').value;
     const branch = document.getElementById('branchSelect').value;
@@ -111,6 +118,7 @@ function handleSubmit(event) {
         
         let htmlContent = '';
         if (Array.isArray(data.value) && data.value.length === 0) {
+            
             // ถ้าเป็นอาร์เรย์ว่าง ให้แสดงข้อความแจ้งเตือนสีแดง
             htmlContent = `
                 <div style="color: red; font-weight: bold; text-align: center; margin: 20px; margin-bottom: 40px;">
@@ -122,32 +130,34 @@ function handleSubmit(event) {
         // ใช้ forEach เพื่อวนลูปตามข้อมูลใน data
         data.value.forEach(single_data => {
             
-                
-               
+            
+            
             htmlContent += `
             <form action="modify_data.php" method="POST">
             ${rights}
                 <input type="text" id="inputGroupFile01" name="_id" value='${single_data.id}' style="display: none;" ">
                 </form>
-                <div class="card" onclick='handleCardClick(${JSON.stringify(single_data)}) id="openModal"'>
+                <div class="card" onclick='handleCardClick(${JSON.stringify(single_data)}) '>
                     
-                    <div class="row">
-                        <div class="col">
-                        <div class="avatar"></div>
+                    <div class="row g-0 align-items-center">
+                        <div class="col-md-4">
+                            <div class="avatar">
+                                ${single_data.picture_path ? 
+                                    `<img src="${single_data.picture_path}" class="img-fluid" alt="รูปภาพสถานที่ฝึกงาน">` : 
+                                    `<img src="images/Medscinu-01.png" class="img-fluid" alt="รูปภาพเริ่มต้น">`
+                                }
+                            </div>
                             <div class="info">
                                 <p class="title">${single_data.location}</p>
-                                
                             </div>
-
                         </div>
-                        <div class="col">
+                        <div class="col-md-4">
                             <div class="detail">
                                 <p>ด้าน: ${single_data.majorName}</p>
-                            <p>แผนก: ${single_data.department}</p>
-                            
+                                <p>แผนก: ${single_data.department}</p>
                             </div>
                         </div>
-                        <div class="col">
+                        <div class="col-md-4">
                             <div class="detail">
                                 <p>${single_data.regionName}</p>
                             </div>
@@ -189,7 +199,7 @@ function handleCardClick(data) {
     return response.json();
 })
 .then(data2 => {
-    console.log(data2)
+    
 
     // ตรวจสอบข้อมูลที่ได้มา
     const headers = ['ปีการศึกษา'];

@@ -51,7 +51,8 @@ class SQLquery {
                     ELSE NULL
                 END AS region_category
             FROM province p 
-            JOIN region g ON p.region_id = g.id";
+            JOIN region g ON p.region_id = g.id
+            ORDER BY p.name";
             
             $stmt = $this->prepareAndCache($sql);
             $stmt->execute();
@@ -95,6 +96,21 @@ class SQLquery {
             throw $e;
         }
     }
+    public function selectOnlyFacuty(){
+        try {
+            $sql = "SELECT facuty    
+            FROM facuty  
+            GROUP BY facuty";
+            
+            $stmt = $this->prepareAndCache($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch(PDOException $e) {
+            error_log("Error in selectFacuty: " . $e->getMessage());
+            throw $e;
+        }
+    }
+    
 
     public function selectDetail(){
         try {
@@ -148,9 +164,10 @@ class SQLquery {
 
     public function selectAllDetail($id, $region, $province){
         try {
-            $params = [':id' => $id];
+            
             $mainWordQuery = "";
-
+            
+            
             if (isset($province) || isset($region)) {
                 if (isset($region) && $region != "") {
                     $mainWordQuery .= " AND LOWER(d.region_id) LIKE LOWER(:region_id)";
@@ -180,15 +197,16 @@ class SQLquery {
                 d.coordinator,
                 d.province,
                 d.latitude,
-                d.longtitude
+                d.longtitude,
+                d.picture_path
             FROM detail d 
-            JOIN facuty f ON f.id = d.facuty_id 
-            JOIN region r ON d.region_id = r.id
-            JOIN recieve_year y ON d.id = y.location_id
+            LEFT JOIN facuty f ON f.id = d.facuty_id 
+            LEFT JOIN region r ON d.region_id = r.id
+            LEFT JOIN recieve_year y ON d.id = y.location_id
             WHERE d.id = :id" . $mainWordQuery;
-
+            
             $stmt = $this->prepareAndCache($sql);
-            $stmt->execute($params);
+            $stmt->execute([':id' => $id]);
             return $stmt->fetch(PDO::FETCH_ASSOC);
         } catch(PDOException $e) {
             error_log("Error in selectAllDetail: " . $e->getMessage());

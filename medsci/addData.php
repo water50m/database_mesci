@@ -20,14 +20,17 @@ $jsonDataProvince = json_encode($func_province);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/addData.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <title>เพิ่มข้อมูลใหม่</title>
+    <script src="https://api.longdo.com/map/?key=bff66f6baa485edba09ca806b597ed30"></script>
+    
 </head>
 
 <body>
     <?php include 'navbar.php'; ?>
 
     <div class="container2">
-        <form action="config/addDatadb.php" method="POST">
+        <form action="config/addDatadb.php" method="POST" enctype="multipart/form-data">
             <div class="box">
                 <div class="mb-3">
                     <label class="form-label">
@@ -38,27 +41,27 @@ $jsonDataProvince = json_encode($func_province);
                             </svg>
                         </span>
                         สถานที่ฝึกงาน
-                        <a href="#" data-bs-toggle="modal" data-bs-target="#addlocation" style="margin-left: 8px;">+</a>
+                        <a href="#" onclick="openLongdoMap()" style="margin-left: 8px;">
+                            <i class="fas fa-search"></i>
+                        </a>
+                        
                     </label>
 
                     <div class="input-group">
-                        <input type="text" class="form-control" aria-label="Text input" name="_location">
+                        <textarea class="form-control" aria-label="Text input" name="_location" id="locationInput"></textarea>
                     </div>   
                 </div>
-
-                <div class="mb-3">
-                    <h5 class="form-label">พิกัด (หมุดจะปักไว้ที่เมืองหลวงของจังหวัดนั้นๆ กรณีที่ไม่ได้กำหนดพิกัด)</h5>
-                    <div class="input-group">
-                        <input type="text" class="form-control" aria-label="Latitude" placeholder="ละติจูด" name="_latitude" id="latitude">
-                        <input type="text" class="form-control" aria-label="Longitude" placeholder="ลองจิจูด" name="_longitude" id="longitude">
-                    </div>
+                <div class="input-group mb-3">
+                    <label class="input-group-text" for="inputGroupFile01">รูปภาพ</label>
+                    <input type="file" class="form-control" id="inputGroupFile01" name="picture_" accept="image/*">
                 </div>
+               
 
                 <div class="mb-3">
                     <h5 class="form-label">คณะ</h5>
                     <div class="input-group">
                         <select class="form-select" aria-label="เลือกสาขาวิชา" id="facultyName" name="_facultyname">
-                            <option value="noselect" selected>เลือกคณะ</option>
+                            <!-- <option value="" selected>เลือกคณะ</option> -->
                             <?php
                             $shown_faculties = [];
                             foreach ($fucn_query as $faculty):
@@ -83,7 +86,7 @@ $jsonDataProvince = json_encode($func_province);
                     <h5 class="form-label">สาขาวิชา</h5>
                     <div class="input-group">
                         <select class="form-select" aria-label="เลือกสาขาวิชา" name="_facultymajor" id="facultyMajor">
-                            <option value="noselect" selected>เลือกสาขาวิชา</option>
+                            <option value="" selected>เลือกสาขาวิชา</option>
                             
                         </select>
                         <button type="button" class="btn btn-outline-primary" style="width: 150px;" data-bs-toggle="modal" data-bs-target="#addFacultyModal">
@@ -101,9 +104,9 @@ $jsonDataProvince = json_encode($func_province);
 
                 <div class="mb-3 d-flex align-items-center justify-content-between">
                     <div class="me-3" style="flex: 1;">
-                        <h5 class="form-label">จังหวัด</h5>
+                        
                         <select class="form-select" aria-label="Default select example" name="_province" id="provinceSelect">
-                            <option value="noselect" selected>เลือกจังหวัด</option>
+                            <option value="" selected>เลือกจังหวัด</option>
                             <?php foreach ($func_province as $province): ?>
                                 <option value="<?php echo $province['province_name']; ?>">
                                     <?php echo $province['province_name']; ?>
@@ -112,18 +115,21 @@ $jsonDataProvince = json_encode($func_province);
                         </select>
                     </div>
                     <div style="flex: 1;">
-                        <h5 class="form-label">ภูมิภาค</h5>
-                        <select class="form-select" aria-label="Default select example" name="_region" id="regionSelect">
-                            <option value="noselect" selected>เลือกภูมิภาค</option>
-
-                        </select>
+                        
+                        <input type="text" class="form-control" value="ภูมิภาค" aria-label="Default select example" name="_region" id="regionSelect" readonly>
                     </div>
                 </div>
-
+                <div class="mb-3">
+                    <p class="form-label">พิกัด (หมุดจะปักไว้ที่จังหวัดนั้นๆ กรณีที่ไม่ได้ระบุพิกัดแบบเจาะจง)</p>
+                    <div class="input-group">
+                        <input type="number" step="0.000001" class="form-control" aria-label="Latitude" placeholder="ละติจูด" name="_latitude" id="latitude">
+                        <input type="number" step="0.000001" class="form-control" aria-label="Longitude" placeholder="ลองจิจูด" name="_longitude" id="longitude">
+                    </div>
+                </div>
                 <div class="mb-3">
                     <h5 class="form-label">ที่อยู่</h5>
                     <div class="input-group">
-                        <textarea class="form-control" id="floatingTextarea1" style="height: 100px" name="_address"></textarea>
+                        <textarea class="form-control"  style="height: 100px" name="_address" id="addressInput"></textarea>
                     </div>
                 </div>
 
@@ -142,7 +148,7 @@ $jsonDataProvince = json_encode($func_province);
                 </div>
 
                 <div class="mb-3">
-                    <h5 class="form-label">ขอบข่ายงาน</h5>
+                    <h5 class="form-label">ขอข่ายงาน</h5>
                     <div class="input-group">
                         <textarea class="form-control" id="floatingTextarea3" style="height: 100px" name="_scope"></textarea>
                     </div>
@@ -165,38 +171,20 @@ $jsonDataProvince = json_encode($func_province);
                     <input type="number" class="form-control" placeholder="รับ...คน" aria-label="Text input" name="_count2">
                 </div>
 
-                <button type="submit" class="button-3" role="button">Submit</button>
+                <button type="submit" class="button-3" role="button">เพิ่ม</button>
 
                 <div class="input-group mb-3" style="padding: 50px;"></div>
             </div>
         </form>
 
-        <!-- Modal -->
-        <div class="modal fade" id="addlocation" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="staticBackdropLabel">เพิ่มสถานที่</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <h5 class="form-label">ชื่อสถานที่</h5>
-                        <input type="text" class="form-control" aria-label="Text input">
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
-                        <button type="button" class="btn btn-primary">เพิ่ม</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+
 
         <!-- Modal ชื่อคณะ -->
         <div class="modal fade" id="addFacultyNameModal" tabindex="-1" aria-labelledby="addFacultyNameModalLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="addFacultyNameModalLabel">เพิ่มคณะ</h5>
+                        <h5 class="modal-title" id="addFacultyNameModalLabel">เพิ่มใหม่</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -220,7 +208,7 @@ $jsonDataProvince = json_encode($func_province);
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="addFacultyModalLabel">เพิ่มสาขาวิชา</h5>
+                        <h5 class="modal-title" id="addFacultyModalLabel">เพิ่มใหม่</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
@@ -228,7 +216,7 @@ $jsonDataProvince = json_encode($func_province);
                             <div class="mb-3">
                                 <label for="facultyName" class="form-label">ภาควิชา</label>
                                 <select class="form-select" aria-label="เลือกสาขาวิชา" id="facultyName" name="_addfacultyname2">
-                                    <option value="noselect" selected>เลือกภาควิชา</option>
+                                    <option value="" selected>เลือกภาควิชา</option>
                                     <?php
                                     $shown_faculties = [];
                                     foreach ($fucn_query as $faculty):
@@ -256,6 +244,28 @@ $jsonDataProvince = json_encode($func_province);
             </div>
         </div>
 
+        <!-- เพิ่ม Modal สำหรับแผนที่ -->
+        <div class="modal fade" id="mapModal" tabindex="-1" aria-labelledby="mapModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="mapModalLabel">เลือกตำแหน่งบนแผนที่</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                    <div id="result" class="mb-3">
+                        <input class="form-control" type="text" id="searchInput" placeholder="ค้นหาสถานที่..." style="margin-bottom: 10px;">
+                        <div id="suggest" class="suggest-div"></div>
+                    </div>
+                    <div id="map" style="height: 500px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">ปิด</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
@@ -263,51 +273,200 @@ $jsonDataProvince = json_encode($func_province);
         var facultySelect = document.getElementById('facultyName');
         var majorSelect = document.getElementById('facultyMajor');
 
-        facultySelect.addEventListener('change', function() {
-            // เคลียร์ตัวเลือกเก่า
-            majorSelect.innerHTML = '<option value="noselect" selected>เลือกสาขาวิชา</option>';
-            
-            // ดึงค่าคณะที่เลือกปัจจุบัน
-            var selectedFaculty_value = this.value;
-            
+        // ฟังก์ชันสำหรับอัพเดทสาขาวิชา
+        function updateMajors(selectedFaculty) {
+            // ��คลียร์ตัวเลือกเก่า
+            majorSelect.innerHTML = '<option value="" selected>เลือกสาขาวิชา</option>';
             
             // กรองและเพิ่มสาขาที่ตรงกับคณะ
             facuty.forEach(function(faculty) {
-                if(faculty.facuty === selectedFaculty_value && faculty.f_major !== '') {
+                if(faculty.facuty === selectedFaculty && faculty.f_major !== '') {
                     const option = document.createElement('option');
                     option.value = faculty.f_major;
                     option.text = faculty.f_major;
                     majorSelect.appendChild(option);
                 }
             });
-        });
+        }
 
+        // เียกใช้ฟังก์ชันทันทีที่โหลดหน้า
+        updateMajors(facultySelect.value);
+
+        // เพิ่ม event listener สำหรับการเปลี่ยนแปลง
+        facultySelect.addEventListener('change', function() {
+            updateMajors(this.value);
+        });
+        
+        // smart select province
         var province = <?php echo $jsonDataProvince; ?>;
+        
         var provinceSelect = document.getElementById('provinceSelect');
         var regionSelect = document.getElementById('regionSelect');
-
-        provinceSelect.addEventListener('change', function() {
-            // เคลียร์ตัวเลือกเก่า
-            regionSelect.innerHTML = '<option value="noselect" selected>เลือกภูมิภาค</option>';   
-            
-            // ดึงค่าจังหวัดที่เลือกปัจจุบัน
-            var selectedprovince_value = this.value;
-            
-            // กรองและเพิ่มภูมิภาคที่ตรงกับจังหวัด
-            var foundRegion = false;
+        updateProvinceInfo(provinceSelect)
+        function updateProvinceInfo(selectedProvince) {
             province.forEach(function(prov) {
-                if(prov.province_name === selectedprovince_value && !foundRegion) {
+                if(prov.province_name === selectedProvince) {
                     document.getElementById('latitude').value = prov.latitude;
-                    document.getElementById('longitude').value = prov.longitude;
-                    const option = document.createElement('option');
-                    option.value = prov.region_id;
-                    option.text = prov.region_name;
-                    option.selected = true; // ตั้งค่าให้เลือกอัตโนมัติ
-                    regionSelect.appendChild(option);
-                    foundRegion = true; // ป้องกันการเพิ่มซ้ำ
+                    document.getElementById('longitude').value = prov.longitude; 
+                    document.getElementById('regionSelect').value = prov.region_name;
+     
                 }
             });
+        }
+
+        provinceSelect.addEventListener('change', function() {
+            updateProvinceInfo(this.value);
         });
+        
+        function openLongdoMap() {
+            var mapModal = new bootstrap.Modal(document.getElementById('mapModal'));
+            mapModal.show();
+            
+            // รอให้ modal แสดงผลเสร็จก่อน แล้วค่อย initialize แผนที่
+            mapModal._element.addEventListener('shown.bs.modal', function () {
+                initializeMap();
+            });
+        }
+
+        // แยก map initialization ออกมา
+        var map;
+        function initializeMap() {
+            map = new longdo.Map({
+                placeholder: document.getElementById('map'),
+                language: 'th'
+            });
+
+            map.Search.placeholder(
+                document.getElementById('result')
+            );
+
+            // เพิ่ม event listener สำหรับการคลิกบนแผนที่
+            map.Event.bind('click', function(overlay) {
+                if (overlay.location) {
+                    var lat = overlay.location.lat;
+                    var lon = overlay.location.lon;
+                    document.getElementById('latitude').value = lat;
+                    document.getElementById('longitude').value = lon;
+                    map.location(overlay.location, true);
+                }
+            });
+        }
+
+        // เรียกใช้ initializeMap หลังจากโหลด DOM เสร็จ
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeMap();
+            
+            // ส่วนของ search functionality ที่เหลือ
+            var searchInput = document.getElementById('searchInput');
+            var suggestDiv = document.getElementById('suggest');
+
+            // ปรับปรุงส่วน suggest
+            searchInput.addEventListener('input', function() {
+                if (this.value.length < 3) {
+                    suggestDiv.innerHTML = '';
+                    suggestDiv.style.display = 'none';
+                    return;
+                }
+                
+                // เรียกใช้ suggest API โดยตรง
+                $.ajax({
+                    url: 'https://search.longdo.com/mapsearch/json/suggest',
+                    data: {
+                        keyword: this.value,
+                        limit: 10
+                    },
+                    success: function(result) {
+                        if (!result || result.data.length === 0) {
+                            suggestDiv.style.display = 'none';
+                            return;
+                        }
+
+                        suggestDiv.innerHTML = '';
+                        result.data.forEach(function(item) {
+                            
+                            var link = document.createElement('a');
+                            link.innerHTML = item.d + ' (' + item.province + ')';
+                            link.href = '#';
+                            link.className = 'suggest-item';
+                            link.style.display = 'block';
+                            link.style.padding = '8px 15px';
+                            link.style.textDecoration = 'none';
+                            link.style.color = '#333';
+                            link.style.backgroundColor = '#fff';
+                            
+                            link.addEventListener('mouseover', function() {
+                                this.style.backgroundColor = '#f0f0f0';
+                            });
+                            
+                            link.addEventListener('mouseout', function() {
+                                this.style.backgroundColor = '#fff';
+                            });
+
+                            link.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                searchInput.value = item.d;
+                                
+                                map.Search.search(item.w);
+                                fetch('proxy.php?keyword=' + item.w)
+                                .then(response => response.json())
+                                .then(data => {
+                                    
+                                    const dataDetail = data; // เก็บค่าไว้ในตัวแปรชื่อ dataDetail
+                                    document.getElementById('locationInput').value = dataDetail.data[0].name;
+                                    document.getElementById('latitude').value = dataDetail.data[0].lat;
+                                    document.getElementById('longitude').value = dataDetail.data[0].lon;
+                                    document.getElementById('addressInput').value = dataDetail.data[0].address;
+                                    
+                                    const addressParts = dataDetail.data[0].address.split(' ');
+                                    const provinceParts = addressParts[addressParts.length - 2].split('.');
+                                    if (addressParts[addressParts.length - 2].includes('.')) {
+                                        
+                                        var province_value = provinceParts[provinceParts.length - 1];
+                                       
+                                        document.getElementById('provinceSelect').value = province_value;
+                                        updateProvinceInfo(province_value);
+        
+                                    }else{
+                                        var provincePart = provinceParts[0];
+                                        document.getElementById('provinceSelect').value = provincePart;
+                                        updateProvinceInfo(provincePart);
+                                        
+                                    }
+                                    
+                                })
+                                .catch(error => console.error('Error:', error));
+                                
+                                
+                                map.zoom(15);
+                                
+                                suggestDiv.style.display = 'none';
+                            });
+                            
+                            suggestDiv.appendChild(link);
+                        });
+                        
+                        suggestDiv.style.display = 'block';
+                    }
+                });
+            });
+        });
+
+        // ฟังก์ชันสำหรับเติมค่าลงใน input และ textarea
+        function fillInputAndTextarea() {
+            
+            
+
+        }
+
+        // จับเหตุการณ์เมื่อ modal ถูกปิด
+        var mapModal = document.getElementById('mapModal');
+        mapModal.addEventListener('hidden.bs.modal', function () {
+            fillInputAndTextarea();
+        });
+
+
+
+       
     </script>
 </body>
 </html>

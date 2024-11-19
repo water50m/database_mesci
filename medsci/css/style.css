@@ -120,20 +120,28 @@ width: 100%;
     background-color: #FFB3B3;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
     
+}   
+.detail-col{
+    display: flex;
+    align-items: center;
+    gap: 15px; 
 }
 
-.avatar {
-    width: 100px;
-    height: 100px;
+
+
+.avatar img {
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     background-color: #ccc;
     margin-right: 15px;
+    border-radius: 50%;
+    object-fit: cover;
 }
 
 .info {
-    flex: 1;
-    display: flex; /* ตั้งค่าให้เป็น flex */
-    align-items: center; /* จัดตำแหน่งให้อยู่กึ่งกลางในแนวตั้ง */
+    flex-grow: 1;
+
 }
 
 .title {
@@ -184,7 +192,7 @@ width: 100%;
 
 .title-welcome h1 {
     font-size: 36px; /* ขนาดตัวอักษรใหญ่ขึ้น */
-    color: #c5a33d;
+    color: #d8c486;
     
 }
 

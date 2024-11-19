@@ -8,10 +8,10 @@ if (isset($_GET['func']) && $_GET['func'] == 1) {
     $conn = $db->connectPDO();
 
     $details_query = "SELECT d.id,d.location, d.department, d.Scope_work, d.receive_term1, d.receive_term2, 
-                 f.major_subject AS majorName ,r.name AS regionName
+                 f.major_subject AS majorName ,r.name AS regionName,d.picture_path
                   FROM detail d 
-                  JOIN facuty f ON f.id = d.facuty_id 
-                  JOIN region r ON d.region_id = r.id
+                  LEFT JOIN facuty f ON f.id = d.facuty_id 
+                  LEFT JOIN region r ON d.region_id = r.id
                   WHERE d.facuty_id = :value";
 
 // เตรียม statement
@@ -45,16 +45,20 @@ if (isset($_GET['func']) && $_GET['func'] == 2 ) {
 
     // เริ่มสร้าง query หลัก
     $mainWordQuery = "SELECT d.id,d.location, d.department, d.Scope_work, d.receive_term1, d.receive_term2, 
-                      f.major_subject AS majorName, r.name AS regionName
+                      f.major_subject AS majorName, r.name AS regionName,d.picture_path
                       FROM detail d 
-                      JOIN facuty f ON f.id = d.facuty_id 
-                      JOIN region r ON d.region_id = r.id";
+                      LEFT JOIN facuty f ON f.id = d.facuty_id 
+                      LEFT JOIN region r ON d.region_id = r.id";
 
     // เพิ่มเงื่อนไขตามตัวแปรที่ส่งเข้ามา
     $params = [];
     if ($location) {
-        
-        $mainWordQuery .= " AND LOWER(d.location) LIKE LOWER(:location)";
+        if($location == ""){
+            $mainWordQuery .= " WHERE LOWER(d.location) LIKE '%%'";
+        }
+        else{
+            $mainWordQuery .= " WHERE LOWER(d.location) LIKE LOWER(:location)";
+        }
         $params[':location'] = '%' . strtolower($location) . '%';
     }
     if ($region && $region!='allr' && $region != 'noselect') {
@@ -71,7 +75,7 @@ if (isset($_GET['func']) && $_GET['func'] == 2 ) {
         $mainWordQuery .= " AND f.major_subject LIKE :branch";
         $params[':branch'] = '%' . $branch . '%';
     }
-
+    
     // เชื่อมต่อฐานข้อมูล
     $db = new connectdb();
     $conn = $db->connectPDO();
@@ -91,6 +95,7 @@ if (isset($_GET['func']) && $_GET['func'] == 2 ) {
     $details = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     echo json_encode([
+        'sql' => $mainWordQuery,
         'value' => $details
     ]);
 }
@@ -101,10 +106,10 @@ function func3($id){
     $conn = $db->connectPDO();
 
     $details_query = "SELECT d.id,d.location, d.department, d.Scope_work, d.receive_term1, d.receive_term2, 
-                 f.major_subject AS majorName ,r.name AS regionName
+                 f.major_subject AS majorName ,r.name AS regionName,d.picture_path
                   FROM detail d 
-                  JOIN facuty f ON f.id = d.facuty_id 
-                  JOIN region r ON d.region_id = r.id
+                  LEFT JOIN facuty f ON f.id = d.facuty_id 
+                  LEFT JOIN region r ON d.region_id = r.id
                   WHERE d.id = :id";
 
     // เตรียม statement

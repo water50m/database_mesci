@@ -10,21 +10,28 @@ $query = new SQLquery();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $type = $_POST['_id'];
+    
 }
 
 $gettype =  isset($_GET['type']) ? $_GET['type'] : '';
 if($gettype){
     $type = $gettype;
 }
+if(!$type){
+    header("location: search.php");
+    exit();
+}
 $result = $query->selectAllDetail($type,null,null);
+$jsonResult = json_encode($result);
 $id = $result['id'];
-
 $fucn_query = $query->selectFacuty();
+
 $jsonDataFacuty = json_encode($fucn_query);
 $region = $query->selectRegion();
 
 $num_receive_per_year = $query->selectAllreceive_year($id );
 $func_province = $query->selectProvince();
+$jsonDataProvince = json_encode($func_province);
 ?>
 
 <!DOCTYPE html>
@@ -41,37 +48,34 @@ $func_province = $query->selectProvince();
 <body>
 <?php include 'navbar.php'; ?>
 <div class="container2">
-    <form  id="myForm" method="POST">
+    <form  id="myForm" method="POST" enctype="multipart/form-data">
         <div class="box">
             <div class="mb-3">
+            <div class="avatar">
+                    <?php if(!empty($result['picture_path'])): ?>
+                        <img src="<?php echo $result['picture_path']; ?>" class="img-fluid" alt="รูปภาพสถานที่ฝึกงาน">
+                    <?php else: ?>
+                        <img src="images/Medscinu-01.png" class="img-fluid" alt="รูปภาพเริ่มต้น">
+                    <?php endif; ?>
+                </div>
                 <label class="form-label">
-                    <span class="icon-container">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon" class="size-3">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"></path>
-                        </svg>
-                    </span>
-                    สถานที่ฝึกงาน                    
+                
+                    
+                    ชื่อสถานที่ฝึกงาน                    
                 </label>
 
                 <div class="input-group">
                     <?php 
-                    echo '<input type="text"  value='.$result['location'].' class="form-control" aria-label="Text input" name="_loName">';
+                    echo '<textarea type="text"  value='.$result['location'].' class="form-control" aria-label="Text input" name="_loName">'.$result['location'].'</textarea>';
                     echo '<input type="text" style="display: none;" value='.$result['id'].' class="form-control" aria-label="Text input" name="_location">';
                     ?>
                 </div>
             </div>
-
-        <div class="mb-3">
-            <h5 class="form-label">พิกัด</h5>
-            <div class="input-group">
-                    
-                <?php
-                    echo '<input type="text" value="'.$result['latitude'].'" class="form-control" aria-label="Latitude" placeholder="ละติจูด" name="_latitude">';
-                    echo '<input type="text" value="'.$result['longtitude'].'" class="form-control" aria-label="Longitude" placeholder="ลองจิจูด" name="_longitude">';
-                ?>
-            </div>
-        </div>   
+            <div class="input-group mb-3">
+                    <label class="input-group-text" for="inputGroupFile01">รูปภาพ</label>
+                    <input type="file" class="form-control" id="inputGroupFile01" name="picture_" accept="image/*">
+                </div>
+           
 
         <div class="mb-3">
             <h5 class="form-label">คณะ</h5>
@@ -108,8 +112,8 @@ $func_province = $query->selectProvince();
             <h5 class="form-label">สาขาวิชา</h5>
             <div class="input-group">
                 <select class="form-select" aria-label="Default select example" id="facultyMajor" name="_facultymajor">
-                    <option selected>เลือกสาขาวิชา</option>
-                   
+                    <option selected>เลือกสาขาวิชา...</option>
+                    
                 </select>
                 <button type="button" class="btn btn-outline-primary" style="width: 150px;"
                     data-bs-toggle="modal" data-bs-target="#addFacultyModal">
@@ -135,10 +139,10 @@ $func_province = $query->selectProvince();
         <div class="mb-3 d-flex align-items-center justify-content-between">
             <div class="me-3" style="flex: 1;">
                 <h5 class="form-label">จังหวัด</h5>
-                <select class="form-select" aria-label="Default select example" name="_province">
+                <select class="form-select" aria-label="Default select example" name="_province" id="provinceSelect">
                     <option value="noselect" selected>เลือกจังหวัด</option>
                     <?php 
-                            echo '<option selected value='.$result['province'].'>'.$result['province'].'</option>';
+                            echo '<option selected value='.$result['province'].' style="background-color: yellow;">'.$result['province'].'</option>';
                     ?>
                     <?php foreach ($func_province as $province): ?>
                         <?php if($province['province_name'] == $result['province']){ }else{?>
@@ -150,21 +154,20 @@ $func_province = $query->selectProvince();
             </div>
             <div style="flex: 1;">
                 <h5 class="form-label">ภูมิภาค</h5>
-                <select class="form-select" aria-label="Default select example" name="_region">
-                    <option selected>เลือกภูมิภาค</option>
-                    <?php 
-                            echo '<option selected value='.$result['rid'].'>'.$result['regionName'].'</option>';
-                    ?>
-                    <?php foreach ($region as $_region): ?>
-                        <?php if($_region['id'] == $result['rid']){ }else{?>
-                        <option value="<?php echo $_region['id']; ?>" >
-                            <?php echo $_region['name']; ?>
-                        </option>
-                    <?php }endforeach; ?>
-                </select>
+                <input type="text" class="form-control" value="<?php echo $result['regionName']; ?>" aria-label="Default select example" readonly id="regionShow">
+                <input type="hidden" name="_region" value="<?php echo $result['rid']; ?>" id="regionSelect">
             </div>
         </div>
-
+        <div class="mb-3">
+            <h5 class="form-label">พิกัด <a href="#" onclick="resetLocationData(); return false;">default</a></h5>
+            <div class="input-group">
+                    
+                <?php
+                    echo '<input type="number" step="0.000001" value="'.$result['latitude'].'" class="form-control" aria-label="Latitude" placeholder="ละติจูด" name="_latitude" id="latitude">';
+                    echo '<input type="number" step="0.000001" value="'.$result['longtitude'].'" class="form-control" aria-label="Longitude" placeholder="ลองจิจูด" name="_longitude" id="longitude">';
+                ?>
+            </div>
+        </div>
         <div class="mb-3">
             <h5  class="form-label">ที่อยู่</h5>
             <div class="input-group">
@@ -369,47 +372,70 @@ $func_province = $query->selectProvince();
         // console.log(numReceivePerYear)    
     };
 
-        var facuty = <?php echo $jsonDataFacuty; ?>;
+    var result = <?php echo json_encode($result); ?>;
+    
+    var facuty = <?php echo $jsonDataFacuty; ?>;
         var facultySelect = document.getElementById('facultyName_select');
         var majorSelect = document.getElementById('facultyMajor');
-        
-        
-        // ฟังก์ชันสำหรับอัพเดทรายการสาขา
-        function updateMajors(selectedFaculty,majorSelect_) {
-            
+
+        // ฟังก์ชันสำหรับอัพเดทสาขาวิชา
+        function updateMajors(selectedFaculty) {
             // เคลียร์ตัวเลือกเก่า
-            majorSelect.innerHTML = '<option value="noselect" selected>เลือกสาขาวิชา</option>';
+            majorSelect.innerHTML = '<option value="" selected>เลือกสาขาวิชา</option>'+'<option value="' + result.majorName + '" selected style="background-color: yellow;">' + result.majorName + '</option>';
             
             // กรองและเพิ่มสาขาที่ตรงกับคณะ
             facuty.forEach(function(faculty) {
-                if(faculty.facuty === selectedFaculty && faculty.f_major !== '') {
+                if(faculty.facuty === selectedFaculty && faculty.f_major !== '' && faculty.f_major !== result.majorName) {
                     const option = document.createElement('option');
                     option.value = faculty.f_major;
                     option.text = faculty.f_major;
-                    if(majorSelect_ === faculty.f_major) {
-                        option.selected = true;
-                    }
                     majorSelect.appendChild(option);
-
                 }
             });
         }
 
-        // เรียกใช้ฟังก์ชันตอนโหลดหน้าเว็บครั้งแรก
-        document.addEventListener('DOMContentLoaded', function() {
-            var jsonMaor = <?php echo json_encode($result['majorName']); ?>;
-            var initialFaculty = facultySelect.value;
-            if (initialFaculty && initialFaculty !== 'เลือกคณะ') {
-                updateMajors(initialFaculty,jsonMaor);
+        // เรียกใช้ฟังก์ชันทันทีที่โหลดหน้า
+        updateMajors(facultySelect.value);
 
-            }
-        });
-
-        // เรียกใช้ฟังก์ชันเมื่อมีการเปลี่ยนค่า faculty
+        // เพิ่ม event listener สำหรับการเปลี่ยนแปลง
         facultySelect.addEventListener('change', function() {
-            updateMajors(this.value,null);
+            updateMajors(this.value);
         });
-    </script>
+
+        // smart select province
+        var province = <?php echo $jsonDataProvince; ?>;
+        
+        var provinceSelect = document.getElementById('provinceSelect');
+        var regionSelect = document.getElementById('regionSelect');
+        
+        provinceSelect.addEventListener('change', function() {
+            // ดึงค่าจังหวัดที่เลือกปัจจุบัน
+            var selectedprovince_value = this.value;
+            
+            // กรองและเพิ่มภูมิภาคที่ตรงกับจังหวัด
+            var foundRegion = false;
+            province.forEach(function(prov) {
+                if(prov.province_name === selectedprovince_value && !foundRegion) {
+                    document.getElementById('latitude').value = prov.latitude;
+                    document.getElementById('longitude').value = prov.longitude;
+                    document.getElementById('regionSelect').value = prov.region_id;
+                    document.getElementById('regionShow').placeholder = prov.region_name;
+                }
+            });
+        });
+
+    function resetLocationData() {
+        // รีเซ็ตค่าพิกัด
+        document.getElementById('latitude').value = '<?php echo $result['latitude']; ?>';
+        document.getElementById('longitude').value = '<?php echo $result['longtitude']; ?>';
+        
+        // รีเซ็ตค่าจังหวัด
+        document.getElementById('provinceSelect').value = '<?php echo $result['province']; ?>';
+        
+        // รีเซ็ตค่าภูมิภาค
+        document.getElementById('regionSelect').value = '<?php echo $result['regionName']; ?>';
+    }
+</script>
 
 </body>
 </html>

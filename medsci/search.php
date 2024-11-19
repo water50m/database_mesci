@@ -31,6 +31,38 @@ header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
     <script src="js/page_search2.js"></script>
     <link herf="css/table_inSearch_page.css">
 </head>
+<style>
+     /* เพิ่ม CSS ให้กับตาราง */
+.custom-table {
+    width: 100%;
+    border-collapse: collapse; /* ทำให้ขอบของเซลล์ติดกัน */
+    margin: 20px 0;
+}
+
+.custom-table th, .custom-table td {
+    padding: 12px; /* เพิ่ม padding ให้เซลล์ */
+    text-align: left; /* จัดตำแหน่งข้อความในเซลล์ */
+    border: 1px solid #ddd; /* เพิ่มขอบให้กับเซลล์ */
+}
+
+.custom-table th {
+    background-color: #f2f2f2; /* ตั้งสีพื้นหลังให้กับหัวตาราง */
+    font-weight: bold; /* ตั้งให้ตัวอักษรในหัวตารางหนา */
+}
+
+.custom-table tr:nth-child(even) {
+    background-color: #f9f9f9; /* เปลี่ยนสีพื้นหลังของแถวคู่ */
+}
+
+.custom-table tr:hover {
+    background-color: #ddd; /* เมื่อชี้เมาส์ไปที่แถวจะมีการเปลี่ยนสีพื้นหลัง */
+}
+
+.custom-table td {
+    font-size: 14px; /* ปรับขนาดตัวอักษร */
+}
+
+    </style>
 <body>
     
   
@@ -137,23 +169,26 @@ header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
                         </form>
                     <div class="card" onclick='handleCardClick(<?php echo json_encode($datafrommap); ?>)'>
                         
-                        <div class="row">
-                            <div class="col">
-                            <div class="avatar"></div>
+                        <div class="row g-0 align-items-center">
+                            <div class="col-md-4">
+                                <div class="avatar">
+                                    <?php if(!empty($datafrommap['picture_path'])): ?>
+                                        <img src="<?php echo $datafrommap['picture_path']; ?>" class="img-fluid" alt="รูปภาพสถานที่ฝึกงาน">
+                                    <?php else: ?>
+                                        <img src="images/Medscinu-01.png" class="img-fluid" alt="รูปภาพเริ่มต้น">
+                                    <?php endif; ?>
+                                </div>
                                 <div class="info">
                                     <p class="title"><?php echo $datafrommap['location'] ?></p>
-                                    
                                 </div>
-    
                             </div>
-                            <div class="col">
+                            <div class="col-md-4"></div>
                                 <div class="detail">
                                     <p>ด้าน: <?php echo $datafrommap['majorName'] ?></p>
-                                <p>แผนก: <?php echo $datafrommap['department'] ?></p>
-                                
+                                    <p>แผนก: <?php echo $datafrommap['department'] ?></p>
                                 </div>
                             </div>
-                            <div class="col">
+                            <div class="col-md-4">
                                 <div class="detail">
                                     <p><?php echo $datafrommap['regionName']?></p>
                                 </div>
@@ -204,38 +239,7 @@ header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
         </div>
       </div>
     </div>
-    <style>
-     /* เพิ่ม CSS ให้กับตาราง */
-.custom-table {
-    width: 100%;
-    border-collapse: collapse; /* ทำให้ขอบของเซลล์ติดกัน */
-    margin: 20px 0;
-}
-
-.custom-table th, .custom-table td {
-    padding: 12px; /* เพิ่ม padding ให้เซลล์ */
-    text-align: left; /* จัดตำแหน่งข้อความในเซลล์ */
-    border: 1px solid #ddd; /* เพิ่มขอบให้กับเซลล์ */
-}
-
-.custom-table th {
-    background-color: #f2f2f2; /* ตั้งสีพื้นหลังให้กับหัวตาราง */
-    font-weight: bold; /* ตั้งให้ตัวอักษรในหัวตารางหนา */
-}
-
-.custom-table tr:nth-child(even) {
-    background-color: #f9f9f9; /* เปลี่ยนสีพื้นหลังของแถวคู่ */
-}
-
-.custom-table tr:hover {
-    background-color: #ddd; /* เมื่อชี้เมาส์ไปที่แถวจะมีการเปลี่ยนสีพื้นหลัง */
-}
-
-.custom-table td {
-    font-size: 14px; /* ปรับขนาดตัวอักษร */
-}
-
-    </style>
+    
     <!-- JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
