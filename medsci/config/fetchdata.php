@@ -100,7 +100,7 @@ if (isset($_GET['func']) && $_GET['func'] == 2 ) {
     ]);
 }
 
-function func3($id){
+function func3($locationName){
     
     $db = new connectdb();
     $conn = $db->connectPDO();
@@ -110,14 +110,14 @@ function func3($id){
                   FROM detail d 
                   LEFT JOIN facuty f ON f.id = d.facuty_id 
                   LEFT JOIN region r ON d.region_id = r.id
-                  WHERE d.id = :id";
+                  WHERE d.location LIKE :locationName";
 
     // เตรียม statement
     $stmt = $conn->prepare($details_query);
 
-    // กำหนดค่าตัวแปรสำหรับการ bind parameter
-
-    $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+    // เพิ่ม % ที่ค่าที่จะ bind แทน
+    $locationNameWithWildcard = '%' . $locationName . '%';
+    $stmt->bindParam(':locationName', $locationNameWithWildcard, PDO::PARAM_STR);
 
     // Execute คำสั่ง SQL
     $stmt->execute();

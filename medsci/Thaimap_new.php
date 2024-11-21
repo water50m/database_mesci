@@ -1,6 +1,8 @@
 <?php 
+session_start();
 include 'navbar.php';
 require 'config/querySQL.php';
+
 $query = new SQLquery();
 $data = $query->selectCoordinate();
 $jsonData = json_encode($data);
@@ -19,10 +21,10 @@ header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Polygon Display on Map</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
-    <script src="https://cdn.jsdelivr.net/npm/leaflet-rotatedmarker@0.2.0/leaflet.rotatedMarker.min.js"></script>
+    <link rel="stylesheet" href="css/leaflet.css" />
+    <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" /> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/leaflet-rotatedmarker@0.2.0/leaflet.rotatedMarker.min.js"></script> -->
     <style>
         #map { height: 600px; width: 100%; }
         .info {
@@ -118,8 +120,8 @@ header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
 
 <div id="map"></div>
 <div id='decorative-map' inert></div>
-<script src='https://unpkg.com/wicg-inert@latest/dist/inert.min.js'></script>
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src='js/inert.min.js'></script>
+<script src="js/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 <script src="js/th-new.js"></script>
 <script>
@@ -356,7 +358,7 @@ function updateSelecting(new_coordinate) {
             rotationAngle: 45  // กำหนดมุมหมุน 45 องศา
         })
             .bindPopup(item.location + '<br>จังหวัด ' + item.province + 
-                       '<br><a href="search.php?func=3&type=' + item.id + '" target="_blank">รายละเอียดเพิ่มเติม</a>')
+                       '<br><a href="search.php?func=3&type=' + item.location + '" target="_blank">รายละเอียดเพิ่มเติม</a>')
             .on('mouseover', function () {
                 this.openPopup();
             })

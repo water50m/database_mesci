@@ -41,7 +41,8 @@ $jsonDataProvince = json_encode($func_province);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/addData.css">
-    
+    <link rel="stylesheet" href="css/autoMap.css">
+    <script src="https://api.longdo.com/map/?key=bff66f6baa485edba09ca806b597ed30"></script>
     <title>แก้ไขข้อมูล</title>
 
 </head>
@@ -63,10 +64,13 @@ $jsonDataProvince = json_encode($func_province);
                     
                     ชื่อสถานที่ฝึกงาน                    
                 </label>
-
+                <!-- แผนที่ -->
+                <a href="#" id="openPopupBtn">ค้นหาในแผนที่</a> 
+                <!-- ^^^แผนที่่^^^ -->
+                <a href="#" onclick="resetLocationData(); return false;">default</a>
                 <div class="input-group">
                     <?php 
-                    echo '<textarea type="text"  value='.$result['location'].' class="form-control" aria-label="Text input" name="_loName">'.$result['location'].'</textarea>';
+                    echo '<textarea id="locationInput" type="text"  value='.$result['location'].' class="form-control" aria-label="Text input" name="_loName">'.$result['location'].'</textarea>';
                     echo '<input type="text" style="display: none;" value='.$result['id'].' class="form-control" aria-label="Text input" name="_location">';
                     ?>
                 </div>
@@ -159,7 +163,7 @@ $jsonDataProvince = json_encode($func_province);
             </div>
         </div>
         <div class="mb-3">
-            <h5 class="form-label">พิกัด <a href="#" onclick="resetLocationData(); return false;">default</a></h5>
+            
             <div class="input-group">
                     
                 <?php
@@ -184,7 +188,7 @@ $jsonDataProvince = json_encode($func_province);
             <h5 class="form-label">เรียน</h5>
             <div class="input-group">
                 <?php
-                echo '<textarea class="form-control"  id="floatingTextarea2" style="height: 100px" name="_sendto">'.$result['sendto'].'</textarea>';
+                echo '<textarea class="form-control"  id="sendto" style="height: 100px" name="_sendto">'.$result['sendto'].'</textarea>';
                 ?>
             </div>
         </div>
@@ -202,7 +206,7 @@ $jsonDataProvince = json_encode($func_province);
             <h5  class="form-label">ขอบข่ายงาน</h5>
             <div class="input-group">           
                 <?php
-                echo '<textarea class="form-control"  id="floatingTextarea2" style="height: 100px" name="_scope">'.$result['Scope_work'].'</textarea>';
+                echo '<textarea class="form-control"  id="scopework" style="height: 100px" name="_scope">'.$result['Scope_work'].'</textarea>';
                 ?>
             </div>
         </div>
@@ -326,116 +330,37 @@ $jsonDataProvince = json_encode($func_province);
 </div>
 
 </div>
-</div>
+<div class="control-map">
+        <div class="popup-overlay" id="popupOverlay"></div>
+        <div class="popup" id="popup">
+
+            <div class="map-container">
+                <div id="in-search">
+                    <div class="search-container">
+                        <input type="text" id="searchInput" placeholder="ค้นหาสถานที่..." autocomplete="off">
+                    </div>
+                    <div id="results"></div>
+                    <div id="suggest" class="suggest"></div>
+                </div>
+                <div id="map"></div>
+            </div>
+            <button id="closePopupBtn">ปิด</button>
+        </div>
+    </div>
+
 <script>
-    function saveNewLocation(action) {
-        const form = document.getElementById('myForm');
-        form.action = action;
-        form.submit();
-    }
-    function modifydata(action) {
-        const form = document.getElementById('myForm');
-        form.action = action;
-        form.submit();
-    }
-    function deletedata(action) {
-        const isConfirmed = confirm("คุณแน่ใจหรือไม่ว่าต้องการลบข้อมูลนี้?");
-        
-        // หากผู้ใช้กด "OK" ให้ดำเนินการส่งฟอร์ม
-        if (isConfirmed) {
-            const form = document.getElementById('myForm');
-            form.action = action;
-            form.submit();
-        }
-    }
-     function handleSelectChange(selectElement) {
-        const selectedValue = selectElement.value; // ค่าที่เลือก 
-        
-        const numReceivePerYear = <?php echo json_encode($num_receive_per_year); ?>;
-        if (Array.isArray(numReceivePerYear)) {
-            numReceivePerYear.forEach(item=>{
-            if (selectedValue == item['id']){
-                document.getElementById('countInput').value = item['received'];
-                document.getElementById('_term1').value = item['term'];
-                document.getElementById('_year1Input').value = item['year'];
-                document.getElementById('_term1_before').value = item['term'];
-                document.getElementById('_year1_before').value = item['year'];
-            }if(selectedValue == 'dontChange'){
-                document.getElementById('countInput').value = 'รับ...คน';
-                document.getElementById('_term1').value = 'ภาคการศึกษาที่...';
-                document.getElementById('_year1Input').value = 'ปีการศึกษา...';
-            }
-        })
-        } else {
-            console.error("numReceivePerYear ไม่ใช่อาร์เรย์", numReceivePerYear);
-        }
-        // console.log(numReceivePerYear)    
-    };
-
-    var result = <?php echo json_encode($result); ?>;
     
+    var province = <?php echo $jsonDataProvince; ?>;
+    const result = <?php echo json_encode($result); ?>;
+    const numReceivePerYear = <?php echo json_encode($num_receive_per_year); ?>;
     var facuty = <?php echo $jsonDataFacuty; ?>;
-        var facultySelect = document.getElementById('facultyName_select');
-        var majorSelect = document.getElementById('facultyMajor');
 
-        // ฟังก์ชันสำหรับอัพเดทสาขาวิชา
-        function updateMajors(selectedFaculty) {
-            // เคลียร์ตัวเลือกเก่า
-            majorSelect.innerHTML = '<option value="" selected>เลือกสาขาวิชา</option>'+'<option value="' + result.majorName + '" selected style="background-color: yellow;">' + result.majorName + '</option>';
-            
-            // กรองและเพิ่มสาขาที่ตรงกับคณะ
-            facuty.forEach(function(faculty) {
-                if(faculty.facuty === selectedFaculty && faculty.f_major !== '' && faculty.f_major !== result.majorName) {
-                    const option = document.createElement('option');
-                    option.value = faculty.f_major;
-                    option.text = faculty.f_major;
-                    majorSelect.appendChild(option);
-                }
-            });
-        }
 
-        // เรียกใช้ฟังก์ชันทันทีที่โหลดหน้า
-        updateMajors(facultySelect.value);
-
-        // เพิ่ม event listener สำหรับการเปลี่ยนแปลง
-        facultySelect.addEventListener('change', function() {
-            updateMajors(this.value);
-        });
-
-        // smart select province
-        var province = <?php echo $jsonDataProvince; ?>;
-        
-        var provinceSelect = document.getElementById('provinceSelect');
-        var regionSelect = document.getElementById('regionSelect');
-        
-        provinceSelect.addEventListener('change', function() {
-            // ดึงค่าจังหวัดที่เลือกปัจจุบัน
-            var selectedprovince_value = this.value;
-            
-            // กรองและเพิ่มภูมิภาคที่ตรงกับจังหวัด
-            var foundRegion = false;
-            province.forEach(function(prov) {
-                if(prov.province_name === selectedprovince_value && !foundRegion) {
-                    document.getElementById('latitude').value = prov.latitude;
-                    document.getElementById('longitude').value = prov.longitude;
-                    document.getElementById('regionSelect').value = prov.region_id;
-                    document.getElementById('regionShow').placeholder = prov.region_name;
-                }
-            });
-        });
-
-    function resetLocationData() {
-        // รีเซ็ตค่าพิกัด
-        document.getElementById('latitude').value = '<?php echo $result['latitude']; ?>';
-        document.getElementById('longitude').value = '<?php echo $result['longtitude']; ?>';
-        
-        // รีเซ็ตค่าจังหวัด
-        document.getElementById('provinceSelect').value = '<?php echo $result['province']; ?>';
-        
-        // รีเซ็ตค่าภูมิภาค
-        document.getElementById('regionSelect').value = '<?php echo $result['regionName']; ?>';
-    }
+    const defaultValue = '<?php echo $jsonResult; ?>';
+    const defaultData = JSON.parse(defaultValue);
+    
+   
 </script>
-
+<script src="js/ModifyData.js"></script>
 </body>
 </html>

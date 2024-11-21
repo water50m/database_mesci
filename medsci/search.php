@@ -7,8 +7,8 @@ $jsonDataFacuty = json_encode($fucn_query);
 $region = $query->selectRegion();
 if (isset($_GET['func']) && $_GET['func'] == 3 ) {
     require 'config/fetchdata.php';
-    $id = isset($_GET['type']) ? $_GET['type'] : null;
-    $datafrommap = func3($id)[0];
+    $locationName = isset($_GET['type']) ? $_GET['type'] : null;
+    $datafrommap = func3($locationName);
     
 }
 
@@ -158,52 +158,48 @@ header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
 
               <!-- ได้รับคำสั่งจากหน้า นี้ -->                              
     <div class=eachrow id="detail_internship">
-        <!-- ได้รับคำสั่งจากหน้า map -->
-    <?php try 
-            { if(isset($datafrommap) && $datafrommap){ ?>
-        <form action="modify_data.php" method="POST">
+        <?php try { 
+            if(isset($datafrommap) && $datafrommap) { 
+                foreach($datafrommap as $data) { ?>
+                    <form action="modify_data.php" method="POST">
                         <div class="button-modify">
-                        <button class="button-20 form-control" role="button">แก้ไข</button>
+                            <button class="button-20 form-control" role="button">แก้ไข</button>
                         </div>
-                        <input type="text" id="inputGroupFile01" name="_id" value=<?php echo $datafrommap['id'] ?> style="display: none;" >
-                        </form>
-                    <div class="card" onclick='handleCardClick(<?php echo json_encode($datafrommap); ?>)'>
-                        
+                        <input type="text" id="inputGroupFile01" name="_id" value="<?php echo $data['id']; ?>" style="display: none;">
+                    </form>
+                    <div class="card" onclick='handleCardClick(<?php echo json_encode($data); ?>)'>
                         <div class="row g-0 align-items-center">
                             <div class="col-md-4">
                                 <div class="avatar">
-                                    <?php if(!empty($datafrommap['picture_path'])): ?>
-                                        <img src="<?php echo $datafrommap['picture_path']; ?>" class="img-fluid" alt="รูปภาพสถานที่ฝึกงาน">
+                                    <?php if(!empty($data['picture_path'])): ?>
+                                        <img src="<?php echo $data['picture_path']; ?>" class="img-fluid" alt="รูปภาพสถานที่ฝึกงาน">
                                     <?php else: ?>
-                                        <img src="images/Medscinu-01.png" class="img-fluid" alt="รูปภาพเริ่มต้น">
+                                        <img src="images/Medscinu-01.png" class="img-fluid" alt="ไม่มีรูปภาพ">
                                     <?php endif; ?>
                                 </div>
                                 <div class="info">
-                                    <p class="title"><?php echo $datafrommap['location'] ?></p>
-                                </div>
-                            </div>
-                            <div class="col-md-4"></div>
-                                <div class="detail">
-                                    <p>ด้าน: <?php echo $datafrommap['majorName'] ?></p>
-                                    <p>แผนก: <?php echo $datafrommap['department'] ?></p>
+                                    <p class="title"><?php echo $data['location']; ?></p>
                                 </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="detail">
-                                    <p><?php echo $datafrommap['regionName']?></p>
+                                    <p>ด้าน: <?php echo $data['majorName']; ?></p>
+                                    <p>แผนก: <?php echo $data['department']; ?></p>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="detail">
+                                    <p><?php echo $data['regionName']; ?></p>
                                 </div>
                             </div>
                         </div>
                     </div>
-        
-
-
-        <?php }
-        } catch(Exception $e ){
+                <?php }
+            }
+        } catch(Exception $e) {
             echo "";
-        }
-            ?>
-</div>
+        } ?>
+    </div>
     
   </div>
  
@@ -247,7 +243,7 @@ header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
     <script>
          const isUserLoggedIn = <?php echo $isUserLoggedInAndBig; ?>;
          
-      var dataFromMap = <?php echo isset($datafrommap) ? json_encode($datafrommap) : 'null'; ?>;
+      var dataFromMap = <?php echo isset($datafrommap[0]) ? json_encode($datafrommap[0]) : 'null'; ?>;
       if (dataFromMap){
     document.getElementById('detail_internship').scrollIntoView({ behavior: 'smooth' });
     handleCardClick(dataFromMap);
