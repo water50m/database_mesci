@@ -276,6 +276,70 @@ class SQLquery {
             throw $e;
         }
     }
+
+    function getFilteredDetails($location,$region,$facuty_Select,$branch) {
+
+        // เริ่มสร้าง query หลัก
+        $mainWordQuery = "SELECT d.id, d.location, d.department, d.Scope_work, d.receive_term1, d.receive_term2, 
+                          f.major_subject AS majorName, r.name AS regionName, d.picture_path
+                          FROM detail d 
+                          LEFT JOIN facuty f ON f.id = d.facuty_id 
+                          LEFT JOIN region r ON d.region_id = r.id";
+    
+        // สร้าง array สำหรับเก็บเงื่อนไขและพารามิเตอร์
+        $conditions = [];
+        $params = [];
+    
+        // เพิ่มเงื่อนไขตามตัวแปรที่ส่งเข้ามา
+        if ($location !== null) {
+            $conditions[] = "LOWER(d.location) LIKE LOWER(:location)";
+            $params[':location'] = '%' . strtolower($location) . '%';
+        }
+    
+        if ($region && $region != 'allr' && $region != 'noselect') {
+            $conditions[] = "r.name LIKE :region";
+            $params[':region'] = '%' . $region . '%';
+        }
+    
+        if ($facuty_Select && $facuty_Select != 'allf' && $facuty_Select != 'noselect') {
+            $conditions[] = "f.facuty LIKE :facuty";
+            $params[':facuty'] = '%' . $facuty_Select . '%';
+        }
+    
+        if ($branch && $branch != 'noselect' && $branch != 'allp') {
+            $conditions[] = "f.major_subject LIKE :branch";
+            $params[':branch'] = '%' . $branch . '%';
+        }
+    
+        // รวมเงื่อนไขเข้ากับ query หลัก
+        if (count($conditions) > 0) {
+            $mainWordQuery .= ' WHERE ' . implode(' AND ', $conditions);
+        }
+    
+        // เชื่อมต่อฐานข้อมูล
+        $db = new connectdb();
+        $conn = $db->connectPDO();
+    
+        // เตรียม statement
+        $stmt = $conn->prepare($mainWordQuery);
+    
+        // bind ตัวแปรเพิ่มเติม
+        foreach ($params as $key => $val) {
+            $stmt->bindValue($key, $val);
+        }
+    
+        // Execute คำสั่ง SQL
+        $stmt->execute();
+    
+        // ดึงข้อมูลทั้งหมด
+        $details = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+        // ส่งผลลัพธ์กลับ
+        return $details;
+    }
+    
+  
+   
 }
 
 ?>

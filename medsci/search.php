@@ -5,6 +5,15 @@ $query = new SQLquery();
 $fucn_query = $query->selectFacuty();
 $jsonDataFacuty = json_encode($fucn_query);
 $region = $query->selectRegion();
+
+
+// ตรงจสอบ error
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+
+
 if (isset($_GET['func']) && $_GET['func'] == 3 ) {
     require 'config/fetchdata.php';
     $locationName = isset($_GET['type']) ? $_GET['type'] : null;
