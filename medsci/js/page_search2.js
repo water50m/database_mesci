@@ -31,7 +31,7 @@
                     </div>
                 `;
             } else {
-                
+    
             // ใช้ forEach เพื่อวนลูปตามข้อมูลใน data
             data.value.forEach(single_data => {
                 
@@ -87,7 +87,8 @@ function handleSubmit(event) {
 
     // ดึงค่าจาก input และ select
     const location = document.getElementById('location').value;
-    
+    console.log('location:')
+    console.log(location)
     const region = document.getElementById('regionSelect').value;
     const facuty_Select = document.getElementById('facuty_Select').value;
     const branch = document.getElementById('branchSelect').value;
@@ -111,7 +112,6 @@ function handleSubmit(event) {
             
             throw new Error('Network response was not ok');
         }
-
         return response.json(); // แปลง JSON จากการตอบกลับ
     })
     .then(data => {
