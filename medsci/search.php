@@ -3,8 +3,12 @@ session_start();
 require 'config/querySQL.php';
 $query = new SQLquery();
 $fucn_query = $query->selectFacuty();
+
 $jsonDataFacuty = json_encode($fucn_query);
 $region = $query->selectRegion();
+$establishment= $query->establishment();
+$facuty_select = $query->facutyTable();
+
 if (isset($_GET['func']) && $_GET['func'] == 3 ) {
     require 'config/fetchdata.php';
     $locationName = isset($_GET['type']) ? $_GET['type'] : null;
@@ -29,38 +33,11 @@ header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
     <title>Card with Modal Example</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="js/page_search2.js"></script>
-    <link herf="css/table_inSearch_page.css">
+    <link href="css/table_inSearch_page.css" rel="stylesheet">
 </head>
 <style>
-     /* เพิ่ม CSS ให้กับตาราง */
-.custom-table {
-    width: 100%;
-    border-collapse: collapse; /* ทำให้ขอบของเซลล์ติดกัน */
-    margin: 20px 0;
-}
 
-.custom-table th, .custom-table td {
-    padding: 12px; /* เพิ่ม padding ให้เซลล์ */
-    text-align: left; /* จัดตำแหน่งข้อความในเซลล์ */
-    border: 1px solid #ddd; /* เพิ่มขอบให้กับเซลล์ */
-}
 
-.custom-table th {
-    background-color: #f2f2f2; /* ตั้งสีพื้นหลังให้กับหัวตาราง */
-    font-weight: bold; /* ตั้งให้ตัวอักษรในหัวตารางหนา */
-}
-
-.custom-table tr:nth-child(even) {
-    background-color: #f9f9f9; /* เปลี่ยนสีพื้นหลังของแถวคู่ */
-}
-
-.custom-table tr:hover {
-    background-color: #ddd; /* เมื่อชี้เมาส์ไปที่แถวจะมีการเปลี่ยนสีพื้นหลัง */
-}
-
-.custom-table td {
-    font-size: 14px; /* ปรับขนาดตัวอักษร */
-}
 
     </style>
 <body>
@@ -122,15 +99,15 @@ header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
                                 
                                
                                 <div class="search-bar">
-                                    <select class="form-control" id="facuty_Select" >
-                                        <option value="allf">ภาควิชา(ทั้งหมด)</option>
+                                    <select class="form-control" id="establishment" >
+                                        <option value="allf">ประเภทสถานประกอบการ(ทั้งหมด)</option>
                                         <?php  
-                                        $unique_faculties = array();
-                                        foreach ($fucn_query as $facuty) {
-                                            if (!in_array($facuty['facuty'], $unique_faculties)) {
-                                                $unique_faculties[] = $facuty['facuty'];
-                                                echo "<option value='".$facuty['facuty']."'>".$facuty['facuty']."</option>";
-                                            }
+
+                                        foreach ($establishment as $estab) {
+                                           
+                                                
+                                                echo "<option value='".$estab['id']."'>".$estab['establishment']."</option>";
+                                            
                                         }
                                         ?>
                                     </select>
@@ -139,7 +116,14 @@ header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
                                 <div class="search-bar">
                                     <select class="form-control select-branch" id="branchSelect">
                                         <option value="allp">สาขาวิชา(ทั้งหมด)</option>
-
+                                        <?php  
+                                        foreach ($facuty_select as $fact) {
+                                           
+                                                
+                                                echo "<option value='".$fact['id']."'>".$fact['major_subject']."</option>";
+                                            
+                                        }
+                                        ?>
                                     </select>
                         
                                 </div>
@@ -160,7 +144,7 @@ header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
     <div class=eachrow id="detail_internship">
         <?php try { 
             if(isset($datafrommap) && $datafrommap) { 
-                foreach($datafrommap as $data) { ?>
+                foreach($datafrommap as $data) {  ?>
                     <form action="modify_data.php" method="POST">
                         <div class="button-modify">
                             <button class="button-20 form-control" role="button">แก้ไข</button>
@@ -178,7 +162,7 @@ header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
                                     <?php endif; ?>
                                 </div>
                                 <div class="info">
-                                    <p class="title"><?php echo $data['location']; ?></p>
+                                    <p class="title"><?php echo $data['location'];  ?></p>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -216,21 +200,32 @@ header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
             <div class=text-modal-card>
             <h5 id="modal-name">ชื่อ:</h5>
             
-            <p id="modal-department">แผนก:</p>
-            <p id="modal-major">ด้าน:</p>
-            <p id="modal-region">ภูมิภาค:</p>
+            <!-- <p id="modal-major">ด้าน:</p> -->
+            
+            <select class="form-select" aria-label="Default select example"  id = "modal-major-subject"></select>
             <p id="modal-scope-work"></p>
+             <p id="modal-department">แผนก:</p>
+             <p id="modal-region">ภูมิภาค:</p>
+            
             
             </div>
             <div class="table-recieve" id="table-recieve"></div>
             
-<style>
-    
-</style>
+
           </div>
           <div class="modal-footer">
+            
+                <form action="modify_data.php" method="POST">
+                <input type="text" id="modal_id" name="_id" style="display: none;">
+                <input type="text" id="modal_location_id" name="location_id" style="display: none;">
+                <?php if(isset($_SESSION['DoYouKnowImSoBig'])): ?>
+                <button type="submit" class="btn btn-warning">
+                    <i class="fas fa-edit"></i> แก้ไข
+                </button>
+                <?php endif; ?>
+              </form>
+            
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-            <!-- <button type="button" class="btn btn-primary">Apply Now</button> -->
           </div>
         </div>
       </div>
@@ -241,10 +236,10 @@ header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"></script>
     
     <script>
-         const isUserLoggedIn = <?php echo $isUserLoggedInAndBig; ?>;
+    const isUserLoggedIn = <?php echo $isUserLoggedInAndBig; ?>;
          
-      var dataFromMap = <?php echo isset($datafrommap[0]) ? json_encode($datafrommap[0]) : 'null'; ?>;
-      if (dataFromMap){
+    var dataFromMap = <?php echo isset($datafrommap[0]) ? json_encode($datafrommap[0]) : 'null'; ?>;
+    if (dataFromMap){
     document.getElementById('detail_internship').scrollIntoView({ behavior: 'smooth' });
     handleCardClick(dataFromMap);
 }else{
@@ -260,27 +255,28 @@ document.getElementById('exampleModal').addEventListener('hidden.bs.modal', func
 
         var facuty = <?php echo $jsonDataFacuty; ?>;
         
-        var facultySelect = document.getElementById('facuty_Select');
-        var majorSelect = document.getElementById('branchSelect');
+        // var facultySelect = document.getElementById('facuty_Select');
+        // var majorSelect = document.getElementById('branchSelect');
 
-        facultySelect.addEventListener('change', function() {
-            // เคลียร์ตัวเลือกเก่า
-            majorSelect.innerHTML = '<option value="noselect" selected>เลือกสาขาวิชา(ทั้งหมด)</option>';
+        // facultySelect.addEventListener('change', function() {
+        //     // เคลียร์ตัวเลือกเก่า
+        //     majorSelect.innerHTML = '<option value="noselect" selected>เลือกสาขาวิชา(ทั้งหมด)</option>';
             
-            // ดึงค่าคณะที่เลือกปัจจุบัน
-            var selectedFaculty_value = this.value;
+        //     // ดึงค่าคณะที่เลือกปัจจุบัน
+        //     var selectedFaculty_value = this.value;
             
             
-            // กรองและเพิ่มสาขาที่ตรงกับคณะ
-            facuty.forEach(function(faculty) {
-                if(faculty.facuty === selectedFaculty_value && faculty.f_major !== '') {
-                    const option = document.createElement('option');
-                    option.value = faculty.f_major;
-                    option.text = faculty.f_major;
-                    majorSelect.appendChild(option);
-                }
-            });
-        });
-</script>
-</body>
+        //     // กรองและเพิ่มสาขาที่ตรงกับคณะ
+        //     facuty.forEach(function(faculty) {
+        //         if(faculty.facuty === selectedFaculty_value && faculty.f_major !== '') {
+        //             const option = document.createElement('option');
+        //             option.value = faculty.f_major;
+        //             option.text = faculty.f_major;
+        //             majorSelect.appendChild(option);
+        //         }
+        //     });
+        // });
+            </script>
+        </div>
+    </body>
 </html>

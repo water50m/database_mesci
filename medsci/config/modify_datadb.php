@@ -16,7 +16,7 @@
         $department = $_POST['_department'];
         
         $faculty_major = $_POST['_facultymajor']; // เพิ่มตัวแปรที่ขาดหาย
-        $faculty_name = $_POST['_facultyname']; // เพิ่มตัวแปรที่ขาดหาย
+        $establishment = $_POST['_establishment']; // เพิ่มตัวแปรที่ขาดหาย
         $region = $_POST['_region'];
         $address = $_POST['_address'];
         $sendTo = $_POST['_sendto'];
@@ -59,7 +59,7 @@
             $result_checkrepeat = $stmt_checkrepeat->get_result();
 
             if ($result_checkrepeat->num_rows > 0){
-                header("Location: ../alert.php?func=2&type=".$location. "&message=" . urlencode("ข้อมูลซ้ำ: มีชื่อสาขาวิชาและคณะนี้อยู่ในระบบแล้ว"));
+                header("Location: ../alert.php?func=2&type=".$location. "type2=". $faculty_major. "&message=" . urlencode("ข้อมูลซ้ำ: มีชื่อสาขาวิชาและคณะนี้อยู่ในระบบแล้ว"));
                 exit;
             }
             $stmt_checkrepeat->close();
@@ -72,9 +72,9 @@
             $stmt_addfac2->bind_param("ss", $addfacultyname2, $addfacultymajor);
         }
         
-            if(isset($faculty_major) && isset($faculty_name)) {
-                $stmt_checkid = $conn->prepare("SELECT id FROM facuty WHERE major_subject = ? AND facuty = ?");
-                $stmt_checkid->bind_param("ss", $faculty_major, $faculty_name);
+            if(isset($faculty_major) ) {
+                $stmt_checkid = $conn->prepare("SELECT id FROM facuty WHERE id = ? ");
+                $stmt_checkid->bind_param("i", $faculty_major);
 
                 // รันคำสั่ง
                 $stmt_checkid->execute();
@@ -86,12 +86,13 @@
                     $row = $result->fetch_assoc();
                     $faculty_id = $row['id'];
 
+                    // อัพเดทตารางหลัก
                     $stmt1 = $conn->prepare("UPDATE detail 
-                    SET region_id = ?, facuty_id = ?, department = ?, 
+                    SET region_id = ?, department = ?, establishmen_id,
                         address = ?, sendto = ?, 
                         coordinator = ?, Scope_work = ?, province = ?, latitude = ?, longtitude = ?
                     WHERE id = ?");
-                    $stmt1->bind_param("iissssssdds", $region, $faculty_id, $department, $address, $sendTo,
+                    $stmt1->bind_param("isisssssdds", $region, $department, $establishmen,$address, $sendTo,
                     $coordinator, $scope, $province, $latitude, $longitude, $location);
 
                     // ตรวจสอบค่า $year1 และ $count1 ก่อนทำการอัปเดต
@@ -111,9 +112,9 @@
                         
                         if ($result->num_rows > 0) {
                             $stmt4 = $conn->prepare("UPDATE recieve_year 
-                                                    SET received = ? 
+                                                    SET received = ? ,major_subject_id = ?
                                                     WHERE year = ? AND term = ? AND location_id = ?");
-                            $stmt4->bind_param("iiii", $count2, $year2, $term2, $location);
+                            $stmt4->bind_param("iiiii", $count2,$faculty_major, $year2, $term2, $location);
                         } else {
                             $stmt3 = $conn->prepare("INSERT INTO recieve_year(location_id, year, received, term) 
                                                         VALUES (?, ?, ?, ?)");
@@ -127,8 +128,9 @@
 
                     
                 } else {
-                    header("Location: ../alert.php?func=2&type=".$location. "&message=" . urlencode("ไม่มีสาขาวิชา ".$faculty_major." ในคณะ ".$faculty_name." กรุณาเพิ่มข้อมูลก่อน"));
+                   header("Location: ../alert.php?func=2&type=".$location. "type2=". $faculty_major. "&message=" . urlencode("ไม่มีสาขาวิชา ".$faculty_major." กรุณาเพิ่มข้อมูลก่อน"));
                     exit;
+                    
                 }
                 $stmt_checkid->close();
             }
@@ -181,30 +183,45 @@
         }
     }
 
-    if (isset($stmt1)) {
-        if (!$stmt1->execute()) {
-            echo "Error executing detail update: " . htmlspecialchars($stmt1->error);
+    try {
+        // Execute statements
+        if (isset($stmt1)) {
+            if (!$stmt1->execute()) {
+                throw new Exception("Error executing detail update: " . $stmt1->error);
+            }
         }
+
+        if (isset($stmt2)) {
+            if (!$stmt2->execute()) {
+                throw new Exception("Error executing year1 update: " . $stmt2->error);
+            }
+        }
+
+        if (isset($stmt3)) {
+            if (!$stmt3->execute()) {
+                throw new Exception("Error executing year2 insert: " . $stmt3->error);
+            }
+        }
+
+        if (isset($stmt4)) {
+            if (!$stmt4->execute()) {
+                throw new Exception("Error executing year2 update: " . $stmt4->error);
+            }
+        }
+
+        // ปิด statements ทั้งหมด
+        if (isset($stmt1)) $stmt1->close();
+        if (isset($stmt2)) $stmt2->close();
+        if (isset($stmt3)) $stmt3->close();
+        if (isset($stmt4)) $stmt4->close();
+
+        // redirect หลังจาก execute สำเร็จ
+        header("Location: ../alert.php?func=2&type=".$location."&type2=".$faculty_major."&message=".urlencode($message));
+        exit;
+        
+    } catch (Exception $e) {
+        header("Location: ../alert.php?message=" . urlencode("เกิดข้อผิดพลาด: " . $e->getMessage()));
+        exit;
     }
 
-    if (isset($stmt2)) {
-        if (!$stmt2->execute()) {
-            echo "Error executing year1 update: " . htmlspecialchars($stmt2->error);
-        }
-    }
-
-    if (isset($stmt3)) {
-        if (!$stmt3->execute()) {
-            echo "Error executing year2 insert: " . htmlspecialchars($stmt3->error);
-        }
-    }
-
-    if (isset($stmt4)) {
-        if (!$stmt4->execute()) {
-            echo "Error executing year2 update: " . htmlspecialchars($stmt4->error);
-        }
-    }
-
-    header("Location: ../alert.php?func=2&hear=3&type=".$location."&message=". urlencode($message));
-    exit;
 ?>

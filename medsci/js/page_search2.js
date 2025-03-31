@@ -4,11 +4,7 @@
     // ดึงค่า attribute 'value' จาก element ที่ถูกคลิก
     const value = element.getAttribute('value');
     rights= ``;
-    if (isUserLoggedIn === 'true' || isUserLoggedIn === true) {
-        rights= `<div class="button-modify">
-                         <button class="button-20 form-control" role="button">แก้ไข</button>
-                     </div>`
-                 }
+
                    
     // เรียกข้อมูลจากไฟล์ PHP ที่จะ query ข้อมูล
     fetch(`config/fetchdata.php?func=1&value=${value}`)
@@ -58,13 +54,13 @@
                                 </div>
                                 <div class="col-md-4">
                                     <div class="detail">
-                                        <p>ด้าน: ${single_data.majorName}</p>
-                                        <p>แผนก: ${single_data.department}</p>
+                                        <p></p>
+                                        <p></p>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="detail">
-                                        <p>${single_data.regionName}</p>
+                                        <p></p>
                                     </div>
                                 </div>
                             </div>
@@ -87,25 +83,20 @@ function handleSubmit(event) {
 
     // ดึงค่าจาก input และ select
     const location = document.getElementById('location').value;
-    console.log('location:')
-    console.log(location)
+
     const region = document.getElementById('regionSelect').value;
-    const facuty_Select = document.getElementById('facuty_Select').value;
+    const establishment = document.getElementById('establishment').value;
     const branch = document.getElementById('branchSelect').value;
-    
+    console.log(establishment);
     rights = ``;
-    if (isUserLoggedIn === 'true' || isUserLoggedIn === true) {
-        rights= `<div class="button-modify">
-                         <button class="button-20 form-control" role="button">แก้ไข</button>
-                     </div>`
-                 }
+
     // ส่งค่าผ่าน fetch API
     fetch(`config/fetchdata.php?func=2`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `&location=${encodeURIComponent(location)}&region=${encodeURIComponent(region)}&department=${encodeURIComponent(facuty_Select)}&branch=${encodeURIComponent(branch)}`
+        body: `&location=${encodeURIComponent(location)}&region=${encodeURIComponent(region)}&department=${encodeURIComponent(establishment)}&branch=${encodeURIComponent(branch)}`
     })
     .then(response => {
         if (!response.ok) {
@@ -153,13 +144,13 @@ function handleSubmit(event) {
                         </div>
                         <div class="col-md-4">
                             <div class="detail">
-                                <p>ด้าน: ${single_data.majorName}</p>
-                                <p>แผนก: ${single_data.department}</p>
+                                <p></p>
+                                <p></p>
                             </div>
                         </div>
                         <div class="col-md-4">
                             <div class="detail">
-                                <p>${single_data.regionName}</p>
+                                <p></p>
                             </div>
                         </div>
                     </div>
@@ -187,43 +178,111 @@ function handleSubmit(event) {
   
 //    madalhandle
 function handleCardClick(data) {
-    
     fetch(`config/fetchdata.php?func=4&value=${data.id}`)
-
     .then(response => {
-    // ตรวจสอบสถานะของการตอบกลับจากเซิร์ฟเวอร์
-    if (!response.ok) {
-        throw new Error('Network response was not ok');
-    }
-    // แปลงข้อมูลจาก response เป็น JSON
-    return response.json();
-})
-.then(data2 => {
-    
-
-    // ตรวจสอบข้อมูลที่ได้มา
-    const headers = ['ปีการศึกษา'];
-    const body = ['จำนวนรับ(คน)'];
-    data2.value.forEach(item=>{
-        headers.push(item.term+'/'+item.year)
-        body.push(item.received)
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
     })
+    .then(data2 => {
+        
+        const major_subject = document.getElementById('modal-major-subject');
+        
+        // ลบ options เก่า
+        major_subject.innerHTML = '';
+        
+        // ลบตารางเก่า
+        deleteTable();
+
+        // สร้าง options และตารางครั้งแรก
+        data2.value.forEach(item => {
+            const major_option = document.createElement('option');
+            major_option.value = item.mid;
+            major_option.textContent = item.m_name;
+            major_subject.appendChild(major_option);
+        });
+
+        // สร้างตารางเริ่มต้นสำหรับตัวเลือกแรก
+        const headers = ['ปีการศึกษา'];
+        const body = ['จำนวนรับ(คน)'];
+        if(data2.value.length > 0) {
+            const firstItem = data2.value[0];
+            
+            document.getElementById('modal_id').value = firstItem.mid;
+            document.getElementById('modal_location_id').value = firstItem.location_id;
+            headers.push(firstItem.term+'/'+firstItem.year);
+            body.push(firstItem.received);
+            updateTable(headers, body);
+        }
+
+        // event listener สำหรับการเปลี่ยนค่า
+        major_subject.addEventListener('change', function(e) {
+            
+            const selectedValue = e.target.value;
+            const selectedText = e.target.options[e.target.selectedIndex].textContent;
+            // document.getElementById('modal-major').textContent = `ด้าน: ${selectedText}`;
+            
+            // ลบตารางเก่าก่อนสร้างใหม่
+      
+            
+            const newHeaders = ['ปีการศึกษา'];
+            const newBody = ['จำนวนรับ(คน)'];
+           
+            data2.value.some(item => {
+                
+                if(item.mid == selectedValue){
+                    document.getElementById('modal_id').value = item.mid;
+                    document.getElementById('modal_location_id').value = item.location_id;
+                    newHeaders.push(item.term+'/'+item.year);
+                    newBody.push(item.received);
+                    updateTable(newHeaders, newBody);
+                    return true;
+                }
+                return false;
+            });
+        });
+        
+        // แสดงข้อมูลอื่นๆ
+        document.getElementById('modal-name').innerText = data.location;
+        // document.getElementById('modal-major').innerText = 'ด้าน: ' + data.majorName;
+        document.getElementById('modal-department').innerText = 'แผนก: '+ data.department;
+        document.getElementById('modal-region').innerText = 'ภูมิภาค: ' +data.regionName;
+        document.getElementById('modal-scope-work').innerText = 'ขอบข่ายงาน: ' +data.Scope_work;
+        
+
+        // แสดง modal
+        var myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
+        myModal.show();
+    })
+    .catch(error => {
+        console.error('Error during fetch or JSON parsing:', error);
+    });
+}
+
+function deleteTable() {
+    // ลบตารางเดิม
     
+    const tableContainer = document.getElementById('table-recieve');
+    const table = tableContainer.querySelector('.custom-table');
+    if (table) {
 
+        table.remove();
+    }
+}
 
-
-// ฟังก์ชันสร้างตาราง
-function createTable() {
-    // สร้าง table element
+function updateTable(headers, body) {
+    // ลบตารางเก่า
+    deleteTable();
+    
+    // สร้างตารางใหม่
     const table = document.createElement('table');
     table.classList.add('custom-table');
     
-    // สร้างส่วนหัวของตาราง
+    // สร้างส่วนหัว
     const thead = document.createElement('thead');
     const headerRow = document.createElement('tr');
-    
     headers.forEach(headerText => {
-        
         const th = document.createElement('th');
         th.textContent = headerText;
         headerRow.appendChild(th);
@@ -231,50 +290,17 @@ function createTable() {
     thead.appendChild(headerRow);
     table.appendChild(thead);
     
-    // สร้างส่วนข้อมูลของตาราง
+    // สร้างส่วนข้อมูล
     const tbody = document.createElement('tbody');
-    
-        const row = document.createElement('tr');
-        Object.values(body).forEach(text => {
-            const cell = document.createElement('td');
-            cell.textContent = text;
-            row.appendChild(cell);
-        });
-        tbody.appendChild(row);
-    
+    const row = document.createElement('tr');
+    body.forEach(text => {
+        const cell = document.createElement('td');
+        cell.textContent = text;
+        row.appendChild(cell);
+    });
+    tbody.appendChild(row);
     table.appendChild(tbody);
     
-    // แสดงตารางบนหน้าเว็บ
+    // แสดงตาราง
     document.getElementById('table-recieve').appendChild(table);
-}
-
-// เรียกฟังก์ชันสร้างตารางด้วยข้อมูล
-createTable(data);
-    // คุณสามารถนำข้อมูลที่ได้ไปใช้ในฟังก์ชันต่อไปได้ที่นี่
-    // เช่น แสดงข้อมูลใน UI หรือการใช้งานอื่น ๆ
-})
-.catch(error => {
-    // แสดงข้อผิดพลาดในกรณีที่เกิดข้อผิดพลาด
-    console.error('Error during fetch or JSON parsing:', error);
-});
-    
-
-    document.getElementById('modal-name').innerText = data.location;
-    document.getElementById('modal-major').innerText ='ด้าน: ' + data.majorName;
-    document.getElementById('modal-department').innerText = 'แผนก: '+ data.department;
-    document.getElementById('modal-region').innerText ='ภูมิภาค: ' +data.regionName;
-    document.getElementById('modal-scope-work').innerText = 'ขอบข่ายงาน: ' +data.Scope_work;
-
-    var myModal = new bootstrap.Modal(document.getElementById('exampleModal'));
-    myModal.show();
-
-}
-
-
-function deleteTable() {
-    const tableContainer = document.getElementById('table-recieve');
-    const table = tableContainer.querySelector('table');
-    if (table) {
-        table.remove(); // ลบตาราง
-    }
 }

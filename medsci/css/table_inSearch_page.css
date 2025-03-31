@@ -6,7 +6,7 @@
 body{
     font-family: Helvetica;
     -webkit-font-smoothing: antialiased;
-    background: rgba( 71, 147, 227, 1);
+    /* background: rgba( 71, 147, 227, 1); */
 }
 h2{
     text-align: center;
@@ -23,6 +23,8 @@ h2{
     margin: 10px 70px 70px;
     box-shadow: 0px 35px 50px rgba( 0, 0, 0, 0.2 );
 }
+
+
 
 .fl-table {
     border-radius: 5px;
@@ -125,4 +127,270 @@ h2{
         display: block;
         text-align: center;
     }
+}
+
+/* ----------------------------------------------------------------------------------- */
+.table-recieve{
+    width: 100%;
+}
+     /* เพิ่ม CSS ให้กับตาราง */
+.custom-table {
+    width: 100%;
+    border-collapse: collapse; /* ทำให้ขอบของเซลล์ติดกัน */
+    margin: 20px 0;
+}
+
+.custom-table th, .custom-table td {
+    padding: 12px; /* เพิ่ม padding ให้เซลล์ */
+    text-align: left; /* จัดตำแหน่งข้อความในเซลล์ */
+    border: 1px solid #ddd; /* เพิ่มขอบให้กับเซลล์ */
+}
+
+.custom-table th {
+    background-color: #f2f2f2; /* ตั้งสีพื้นหลังให้กับหัวตาราง */
+    font-weight: bold; /* ตั้งให้ตัวอักษรในหัวตารางหนา */
+}
+
+.custom-table tr:nth-child(even) {
+    background-color: #f9f9f9; /* เปลี่ยนสีพื้นหลังของแถวคู่ */
+}
+
+.custom-table tr:hover {
+    background-color: #ddd; /* เมื่อชี้เมาส์ไปที่แถวจะมีการเปลี่ยนสีพื้นหลัง */
+}
+
+.custom-table td {
+    font-size: 14px; /* ปรับขนาดตัวอักษร */
+}
+
+
+
+.rectangle-container {
+    display: flex;
+    justify-content: center;  /* จัดให้อยู่ตรงกลางแนวนอน */
+    flex-wrap: wrap;  /* ให้ elements ขึ้นบรรทัดใหม่เมื่อไม่พอพื้นที่ */
+    gap: 20px;  /* ระยะห่างระหว่าง rectangles */
+    width: 100%;
+    padding: 20px;
+}
+
+/* ส่วนของ modal content */
+.text-modal-card {
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+/* ชื่อสถานที่ */
+#modal-name {
+    font-size: 24px;
+    color: #2c3e50;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+}
+
+/* select dropdown */
+#modal-major-subject {
+    width: 100%;
+    padding: 10px;
+    margin: 15px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    background-color: white;
+}
+
+#modal-major-subject:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+    outline: none;
+}
+
+/* ข้อความรายละเอียด */
+#modal-department, 
+#modal-region, 
+#modal-scope-work {
+    font-size: 16px;
+    color: #34495e;
+    margin: 10px 0;
+    padding: 8px 0;
+    border-bottom: 1px solid #eee;
+}
+
+/* ส่วนของตาราง */
+.table-recieve {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* ตารางข้อมูล */
+.custom-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+.custom-table th {
+    background-color: #3498db;
+    color: white;
+    padding: 12px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.custom-table td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.custom-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.custom-table tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* การ์ดหลัก */
+.card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 15px 0;
+    padding: 20px;
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ส่วนรูปภาพ */
+.avatar {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.avatar img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+
+.avatar img:hover {
+    transform: scale(1.05);
+}
+
+/* ส่วนข้อมูล */
+.info {
+    padding: 10px 0;
+}
+
+.info .title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #2c3e50;
+    margin: 0;
+}
+
+.detail {
+    padding: 10px 0;
+}
+
+.detail p {
+    margin: 8px 0;
+    font-size: 16px;
+    color: #34495e;
+    line-height: 1.5;
+}
+
+/* ปุ่มแก้ไข */
+.button-modify {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 1;
+}
+
+.button-20 {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.button-20:hover {
+    background-color: #2980b9;
+}
+
+/* การจัดเรียง Grid */
+.row {
+    margin: 0 -10px;
+}
+
+.col-md-4 {
+    padding: 0 10px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .card {
+        padding: 15px;
+    }
+    
+    .avatar img {
+        height: 150px;
+    }
+    
+    .info .title {
+        font-size: 16px;
+    }
+    
+    .detail p {
+        font-size: 14px;
+    }
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding: 15px;
+    border-top: 1px solid #dee2e6;
+}
+
+.btn-warning {
+    background-color: #ffc107;
+    border-color: #ffc107;
+    color: #000;
+}
+
+.btn-warning:hover {
+    background-color: #ffca2c;
+    border-color: #ffc720;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+    color: #fff;
+}
+
+.btn-secondary:hover {
+    background-color: #5c636a;
+    border-color: #565e64;
 }

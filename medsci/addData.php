@@ -11,6 +11,10 @@ $jsonDataFacuty = json_encode($fucn_query);
 $region = $query->selectRegion();
 $func_province = $query->selectProvince();
 $jsonDataProvince = json_encode($func_province);
+$establishment= $query->establishment();
+$facuty_select = $query->facutyTable();
+
+
 ?>
 
 <!DOCTYPE html>
@@ -56,24 +60,22 @@ $jsonDataProvince = json_encode($func_province);
                     <input type="file" class="form-control" id="inputGroupFile01" name="picture_" accept="image/*">
                 </div>
                
-
                 <div class="mb-3">
                     
                     <div class="input-group">
-                    <span class="input-group-text">ภาควิชา</span>   
-                        <select class="form-select" aria-label="เลือกสาขาวิชา" id="facultyName" name="_facultyname">
-                            <!-- <option value="" selected>เลือกคณะ</option> -->
+                    <span class="input-group-text">ประเภทสถานประกอบการ</span>   
+                        <select class="form-select" aria-label="ประเภทสถานประกอบการ" id="facultyName" name="_establishment">
+                        <option value="allp">เลือก</option><!-- <option value="" selected>เลือกคณะ</option> -->
                             <?php
-                            $shown_faculties = [];
-                            foreach ($fucn_query as $faculty):
-                                if (!in_array($faculty['facuty'], $shown_faculties)):
-                                    $shown_faculties[] = $faculty['facuty'];
+
+                            foreach ($establishment as $estb):
+                               
                             ?>
-                                    <option value="<?php echo $faculty['facuty']; ?>">
-                                        <?php echo $faculty['facuty']; ?>
+                                    <option value="<?php echo $estb['id']; ?>">
+                                        <?php echo $estb['establishment']; ?>
                                     </option>
                             <?php
-                                endif;
+                               
                             endforeach;
                             ?>
                         </select>
@@ -86,10 +88,20 @@ $jsonDataProvince = json_encode($func_province);
                 <div class="mb-3">
                     
                     <div class="input-group">
-                    <span class="input-group-text">สาขาวิชา</span>   
+                    <span class="input-group-text">สาขาวิชา</span> 
                         <select class="form-select" aria-label="เลือกสาขาวิชา" name="_facultymajor" id="facultyMajor">
-                            <option value="" selected>เลือกสาขาวิชา</option>
-                            
+                            <option value="">กรุณาเลือกสาขาวิชา</option>
+                            <?php
+                            if(isset($facuty_select) && is_array($facuty_select)) {
+                                foreach($facuty_select as $fact) {
+                                    ?>
+                                    <option value="<?php echo htmlspecialchars($fact['id']); ?>">
+                                        <?php echo htmlspecialchars($fact['major_subject']); ?>
+                                    </option>
+                                    <?php
+                                }
+                            }
+                            ?>
                         </select>
                         <button type="button" class="btn btn-outline-primary" style="width: 150px;" data-bs-toggle="modal" data-bs-target="#addFacultyModal">
                         เพิ่มใหม่
@@ -194,7 +206,7 @@ $jsonDataProvince = json_encode($func_province);
                     <div class="modal-body">
                         <form action="config\addDatadb.php" method="POST">
                             <div class="mb-3">
-                                <label for="facultyName" class="form-label">ชื่อคณะ</label>
+                                <label for="facultyName" class="form-label">ประเภทสถานประกอบการ(ใหม่)</label>
                                 <input type="text" class="form-control"  name="_addfacultyname1" required>
                             </div>
                             <div class="modal-footer">

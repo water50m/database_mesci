@@ -7,12 +7,18 @@ if (isset($_GET['func']) && $_GET['func'] == 1) {
     $db = new connectdb();
     $conn = $db->connectPDO();
 
-    $details_query = "SELECT d.id,d.location, d.department, d.Scope_work, d.receive_term1, d.receive_term2, 
-                 f.major_subject AS majorName ,r.name AS regionName,d.picture_path
-                  FROM detail d 
-                  LEFT JOIN facuty f ON f.id = d.facuty_id 
+
+    $details_query = "SELECT    d.id,d.location, 
+                                d.department, d.Scope_work, 
+                                d.receive_term1, 
+                                d.receive_term2, 
+                                r.name AS regionName,
+                                d.picture_path,
+                                re.major_subject_id AS mid
+                  FROM recieve_year re
+                  LEFT JOIN detail d ON d.id = re.location_id
                   LEFT JOIN region r ON d.region_id = r.id
-                  WHERE d.facuty_id = :value";
+                  WHERE re.major_subject_id = :value";
 
 // เตรียม statement
 $stmt = $conn->prepare($details_query);
@@ -29,30 +35,44 @@ $details = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
    
     echo json_encode([
-        
         'value' => $details
     ]);
 }
 
 
-
 if (isset($_GET['func']) && $_GET['func'] == 2 ) {
     $location = $_POST['location'] ?? null;
     $region = $_POST['region'] ?? null;
-    $facuty_Select = $_POST['facuty_Select'] ?? null;
+    $establishment = $_POST['department'] ?? null;
     $branch = $_POST['branch'] ?? null;
-    
+    $check_where = False;
 
+
+    $join_receive = "";
+    if ($branch && $branch != 'noselect' && $branch != 'allp') {
+        $join_receive = "JOIN recieve_year re ON d.id = re.location_id";
+        
+    }
     // เริ่มสร้าง query หลัก
-    $mainWordQuery = "SELECT d.id,d.location, d.department, d.Scope_work, d.receive_term1, d.receive_term2, 
-                      f.major_subject AS majorName, r.name AS regionName,d.picture_path
+    $mainWordQuery = "SELECT    d.id,d.location, 
+                                d.department, 
+                                d.Scope_work, 
+                                d.receive_term1, 
+                                d.receive_term2, 
+                                -- re.major_subject_id as major_subject,
+                                -- f.major_subject AS majorName, 
+                                r.name AS regionName,
+                                d.picture_path
                       FROM detail d 
-                      LEFT JOIN facuty f ON f.id = d.facuty_id 
-                      LEFT JOIN region r ON d.region_id = r.id";
+                    --   LEFT JOIN facuty f ON f.id = d.facuty_id 
+                      LEFT JOIN region r ON d.region_id = r.id
+                      
+                      $join_receive";
 
     // เพิ่มเงื่อนไขตามตัวแปรที่ส่งเข้ามา
     $params = [];
     if ($location) {
+        $check_where = true;
         if($location == ""){
             $mainWordQuery .= " WHERE LOWER(d.location) LIKE '%%'";
         }
@@ -62,18 +82,33 @@ if (isset($_GET['func']) && $_GET['func'] == 2 ) {
         $params[':location'] = '%' . strtolower($location) . '%';
     }
     if ($region && $region!='allr' && $region != 'noselect') {
-        
-        $mainWordQuery .= " AND r.name LIKE :region";
-        $params[':region'] = '%' . $region . '%';
+        if (!$check_where){
+            $mainWordQuery .= " WHERE r.name LIKE :region";
+            $check_where = TRUE;
+        }else{
+            $mainWordQuery .= " AND r.name LIKE :region";
+        }
+        $params[':region'] =  $region ;
     }
-    if ($facuty_Select && $facuty_Select != 'allf' && $facuty_Select != 'noselect') {
+    if ($establishment && $establishment != 'allf' && $establishment != 'noselect') {
+        if (!$check_where){
+            $mainWordQuery .= " WHERE d.establishment_id LIKE :establishment";
+            $check_where = TRUE;
+        }else{
+            $mainWordQuery .= " AND d.establishment_id LIKE :establishment";
+        }
         
-        $mainWordQuery .= " AND f.facuty LIKE :facuty";
-        $params[':facuty'] = '%' . $facuty_Select . '%';
+        $params[':establishment'] = $establishment;
     }
     if ($branch && $branch != 'noselect' && $branch != 'allp') {
-        $mainWordQuery .= " AND f.major_subject LIKE :branch";
-        $params[':branch'] = '%' . $branch . '%';
+        if (!$check_where){
+            $mainWordQuery .= " WHERE re.major_subject_id LIKE :branch GROUP BY d.id";
+            $check_where = TRUE;
+        }else{
+            $mainWordQuery .= " AND re.major_subject_id LIKE :branch GROUP BY d.id";
+        }
+        
+        $params[':branch'] = $branch;
     }
     
     // เชื่อมต่อฐานข้อมูล
@@ -93,9 +128,10 @@ if (isset($_GET['func']) && $_GET['func'] == 2 ) {
 
     // ดึงข้อมูลทั้งหมด
     $details = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
+    // echo $mainWordQuery;
+    // print_r($details);
     echo json_encode([
-        'sql' => $mainWordQuery,
+        
         'value' => $details
     ]);
 }
@@ -104,7 +140,6 @@ function func3($locationName){
     
     $db = new connectdb();
     $conn = $db->connectPDO();
-
     $details_query = "SELECT d.id,d.location, d.department, d.Scope_work, d.receive_term1, d.receive_term2, 
                  f.major_subject AS majorName ,r.name AS regionName,d.picture_path
                   FROM detail d 
@@ -145,7 +180,7 @@ if (isset($_GET['func']) && $_GET['func']==5){
     $province = $_POST['province'] ?? null;
     $region = $_POST['region'] ?? null;
     $major_subject = $_POST['major_subject'] ?? null;
-    $facuty = $_POST['facuty'] ?? null;
+    $establishment = $_POST['establishment'] ?? null;
     $newQuery = new SQLquery();
     $provinceWithoutSuffix = explode(' (', $province)[0]; 
     if($region=='north'){$region=1;}
@@ -154,11 +189,13 @@ if (isset($_GET['func']) && $_GET['func']==5){
     else if($region=='south'){$region=6;}
     else if($region=='east'){$region=5;}
     else if($region=='west'){$region=3;}
-
-
+    // $newQuery->selectToMap($region,$provinceWithoutSuffix,$establishment,$major_subject);
+    // print_r($newQuery->selectToMap($region,$provinceWithoutSuffix,$establishment,$major_subject));
+    
     echo json_encode([
-        'value' => $newQuery->selectToMap($region,$provinceWithoutSuffix,$facuty,$major_subject)
-    ]);;
+        'value' => $newQuery->selectToMap($region,$provinceWithoutSuffix,$establishment,$major_subject)
+    ]);
+
 
 }
 ?>

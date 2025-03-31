@@ -24,10 +24,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             header("Location: ../alert.php?func=1&message=" . urlencode("บันทึกข้อมูลสำเร็จ"));
             exit;
         }
-
         // ปิดคำสั่ง
         $stmt_addfac1->close();
-
     } 
 
     if(isset($_POST['_addfacultyname2']) && !empty($_POST['_addfacultyname2']) && isset($_POST['_addfacultymajor']) && !empty($_POST['_addfacultymajor'])){
@@ -70,7 +68,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $location = $_POST['_location'];
         $department = $_POST['_department'];
         $faculty_major = $_POST['_facultymajor'];
-        $faculty_name = $_POST['_facultyname'];
+        $establishment = $_POST['_establishment'];
         $region = $_POST['_region'];
         if($region == 'ภาคเหนือ') {
             $region = 1;
@@ -102,7 +100,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // เช็ค id จาก คณะและสาขา
         // เตรียมคำสั่ง SQL สำหรับการตรวจสอบค่า
         $stmt_checkid = $conn->prepare("SELECT id FROM facuty WHERE major_subject = ? AND facuty = ?");
-        $stmt_checkid->bind_param("ss", $faculty_major, $faculty_name);
+        $stmt_checkid->bind_param("ss", $faculty_major, $establishment);
 
         // รันคำสั่ง
         $stmt_checkid->execute();
@@ -115,13 +113,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $faculty_id = $row['id'];
             // echo "พบคณะที่ตรงกับ ID: " . $faculty_id;
         } else {
-            header("Location: ../alert.php?func=1&message=" . urlencode("ไม่มีสาขาวิชา"."$faculty_major "." ในคณะ"."$faculty_name "));
+            header("Location: ../alert.php?func=1&message=" . urlencode("ไม่มีสาขาวิชา"."$faculty_major "." ในคณะ"."$establishment "));
             exit;
         }
         $stmt_checkid->close();
 
         // เพิ่มข้อมูลในตาราง detail
-        $stmt1 = $conn->prepare("INSERT INTO detail (region_id, facuty_id, location, department, address, sendto, coordinator, Scope_work, province, latitude, longtitude) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt1 = $conn->prepare("INSERT INTO detail (region_id ,establishment_id ,location , department, address, sendto, coordinator, Scope_work, province, latitude, longtitude) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         if ($stmt1 === false) {
             die("Prepare failed: " . htmlspecialchars($conn->error));
         }
@@ -130,12 +128,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $picture_path = null;
         
         // ย้าย bind_param มาก่อนการ execute
-        $stmt1->bind_param("sssssssssss", $region, $faculty_id, $location, $department, $address, $sendTo, $coordinator, $scope, $province, $latitude, $longitude);
+        $stmt1->bind_param("sssssssssss", $region,establishment, $location, $department, $address, $sendTo, $coordinator, $scope, $province, $latitude, $longitude);
 
         if (!$stmt1->execute()) {
             echo "Error query";
             // echo "Error executing query: " . htmlspecialchars($stmt1->error);
         }
+
 
         // ดึง max_id ทันทีหลังจาก execute
         $max_id = $conn->insert_id;
@@ -172,28 +171,27 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         
 
         // เพิ่มข้อมูลในตาราง recieve_year
-        $stmt2 = $conn->prepare("INSERT INTO recieve_year (location_id, year, received, term) VALUES (?, ?, ?, ?)");
+        $stmt2 = $conn->prepare("INSERT INTO recieve_year (location_id, year, received, term,major_subject_id) VALUES (?, ?, ?, ?, ?)");
         if ($stmt2 === false) {
             die("Prepare failed: " . htmlspecialchars($conn->error));
         }   
 
         // เพิ่มข้อมูลภาคการศึกษาที่ 1
         $term1 = 1;
-        $stmt2->bind_param("isii", $max_id, $year1, $count1, $term1);
+        $stmt2->bind_param("isiii", $max_id, $year1, $count1, $term1,$faculty_major );
         if (!$stmt2->execute()) {
             echo "Error executing query: " . htmlspecialchars($stmt2->error);
         }
 
         // เพิ่มข้อมูลภาคการศึกษาที่ 2
         $term2 = 2;
-        $stmt2->bind_param("isii", $max_id, $year2, $count2, $term2);
+        $stmt2->bind_param("isiii", $max_id, $year2, $count2, $term2,$faculty_major );
         if (!$stmt2->execute()) {
             echo "Error executing query: " . htmlspecialchars($stmt2->error);
         } else {
             header("Location: ../alert.php?func=1&message=" . urlencode("บันทึกข้อมูลสำเร็จ"));
             exit;
         }
-
         // ปิดคำสั่ง
         $stmt1->close();
         $stmt2->close();

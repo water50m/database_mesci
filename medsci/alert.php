@@ -11,7 +11,8 @@ if($func == 1){
     $redirectUrl = 'addData.php';
 }else if($func == 2){
     $type =  isset($_GET['type']) ? $_GET['type'] : '';
-    $redirectUrl = 'modify_data.php?func=2&type='.$type;
+    $type2 =  isset($_GET['type2']) ? $_GET['type2'] : '';
+    $redirectUrl = 'modify_data.php?func=2&type='.$type.'&type2='.$type2;
 }else if($func == 3){
     $redirectUrl = 'search.php?';       
 }else if($func == 4){

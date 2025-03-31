@@ -1,4 +1,5 @@
-<?php 
+<?php
+ 
 session_start();
 if(!isset($_SESSION['whoareyou']) ){
     
@@ -9,18 +10,25 @@ require 'config/querySQL.php';
 $query = new SQLquery();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $type = $_POST['_id'];
+    $type = $_POST['location_id'];
+    $major_id = $_POST['_id'];
     
 }
 
 $gettype =  isset($_GET['type']) ? $_GET['type'] : '';
 if($gettype){
     $type = $gettype;
+    $major_id = $_GET['type2'];
+    print($_GET['type2']);
 }
+
 if(!$type){
     header("location: search.php");
     exit();
 }
+
+$majorSubjectName = $query->selectMajorSubjectName($major_id);
+
 $result = $query->selectAllDetail($type,null,null);
 $jsonResult = json_encode($result);
 $id = $result['id'];
@@ -32,6 +40,9 @@ $region = $query->selectRegion();
 $num_receive_per_year = $query->selectAllreceive_year($id );
 $func_province = $query->selectProvince();
 $jsonDataProvince = json_encode($func_province);
+$facuty_select = $query->facutyTable();
+$establishment= $query->establishment();
+
 ?>
 
 <!DOCTYPE html>
@@ -42,6 +53,7 @@ $jsonDataProvince = json_encode($func_province);
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/addData.css">
     <link rel="stylesheet" href="css/autoMap.css">
+    <link rel="stylesheet" href="css/modify_data.css">
     <script src="https://api.longdo.com/map/?key=bff66f6baa485edba09ca806b597ed30"></script>
     <title>แก้ไขข้อมูล</title>
 
@@ -82,26 +94,28 @@ $jsonDataProvince = json_encode($func_province);
            
 
         <div class="mb-3">
-            <h5 class="form-label">คณะ</h5>
+            <h5 class="form-label">ประเภทสถานประกอบการ</h5>
             <div class="input-group">
-                <select class="form-select" aria-label="Default select example" id="facultyName_select"  name="_facultyname">
-                    <option selected>เลือกคณะ</option>
+                <select class="form-select" aria-label="Default select example" id="facultyName_select"  name="_establishment">
+
                     <?php 
-                        echo '<option selected value='.$result['facuty'].'>'.$result['facuty'].'</option>';
+                    if (isset($result['establishment'])){
+                        echo '<option selected value='.$result['eid'].'>'.$result['establishment'].'</option>';
+                    }else{
+                        echo '<option selected value=null>เลือก</option>';
+                    }
                     ?>
                     <?php
-                        $shown_faculties = [];
-                        foreach ($fucn_query as $faculty):
-                            if (!in_array($faculty['facuty'], $shown_faculties)):
-                                
-                                if ($result['facuty'] ==$faculty['facuty']){}else{
-                                $shown_faculties[] = $faculty['facuty'];
+         
+                        foreach ($establishment as $esta):
+                                if ($result['eid'] ==$esta['id']){}else{
                         ?>
-                                <option value="<?php echo $faculty['facuty']; ?>">
-                                    <?php echo $faculty['facuty']; ?>
+
+                                <option value="<?php echo $esta['id']; ?>">
+                                    <?php echo $esta['establishment']; ?>
                                 </option>
                         <?php
-                                }endif;
+                                }
                         endforeach;
                         ?>
                 </select>
@@ -116,8 +130,30 @@ $jsonDataProvince = json_encode($func_province);
             <h5 class="form-label">สาขาวิชา</h5>
             <div class="input-group">
                 <select class="form-select" aria-label="Default select example" id="facultyMajor" name="_facultymajor">
-                    <option selected>เลือกสาขาวิชา...</option>
-                    
+                <option selected>เลือกสาขาวิชา...</option>
+                    <?php 
+                    if (isset($major_id)){
+                        echo '<option selected value='.$major_id.' style="background-color: #ffc107;">'.$majorSubjectName[0]['major_subject'].'</option>';
+                    }else{?>
+                        <option selected>เลือกสาขาวิชา...</option>
+                        <?php 
+                    }
+                    ?>
+                    ?>
+                    <?php
+         
+                        foreach ($facuty_select  as $fac):
+                                if ($major_id ==$fac['id']){}else{
+                        ?>
+
+                                <option value="<?php echo $fac['id']; ?>">
+                                    <?php echo $fac['major_subject']; ?>
+                                </option>
+                        <?php
+                                }
+                        endforeach;
+                        ?>
+
                 </select>
                 <button type="button" class="btn btn-outline-primary" style="width: 150px;"
                     data-bs-toggle="modal" data-bs-target="#addFacultyModal">
@@ -252,8 +288,8 @@ $jsonDataProvince = json_encode($func_province);
 
         <div class="d-flex justify-content-between mt-3">
             <button type="submit" class="btn btn-danger w-100 me-2" onclick="deletedata('config/delete.php')" role="button">ลบ</button>
-            <button type="submit" class="btn btn-success w-100 mx-2" onclick="saveNewLocation('config/addDatadb.php?newlocation=<?php echo $result['location']; ?>')" role="button">บันทึกเป็นสถานที่ใหม่</button>
-            <button type="submit" class="btn btn-warning w-100 ms-2" onclick="modifydata('config/modify_datadb.php')" role="button">แก้ไข</button>
+            
+            <button type="submit" class="btn btn-warning w-100 ms-2" onclick="modifydata('config/modify_datadb.php')" role="button">บันทึกการแก้ไข</button>
         </div>
 
         <div class="input-group mb-3" style="padding: 50px;">

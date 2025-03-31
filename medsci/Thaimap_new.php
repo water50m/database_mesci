@@ -1,4 +1,5 @@
 <?php 
+
 session_start();
 include 'navbar.php';
 require 'config/querySQL.php';
@@ -8,8 +9,12 @@ $data = $query->selectCoordinate();
 $jsonData = json_encode($data);
 $region_province = $query->selectProvince();
 $jsonData_RP = json_encode($region_province);
-
-header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
+$establishment = $query->establishment();
+$establishmentData = json_encode($establishment);
+$Facuty = $query->selectMajor();
+$FacutyData = json_encode($Facuty);
+// print_r($data);
+header('Cache-Control: public, max-age=3600'); 
 
 ?>
 
@@ -26,7 +31,7 @@ header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" /> -->
     <!-- <script src="https://cdn.jsdelivr.net/npm/leaflet-rotatedmarker@0.2.0/leaflet.rotatedMarker.min.js"></script> -->
     <style>
-        #map { height: 600px; width: 100%; }
+        #map { height: 800px; width: 100%; }
         .info {
             padding: 6px 8px;
             font: 14px/16px Arial, Helvetica, sans-serif;
@@ -138,8 +143,9 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 //---------------------------------------------------------------------------------------------------testLayer 
 var coordinate = <?php echo $jsonData; ?>;
-
+var establishmentData = <?php echo $establishmentData; ?>;
 var region_province = <?php echo $jsonData_RP; ?>;
+var FacutyData = <?php echo $FacutyData; ?>;
 
 const regions = {
     allRegion:[],
@@ -195,9 +201,9 @@ if (regions[item.region_category]) {
                 <option value="allProvince">เลือกจังหวัด(ทั้งหมด)</option>  
             </select>
             <br/>
-                <label for="facuty">เลือกคณะ:</label>
-            <select id="facuty" onchange="updateMajorSubjects();watchWithRegion();">
-                <option value="">เลือกคณะ(ทั้งหมด)</option>
+                <label for="establishment">เลือกประเภทสถานประกอบการ:</label>
+            <select id="establishment" onchange="updateMajorSubjects();watchWithRegion();">
+                <option value=" ">เลือกประเภทสถานประกอบการ(ทั้งหมด)</option>
 
             </select>
             <br/>
@@ -228,72 +234,79 @@ if (regions[item.region_category]) {
         }
     }
 
-    // select facuty-------------------------------------------------------------------------------
-    function updateFacuty() {
-    const facuty = document.getElementById('facuty');
-    facuty.innerHTML = '<option value="">เลือกคณะ(ทั้งหมด)</option>'; // Clear previous options
-    const unique_Faculty = [...new Set(coordinate.map(item => item.facuty))];
-    unique_Faculty.forEach(item => {
-        const facuty_option = document.createElement('option');
-        facuty_option.value = item;
-        facuty_option.textContent = item;
-        facuty.appendChild(facuty_option);
+
+    // select establishmentData-------------------------------------------------------------------------------
+    function updateEstablishment() {
+    const establishment = document.getElementById('establishment');
+    
+    establishment.innerHTML = '<option value="">เลือกประเภทสถานประกอบการ(ทั้งหมด)</option>'; // Clear previous options
+    // const unique_Faculty = [...new Set(coordinate.map(item => item.facuty))];
+    
+    establishmentData.forEach(item => {
+
+        const establishment_option = document.createElement('option');
+        establishment_option.value = item.id;
+        establishment_option.textContent = item.establishment;
+        establishment.appendChild(establishment_option);
     });
 
-    // Call the update function when a faculty is selected
-    facuty.addEventListener('change', updateMajorSubjects);
+    // // Call the update function when a faculty is selected
+    // establishment.addEventListener('change', updateMajorSubjects);
     
-    // Initialize major subjects based on the initial faculty selection
-    updateMajorSubjects();
+    // // Initialize major subjects based on the initial faculty selection
+    // updateMajorSubjects();
     }
+    
     // update major from selecting facuty-------------------------------------------------------------------------------
     function updateMajorSubjects() {
-        const facuty_selected = document.getElementById('facuty').value;
+        const establishment_selected = document.getElementById('establishment').value;
         const major_subject = document.getElementById('major_subject');
         major_subject.innerHTML = '<option value="">สาขาวิชา(ทั้งหมด)</option>'; // Clear previous options
-        
+
         const unique_MajorNames = [
             ...new Set(
-                coordinate
-                    .filter(item => (!facuty_selected || item.facuty === facuty_selected) || (item.facuty === ""))
-                    .map(item => item.majorName)
+                
+                FacutyData
+                    
             )
         ];
         
-        
         unique_MajorNames.forEach(item => {
             const major_option = document.createElement('option');
-            major_option.value = item;
-            major_option.textContent = item;
+            major_option.value = item.id;
+            major_option.textContent = item.major_subject;
             major_subject.appendChild(major_option);
         });
     }
-    updateFacuty()
-    
+    updateEstablishment()
     let new_coordinate = '';
 
 // เตรียมข้อมูลสำหรับสร้าง marker หลังจากเลือกจังหวัดหรือภาคแล้ว-----------------------------------------------------------------
 function watchWithRegion() {
     const province = document.getElementById('province').value;
     const regionSelect = document.getElementById('regionSelect').value;
-    const facuty = document.getElementById('facuty').value;
+    const establishment = document.getElementById('establishment').value;
     const major_subject = document.getElementById('major_subject').value;
+
+    
 
     fetch(`config/fetchdata.php?func=5`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `&province=${encodeURIComponent(province)}&region=${encodeURIComponent(regionSelect)}&facuty=${encodeURIComponent(facuty)}&major_subject=${encodeURIComponent(major_subject)}`
+        body: `&province=${encodeURIComponent(province)}&region=${encodeURIComponent(regionSelect)}&establishment=${encodeURIComponent(establishment)}&major_subject=${encodeURIComponent(major_subject)}`
     })
     .then(response => {
+    
+
         if (!response.ok) {
             throw new Error('Network response was not ok');
         }
         return response.json();
     })
     .then(data => {
-
+        // console.log(data);
         new_coordinate = data.value;
 
         // Check if new_coordinate is an array
@@ -390,7 +403,6 @@ function updateSelecting(new_coordinate) {
 // -------------------------------------------------------------------------------------add province on map
 function highlightFeature(e) {
     var layer = e.target;
-
     layer.setStyle({
         fillColor:'white',
         weight: 2,
@@ -399,14 +411,15 @@ function highlightFeature(e) {
         dashArray: '',
         fillOpacity: 0.7
     });
-
     layer.bringToFront();
     info.update(layer.feature.properties);
 }
+
 function resetHighlight(e) {
     geojson.resetStyle(e.target);
     info.update();
 }
+
 function zoomToFeature(e) {
     map.fitBounds(e.target.getBounds());
 }
@@ -425,17 +438,21 @@ function onEachFeature(feature, layer) {
 // }).addTo(map);
 
 // -----------------------------------------------------------------------------------------------------
+
 var info = L.control();
 info.onAdd = function (map) {
     this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
     this.update();
     return this._div;
 };
+
+
 info.update = function (props) {
     this._div.innerHTML = '<h4>US Population Density</h4>' +  (props ?
         '<b>' + props.th_name + '</b><br />' + props.id + ' people / mi<sup>2</sup>'
         : 'Hover over a state');
 };
+
 
 // info.addTo(map);
 

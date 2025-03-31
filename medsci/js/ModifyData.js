@@ -219,7 +219,6 @@ openPopupBtn.addEventListener('click', function() {
             }
             map.Search.suggest(search.value);
         };
-
         map.Event.bind('suggest', function(result) {
             if (result.meta.keyword != search.value) return;
             suggest.innerHTML = '';
@@ -294,34 +293,7 @@ function deletedata(action) {
 };
 
 
-    var facultySelect = document.getElementById('facultyName_select');
-    var majorSelect = document.getElementById('facultyMajor');
-
-    // ฟังก์ชันสำหรับอัพเดทสาขาวิชา
-    function updateMajors(selectedFaculty) {
-        // เคลียร์ตัวเลือกเก่า
-        
-        majorSelect.innerHTML = '<option value="" selected>เลือกสาขาวิชา</option>'+'<option value="' + result.majorName + '" selected style="background-color: yellow;">' + result.majorName + '</option>';
-        
-        // กรองและเพิ่มสาขาที่ตรงกับคณะ
-        facuty.forEach(function(faculty) {
-            if(faculty.facuty === selectedFaculty && faculty.f_major !== '' && faculty.f_major !== result.majorName) {
-                const option = document.createElement('option');
-                option.value = faculty.f_major;
-                option.text = faculty.f_major;
-                majorSelect.appendChild(option);
-            }
-        });
-    }
-
-    // เรียกใช้ฟังก์ชันทันทีที่โหลดหน้า
-    updateMajors(facultySelect.value);
-
-    // เพิ่ม event listener สำหรับการเปลี่ยนแปลง
-    facultySelect.addEventListener('change', function() {
-        updateMajors(this.value);
-    });
-
+    
     // smart select province
    
     
@@ -332,6 +304,7 @@ function deletedata(action) {
         // ดึงค่าจังหวัดที่เลือกปัจจุบัน
         var selectedprovince_value = this.value;
         
+
         // กรองและเพิ่มภูมิภาคที่ตรงกับจังหวัด
         var foundRegion = false;
         province.forEach(function(prov) {

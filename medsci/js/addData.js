@@ -1,29 +1,6 @@
 var facultySelect = document.getElementById('facultyName');
 var majorSelect = document.getElementById('facultyMajor');
 
-// ฟังก์ชันสำหรับอัพเดทสาขาวิชา
-function updateMajors(selectedFaculty) {
-    // คลียร์ตัวเลือกเก่า
-    majorSelect.innerHTML = '<option value="" selected>เลือกสาขาวิชา</option>';
-    
-    // กรองและเพิ่มสาขาที่ตรงกับคณะ
-    facuty.forEach(function(faculty) {
-        if(faculty.facuty === selectedFaculty && faculty.f_major !== '') {
-            const option = document.createElement('option');
-            option.value = faculty.f_major;
-            option.text = faculty.f_major;
-            majorSelect.appendChild(option);
-        }
-    });
-}
-
-// เียกใช้ฟังก์ชันทันทีที่โหลดหน้า
-updateMajors(facultySelect.value);
-
-// เพิ่ม event listener สำหรับการเปลี่ยนแปลง
-facultySelect.addEventListener('change', function() {
-    updateMajors(this.value);
-});
 
 // smart select province
 
