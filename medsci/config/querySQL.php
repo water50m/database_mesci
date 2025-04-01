@@ -4,10 +4,11 @@ require_once 'condb.php';
 class SQLquery {
     private $db;
     private $conn;
-    private $stmt_cache = []; // เพิ่ม cache สำหรับ prepared statements
+    private $stmt_cache = array();// เพิ่ม cache สำหรับ prepared statements
 
     public function __construct() {
         $this->db = new connectdb();
+        
         $this->conn = $this->db->connectPDO();
         $this->conn->setAttribute(PDO::ATTR_EMULATE_PREPARES, false); // ปิด emulated prepares
     }
@@ -304,8 +305,11 @@ class SQLquery {
             $joun_receive = " ";
             $grou_major = " ";
             $joun_establishment = " ";
-            
-            if (isset($major_subject) && $major_subject != "") {
+            // $region = "1";
+            // $province = "allProvince";
+            // $establishment = " ";
+            // $major_subject = "allMajor";
+            if (isset($major_subject) && $major_subject != "" && $major_subject !="allMajor") {
 
                 $conditions[] = "re.major_subject_id = :major_subject";
                 $params[':major_subject'] = $major_subject;
@@ -325,7 +329,7 @@ class SQLquery {
                 $params[':province'] = $province;
             }
 
-            if (isset($establishment) && $establishment != "" ) {
+            if (isset($establishment) && $establishment != " " ) {
                 $joun_establishment = "JOIN establishment e ON  d.establishment_id = e.id";
                 $conditions[] = "d.establishment_id = :establishment";
                 $params[':establishment'] = $establishment;
@@ -339,17 +343,12 @@ class SQLquery {
             $sql = "SELECT 
                 d.id,
                 d.location,
-                -- f.id AS fid,
-                -- f.major_subject AS majorName,
-                -- e.id AS eid,
-                -- e.establishment AS establishment_name,
                 r.name AS regionName,
                 r.id AS rid,
                 d.province,
                 d.latitude,
                 d.longtitude
             FROM detail d 
-            -- JOIN facuty f ON f.id = d.facuty_id 
             JOIN region r ON d.region_id = r.id 
             $joun_establishment
             $joun_receive

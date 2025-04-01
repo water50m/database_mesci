@@ -19,7 +19,7 @@ $gettype =  isset($_GET['type']) ? $_GET['type'] : '';
 if($gettype){
     $type = $gettype;
     $major_id = $_GET['type2'];
-    print($_GET['type2']);
+    
 }
 
 if(!$type){

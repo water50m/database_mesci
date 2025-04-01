@@ -88,13 +88,14 @@
 
                     // อัพเดทตารางหลัก
                     $stmt1 = $conn->prepare("UPDATE detail 
-                    SET region_id = ?, department = ?, establishmen_id,
+                    SET region_id = ?, department = ?, establishment_id = ?,
                         address = ?, sendto = ?, 
                         coordinator = ?, Scope_work = ?, province = ?, latitude = ?, longtitude = ?
                     WHERE id = ?");
+                    
                     $stmt1->bind_param("isisssssdds", $region, $department, $establishmen,$address, $sendTo,
                     $coordinator, $scope, $province, $latitude, $longitude, $location);
-
+                    
                     // ตรวจสอบค่า $year1 และ $count1 ก่อนทำการอัปเดต
                     if ($year1 != 'dontChange' && $year1) {
                         $stmt2 = $conn->prepare("UPDATE recieve_year 
