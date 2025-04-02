@@ -255,9 +255,9 @@ if (regions[item.region_category]) {
     // establishment.addEventListener('change', updateMajorSubjects);
     
     // // Initialize major subjects based on the initial faculty selection
-    // updateMajorSubjects();
+    // 
     }
-    
+    updateMajorSubjects();
     // update major from selecting facuty-------------------------------------------------------------------------------
     function updateMajorSubjects() {
         const establishment_selected = document.getElementById('establishment').value;
