@@ -165,7 +165,6 @@ const countedProvince = coordinate.reduce((acc, value) => {
     return acc;
 }, {});
 
-console.log(region_province);
 // บอกว่าในจังหวัดนั้นๆมีกี่ location
 region_province.forEach( item =>{
 if(item.province_name in countedProvince){
@@ -202,10 +201,10 @@ if (regions[item.region_category]) {
             </select>
             <br/>
                 <label for="establishment">เลือกประเภทสถานประกอบการ:</label>
-            <select id="establishment" onchange="updateMajorSubjects();watchWithRegion();">
-                <option value="allEstablishment">เลือกประเภทสถานประกอบการ(ทั้งหมด)</option>
-
+            <select id="establishment" onchange="watchWithRegion();">
+                <option value="allEstablishment">เลือกประเภทสถานประกอบการ(ทั้งหมด)</option>  
             </select>
+
             <br/>
             <label for="major_subject">เลือกสาขาวิชา:</label>
             <select id="major_subject" onchange="watchWithRegion();">
@@ -225,14 +224,12 @@ if (regions[item.region_category]) {
         const provinceSelect = document.getElementById('province');
         provinceSelect.innerHTML = '<option value="allProvince">เลือกจังหวัด(ทั้งหมด)</option>'; // Clear previous options
         
-        if (regions[region]) {
-            regions[region].forEach(province => {
-                // region_province.forEach(province => {
+        if (region_province) {
+
+                region_province.forEach(province => {
                 const option = document.createElement('option');
-                // option.value = province.province_id;
-                // option.textContent = province.province_name;
-                option.value = province;
-                option.textContent = province;
+                option.value = province.province_id;
+                option.textContent = province.province_name;
                 provinceSelect.appendChild(option);
             });
         }
@@ -243,7 +240,7 @@ if (regions[item.region_category]) {
     function updateEstablishment() {
     const establishment = document.getElementById('establishment');
     
-    establishment.innerHTML = '<option value="">เลือกประเภทสถานประกอบการ(ทั้งหมด)</option>'; // Clear previous options
+    establishment.innerHTML = '<option value="allEstablishment">เลือกประเภทสถานประกอบการ(ทั้งหมด)</option>'; // Clear previous options
     // const unique_Faculty = [...new Set(coordinate.map(item => item.facuty))];
     
     establishmentData.forEach(item => {
@@ -289,20 +286,20 @@ if (regions[item.region_category]) {
 function watchWithRegion() {
     const province = document.getElementById('province').value;
     const regionSelect = document.getElementById('regionSelect').value;
-    const establishment = document.getElementById('establishment').value;
     const major_subject = document.getElementById('major_subject').value;
+    const establishment = document.getElementById('establishment').value;
     
-    console.log(province);
-    console.log(regionSelect);
-    console.log(establishment);
-    console.log(major_subject);
+    // console.log(province);
+    // console.log(regionSelect);
+    // console.log(major_subject);
+    // console.log(establishment);
 
     fetch(`config/fetchdata.php?func=5`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `&province=${encodeURIComponent(province)}&region=${encodeURIComponent(regionSelect)}&establishment=${encodeURIComponent(establishment)}&major_subject=${encodeURIComponent(major_subject)}`
+       body: `province=${encodeURIComponent(province)}&region=${encodeURIComponent(regionSelect)}&establishment=${encodeURIComponent(establishment)}&major_subject=${encodeURIComponent(major_subject)}`
     })
     .then(response => {
     
@@ -313,7 +310,7 @@ function watchWithRegion() {
         return response.json();
     })
     .then(data => {
-        // console.log(data);
+
         new_coordinate = data.value;
 
         // Check if new_coordinate is an array

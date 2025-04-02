@@ -300,12 +300,14 @@ class SQLquery {
     
     public function selectToMap($region, $province, $establishment, $major_subject){
         try {
-            $params = [];
-            $conditions = [];
+           
+            $params = array();
+            $conditions = array();
             $joun_receive = " ";
             $grou_major = " ";
             $joun_establishment = " ";
-            // $region = "1";
+            $joinProcinveTable = " ";
+            // $region = "allRegion";
             // $province = "allProvince";
             // $establishment = " ";
             // $major_subject = "allMajor";
@@ -325,11 +327,12 @@ class SQLquery {
             }
 
             if (isset($province) && $province != "" && $province != "allProvince") {
-                $conditions[] = "d.province = :province";
+                $joinProcinveTable = "JOIN province p ON  d.province = p.name";
+                $conditions[] = "p.id = :province";
                 $params[':province'] = $province;
             }
 
-            if (isset($establishment) && $establishment != " " ) {
+            if (isset($establishment) && $establishment != " " && $establishment != "allEstablishment" ) {
                 $joun_establishment = "JOIN establishment e ON  d.establishment_id = e.id";
                 $conditions[] = "d.establishment_id = :establishment";
                 $params[':establishment'] = $establishment;
@@ -350,6 +353,7 @@ class SQLquery {
                 d.longtitude
             FROM detail d 
             JOIN region r ON d.region_id = r.id 
+            $joinProcinveTable
             $joun_establishment
             $joun_receive
             $whereClause

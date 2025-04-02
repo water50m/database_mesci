@@ -70,7 +70,7 @@ if (isset($_GET['func']) && $_GET['func'] == 2 ) {
                       $join_receive";
 
     // เพิ่มเงื่อนไขตามตัวแปรที่ส่งเข้ามา
-    $params = [];
+    $params = array();
     if ($location) {
         $check_where = true;
         if($location == ""){
@@ -177,10 +177,12 @@ if (isset($_GET['func']) && $_GET['func']==4){
 
 
 if (isset($_GET['func']) && $_GET['func']==5){
-    $province = $_POST['province'] ?? null;
+    $province = $_POST['province']?? null;
     $region = $_POST['region'] ?? null;
     $major_subject = $_POST['major_subject'] ?? null;
     $establishment = $_POST['establishment'] ?? null;
+     // Debug: ดูข้อมูลทั้งหมดที่ได้รับ
+
     $newQuery = new SQLquery();
     $provinceWithoutSuffix = explode(' (', $province)[0]; 
     if($region=='north'){$region=1;}
@@ -189,11 +191,17 @@ if (isset($_GET['func']) && $_GET['func']==5){
     else if($region=='south'){$region=6;}
     else if($region=='east'){$region=5;}
     else if($region=='west'){$region=3;}
+    // $province = "allProvince";
+    // $region ="allRegion";
+    // $major_subject =  "allMajor";
+    // $establishment = " ";
+
     // $newQuery->selectToMap($region,$provinceWithoutSuffix,$establishment,$major_subject);
-    // print_r($newQuery->selectToMap($region,$provinceWithoutSuffix,$establishment,$major_subject));
+    // print_r($newQuery->selectToMap($region,$province,$establishment,$major_subject));
     
     echo json_encode([
-        'value' => $newQuery->selectToMap($region,$provinceWithoutSuffix,$establishment,$major_subject)
+
+        'value' => $newQuery->selectToMap($region,$province,$establishment,$major_subject)
     ]);
 
 
