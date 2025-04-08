@@ -1,13 +1,4 @@
-body {
 
-background-image: url('../images/IMG_1216.jpg'); 
-
-background-size: 1590px 905px; /* ปรับขนาดให้เต็มพื้นที่ */
-background-repeat: no-repeat; /* ไม่ให้ภาพซ้ำ */
-/* background-position: center; */
-font-family: Arial, sans-serif; /* ฟอนต์ที่ใช้ในหน้าเว็บ */
-
-}
 
 .navbar {
 
@@ -180,7 +171,7 @@ width: 100%;
     height: 200px;
     width: 400px;
     
-    margin-left:50%;
+    margin-right: 30%;
     right: 20px; /* ตำแหน่งชิดขวา */
     padding: 20px;
     border-radius: 8px;

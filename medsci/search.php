@@ -30,19 +30,22 @@ header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Card with Modal Example</title>
+    <title>Internship-Medsci</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="js/page_search2.js"></script>
     <link href="css/table_inSearch_page.css" rel="stylesheet">
 </head>
-<style>
 
-
-
-    </style>
-<body>
-    
-  
+<body id = myBody>
+  <script>
+    const body = document.getElementById("myBody");
+    body.style.backgroundImage = "url('images/IMG_1216.JPG')";
+    body.style.backgroundSize = "cover"; // ทำให้ responsive
+    body.style.backgroundRepeat = "no-repeat";
+    body.style.backgroundPosition = "center";
+    body.style.fontFamily = "Arial, sans-serif";
+  </script>
+      
 <div class="search-bar">
                               
         <?php include 'navbar.php'; ?>
@@ -278,5 +281,7 @@ document.getElementById('exampleModal').addEventListener('hidden.bs.modal', func
         // });
             </script>
         </div>
+
+
     </body>
 </html>

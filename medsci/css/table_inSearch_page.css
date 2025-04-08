@@ -1,13 +1,36 @@
-*{
+* {
     box-sizing: border-box;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
 }
-body{
+
+body {
+    margin: 0;
+    padding: 0;
     font-family: Helvetica;
     -webkit-font-smoothing: antialiased;
-    /* background: rgba( 71, 147, 227, 1); */
+    min-height: 100vh;
+    position: relative;
+    /* background: rgba(71, 147, 227, 1); - ถูกแทนที่ด้วย background-image */
+    background-image: url('images/IMG_1216.JPG');
+    background-size: cover; /* Responsive พอดีกับหน้าจอ */
+    background-repeat: no-repeat;
+    background-position: center;
+    font-family: Arial, sans-serif;
 }
+
+@media (max-width: 768px) {
+    body {
+      background-position: top;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    body {
+      background-image: none; /* หรือใช้ภาพขนาดเล็ก */
+      background-color: #000; /* fallback */
+    }
+  }
 h2{
     text-align: center;
     font-size: 18px;
