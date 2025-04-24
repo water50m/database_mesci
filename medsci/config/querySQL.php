@@ -240,7 +240,7 @@ class SQLquery {
             $sql = "SELECT 
                 d.id,
                 d.location,
-                d.establishment_id,
+                e.establishment,
                 e.id as eid,
                 d.department,
                 d.Scope_work,

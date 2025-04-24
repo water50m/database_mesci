@@ -24,7 +24,7 @@ header('Cache-Control: public, max-age=3600');
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Polygon Display on Map</title>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/leaflet.css" />
     <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
@@ -120,6 +120,7 @@ header('Cache-Control: public, max-age=3600');
         }
 
             </style>
+            <title>Internship Display on Map</title>
 </head>
 <body>
 

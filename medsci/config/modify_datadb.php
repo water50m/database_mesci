@@ -17,6 +17,9 @@
         
         $faculty_major = $_POST['_facultymajor']; // เพิ่มตัวแปรที่ขาดหาย
         $establishment = $_POST['_establishment']; // เพิ่มตัวแปรที่ขาดหาย
+        echo $establishment;
+        echo "---";
+        
         $region = $_POST['_region'];
         $address = $_POST['_address'];
         $sendTo = $_POST['_sendto'];
@@ -93,7 +96,7 @@
                         coordinator = ?, Scope_work = ?, province = ?, latitude = ?, longtitude = ?
                     WHERE id = ?");
                     
-                    $stmt1->bind_param("isisssssdds", $region, $department, $establishmen,$address, $sendTo,
+                    $stmt1->bind_param("isisssssdds", $region, $department, $establishment,$address, $sendTo,
                     $coordinator, $scope, $province, $latitude, $longitude, $location);
                     
                     // ตรวจสอบค่า $year1 และ $count1 ก่อนทำการอัปเดต
@@ -171,7 +174,7 @@
         $old_picture_query->close();
     }
 
-    // Execute all statements
+    //Execute all statements
     if (isset($stmt_addfac1)) {
         if (!$stmt_addfac1->execute()) {
             echo "Error executing query: " . htmlspecialchars($stmt_addfac1->error);
@@ -187,9 +190,12 @@
     try {
         // Execute statements
         if (isset($stmt1)) {
+        
             if (!$stmt1->execute()) {
+                
                 throw new Exception("Error executing detail update: " . $stmt1->error);
             }
+  
         }
 
         if (isset($stmt2)) {

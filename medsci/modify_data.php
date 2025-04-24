@@ -100,6 +100,7 @@ $establishment= $query->establishment();
 
                     <?php 
                     if (isset($result['establishment'])){
+                        
                         echo '<option selected value='.$result['eid'].'>'.$result['establishment'].'</option>';
                     }else{
                         echo '<option selected value=null>เลือก</option>';
