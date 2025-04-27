@@ -1,5 +1,5 @@
 <?php 
-
+session_start();
 
 
 ?>
@@ -21,28 +21,25 @@
 <!-- <h2>Weekly Coding Challenge #1: Sign in/up Form</h2> -->
 <div class="container" id="container">
 	<div class="form-container sign-up-container">
-		<form action="config/login_process.php" method="POST">
-			<h1>Create Account</h1>
-			<div class="social-container">
-				<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
-				<a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
-				<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
-			</div>
-			<span>or use your email for registration</span>
-			<input type="text" placeholder="Name" name="name_sup"/>
-			<input type="email" placeholder="Email" name="email_sup"/>
-			<input type="password" placeholder="Password" name="password_sup"/>
-			<!-- <button>Sign Up</button> -->
-		</form>
+				<form action="config/login_process.php" method="POST" autocomplete="off">
+			<h2>Create Account</h2>
+
+			<input type="text" placeholder="UserName" name="name_sup" />
+			<input type="text" placeholder="ชื่อ-นามสกุล" name="fullname_sup" />
+			<input type="text" placeholder="ตำแหน่ง" name="position_sup" />
+			<input type="email" placeholder="Email" name="email_sup" />
+			<input type="password" placeholder="Password" name="password_sup" />
+			
+			<button>Sign Up</button>
+			</form>
+
 	</div>
 
 	<div class="form-container sign-in-container">
 		<form action="config/login_process.php" method="POST">
 			<h1>Sign in</h1>
 			<div class="social-container">
-				<a href="#" class="social"><i class="fab fa-facebook-f"></i></a>
-				<a href="#" class="social"><i class="fab fa-google-plus-g"></i></a>
-				<a href="#" class="social"><i class="fab fa-linkedin-in"></i></a>
+
 			</div>
 			<span>use your account</span>
 			<input type="text" placeholder="Email" name="email_sin" />
@@ -55,15 +52,21 @@
 	<div class="overlay-container">
 		<div class="overlay">
 			<div class="overlay-panel overlay-left">
-				<h1>Welcome Back!</h1>
-				<p>To keep connected with us please login with your personal info</p>
+			<h1>Welcome </h1> 	
+			<p1>ยินดีต้อนรับสู่คณะวิทยาศาสตร์การแพทย์</p1> <p1> <a target="_blank" href="Thaimap_new.php"> Click </a> เพื่อเข้าสู่เว็บไซต์</p1>
 				<button class="ghost" id="signIn">Sign In</button>
 			</div>
 			<div class="overlay-panel overlay-right">
 				<h1>Welcome </h1> 	
 				<p1>ยินดีต้อนรับสู่คณะวิทยาศาสตร์การแพทย์</p1> <p1> <a target="_blank" href="Thaimap_new.php"> Click </a> เพื่อเข้าสู่เว็บไซต์</p1>
-				<!-- <button class="ghost" id="signUp">Sign Up</button> -->
-				 
+				<?php 
+                        
+                        if(isset($_SESSION['DoYouKnowImBigBrother']) ){
+                            
+                    
+                    ?>
+				<button class="ghost" id="signUp">Sign Up</button>
+				<?php }?>
 			</div>
 		</div>
 	</div>

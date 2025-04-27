@@ -13,6 +13,8 @@
             $name_sup = mysqli_real_escape_string($conn, $_POST['name_sup']);
             $email_sup = mysqli_real_escape_string($conn, $_POST['email_sup']);
             $password_sup = mysqli_real_escape_string($conn, $_POST['password_sup']);
+            $fullname_sup = mysqli_real_escape_string($conn, $_POST['fullname_sup']);
+            $position_sup = mysqli_real_escape_string($conn, $_POST['position_sup']);
             
             $check_email_sql = "SELECT * FROM users WHERE email = '$email_sup' OR '$email_sup' = name";
             $result_email = mysqli_query($conn, $check_email_sql);
@@ -24,7 +26,7 @@
                 $hashed_password = password_hash($password_sup, PASSWORD_DEFAULT);
                 
                 // เพิ่มข้อมูลผู้ใช้ใหม่ลงในฐานข้อมูล
-                $sql_insert = "INSERT INTO users (name, email, password) VALUES ('$name_sup', '$email_sup', '$hashed_password')";
+                $sql_insert = "INSERT INTO users (name, email, password,role_,FullName,position) VALUES ('$name_sup', '$email_sup', '$hashed_password','adminB','$fullname_sup','$position_sup')";
                 
                 if (mysqli_query($conn, $sql_insert)) {
                     echo "ลงทะเบียนสำเร็จ" . mysqli_error($conn);
@@ -57,9 +59,16 @@
                     // ล็อกอินสำเร็จ
                     ini_set('session.gc_maxlifetime', 1800);
                     session_start();
+                    session_unset();
+                    session_destroy();
+                    session_start();
+
                     
-                    if($user && $user['role_'] == 'admin'){
+                    if($user && ($user['role_'] == 'admin' || $user['role_'] == 'adminB')){
                         $_SESSION['DoYouKnowImSoBig'] = $user['role_'];
+                    };
+                    if($user && ($user['role_'] == 'admin' )){
+                        $_SESSION['DoYouKnowImBigBrother'] = $user['role_'];
                     };
                     // เก็บค่าลงในตัวแปรเซสชัน
                     $_SESSION['whoareyou'] = $email_sin;

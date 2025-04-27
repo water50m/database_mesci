@@ -81,7 +81,7 @@ function initMap() {
 
     // เพิ่มฟังก์ชันไฮไลท์คำแนะนำที่เลือก
     function highlightSuggestion() {
-        const suggestions = suggest.getElementsByTagName('a');
+        const suggestions = doSuggest.getElementsByTagName('a');
         
         // ลบไฮไลท์เดิมทั้งหมด
         for(let i = 0; i < suggestions.length; i++) {

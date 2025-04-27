@@ -99,8 +99,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
        
         // เช็ค id จาก คณะและสาขา
         // เตรียมคำสั่ง SQL สำหรับการตรวจสอบค่า
-        $stmt_checkid = $conn->prepare("SELECT id FROM facuty WHERE major_subject = ? AND facuty = ?");
-        $stmt_checkid->bind_param("ss", $faculty_major, $establishment);
+        $stmt_checkid = $conn->prepare("SELECT major_subject,id FROM facuty WHERE id = ? ");
+        $stmt_checkid->bind_param("s", $faculty_major);
 
         // รันคำสั่ง
         $stmt_checkid->execute();
@@ -113,7 +113,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $faculty_id = $row['id'];
             // echo "พบคณะที่ตรงกับ ID: " . $faculty_id;
         } else {
-            header("Location: ../alert.php?func=1&message=" . urlencode("ไม่มีสาขาวิชา"."$faculty_major "." ในคณะ"."$establishment "));
+            // header("Location: ../alert.php?func=1&message=" . urlencode("ไม่มีสาขาวิชา"."$faculty_major "." ในคณะ"."$establishment "));
+            header("Location: ../alert.php?func=1&message=" . urlencode("ไม่มีสาขาวิชาที่เลือก"));
             exit;
         }
         $stmt_checkid->close();
@@ -128,7 +129,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $picture_path = null;
         
         // ย้าย bind_param มาก่อนการ execute
-        $stmt1->bind_param("sssssssssss", $region,establishment, $location, $department, $address, $sendTo, $coordinator, $scope, $province, $latitude, $longitude);
+        $stmt1->bind_param("sssssssssss", $region,$establishment, $location, $department, $address, $sendTo, $coordinator, $scope, $province, $latitude, $longitude);
 
         if (!$stmt1->execute()) {
             echo "Error query";
