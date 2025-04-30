@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 27, 2025 at 06:34 PM
+-- Generation Time: Apr 30, 2025 at 07:28 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `internship_medsci1`
+-- Database: `internship_medsci2`
 --
 
 -- --------------------------------------------------------
@@ -691,13 +691,13 @@ INSERT INTO `region` (`id`, `name`) VALUES
 
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
-  `name` varchar(50) NOT NULL,
-  `email` varchar(50) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `role_` varchar(10) NOT NULL,
+  `name` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `email` varchar(50) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `password` varchar(255) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
+  `role_` varchar(10) CHARACTER SET latin1 COLLATE latin1_swedish_ci NOT NULL,
   `FullName` varchar(128) NOT NULL,
   `position` varchar(128) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
 -- Dumping data for table `users`
@@ -705,7 +705,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `role_`, `FullName`, `position`) VALUES
 (9, 'admin9', '0@0', '$2y$10$2hV0V8Fbr8w0AEqFUPIoUuwGO4pwrqObFcJWc20P/vElK17Nhexcy', 'admin', '', ''),
-(10, 'my@l', 'my@l', '$2y$10$dEf.V2XTXdE./DKyQ4mZ9OidFT2A/Uf3S1clJuxbE2HCpe1M2szxu', '', '', ''),
+(10, 'my@l', 'my@l', '$2y$10$dEf.V2XTXdE./DKyQ4mZ9OidFT2A/Uf3S1clJuxbE2HCpe1M2szxu', '', '???', ''),
 (11, 'testB', 'aaa@aaa', '$2y$10$FQ2Jvolh8L6bDAKAVpWqz.ysK/6O.a8AowVmSavVnd/cSfD7xFFHq', 'adminB', 'aaa', 'aaa');
 
 --

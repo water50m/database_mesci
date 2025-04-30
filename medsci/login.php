@@ -24,10 +24,9 @@ session_start();
 				<form action="config/login_process.php" method="POST" autocomplete="off">
 			<h2>Create Account</h2>
 
-			<input type="text" placeholder="UserName" name="name_sup" />
+			<input type="text" placeholder="UserName" name="username_sup" />
 			<input type="text" placeholder="ชื่อ-นามสกุล" name="fullname_sup" />
 			<input type="text" placeholder="ตำแหน่ง" name="position_sup" />
-			<input type="email" placeholder="Email" name="email_sup" />
 			<input type="password" placeholder="Password" name="password_sup" />
 			
 			<button>Sign Up</button>
