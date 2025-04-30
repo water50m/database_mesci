@@ -8,9 +8,9 @@
     
         if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // ตรวจสอบว่าฟอร์มที่ถูกส่งมาคือการลงทะเบียนหรือเข้าสู่ระบบ
-        if (isset($_POST['name_sup'],  $_POST['password_sup'])) {
+        if (isset($_POST['username_sup'],  $_POST['password_sup'])) {
             // การลงทะเบียน (Sign Up)
-            $name_sup = mysqli_real_escape_string($conn, $_POST['name_sup']);
+            $name_sup = mysqli_real_escape_string($conn, $_POST['username_sup']);
             $password_sup = mysqli_real_escape_string($conn, $_POST['password_sup']);
             $fullname_sup = mysqli_real_escape_string($conn, $_POST['fullname_sup']);
             $position_sup = mysqli_real_escape_string($conn, $_POST['position_sup']);
