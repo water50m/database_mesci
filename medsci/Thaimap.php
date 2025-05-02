@@ -1,3 +1,4 @@
+
 <?php 
 
 session_start();
@@ -24,100 +25,15 @@ header('Cache-Control: public, max-age=3600');
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polygon Display on Map</title>
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/leaflet.css" />
-    <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" /> -->
-    <!-- <script src="https://cdn.jsdelivr.net/npm/leaflet-rotatedmarker@0.2.0/leaflet.rotatedMarker.min.js"></script> -->
-    <style>
-        #map { height: 800px; width: 100%; }
-        .info {
-            padding: 6px 8px;
-            font: 14px/16px Arial, Helvetica, sans-serif;
-            background: white;
-            background: rgba(255,255,255,0.8);
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
-            border-radius: 5px;
-        }
-        .info h4 {
-            margin: 0 0 5px;
-            color: #777;
-        }
-        .legend {
-            line-height: 18px;
-            color: #555;
-        }
-        .legend i {
-            width: 18px;
-            height: 18px;
-            float: left;
-            margin-right: 8px;
-            opacity: 0.7;
-        }
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
 
-        /* Container for styling and alignment */
-        form {
-            max-width: 300px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #FFF7E1; /* Soft yellow background */
-            border-radius: 8px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-            font-family: Arial, sans-serif;
-        }
 
-        /* Style for labels */
-        label {
-            display: block;
-            font-weight: bold;
-            margin-top: 15px;
-            color: #B84545; /* Soft red text color */
-        }
 
-        /* Style for dropdowns */
-        select {
-            width: 100%;
-            padding: 8px;
-            margin-top: 5px;
-            border: 2px solid #FFD3B5; /* Light pastel red border */
-            border-radius: 4px;
-            background-color: #FFF3E2; /* Soft pastel yellow */
-            color: #B84545; /* Soft red text */
-            font-size: 14px;
-            outline: none;
-            transition: border-color 0.3s ease;
-        }
-
-        /* Hover and focus states */
-        select:hover,
-        select:focus {
-            border-color: #FFAD90; /* Darker pastel red for focus */
-        }
-
-        /* Optional: add space between dropdowns and buttons */
-        select + select,
-        label + select {
-            margin-top: 10px;
-        }
-
-        /* Add some styling for the 'submit' button if there is one */
-        button {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 4px;
-            background-color: #FFAD90; /* Soft pastel red */
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #FF7A60; /* Darker red for hover */
-        }
+        
 
             </style>
             <title>Internship Display on Map</title>
@@ -337,7 +253,6 @@ function updateSelecting(new_coordinate) {
     // Remove previous layers if any
     if (previousLayers.length > 0) {
         previousLayers.forEach(layer => {
-            console.log('remove');
             map.removeLayer(layer); // Remove the layer from the map
         });
         previousLayers = []; // Clear the array of layers
