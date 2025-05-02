@@ -337,7 +337,6 @@ function updateSelecting(new_coordinate) {
     // Remove previous layers if any
     if (previousLayers.length > 0) {
         previousLayers.forEach(layer => {
-            console.log('remove');
             map.removeLayer(layer); // Remove the layer from the map
         });
         previousLayers = []; // Clear the array of layers
@@ -372,7 +371,15 @@ function updateSelecting(new_coordinate) {
         if (!regionGroups[item.rid]) {
             regionGroups[item.rid] = L.layerGroup().addTo(map);
         }
-
+        var myIcon = L.icon({
+                iconUrl: 'images/maker/maker1.png',
+                iconSize: [38, 95],
+                iconAnchor: [22, 94],
+                popupAnchor: [-3, -76],
+                shadowUrl: 'my-icon-shadow.png',
+                shadowSize: [68, 95],
+                shadowAnchor: [22, 94]
+            });
         var marker = L.marker([item.latitude, item.longtitude], {
             rotationAngle: 45  // กำหนดมุมหมุน 45 องศา
         })
