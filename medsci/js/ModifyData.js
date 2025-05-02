@@ -1,5 +1,7 @@
+
 // set to default value
 function resetLocationData() {
+    
     // รีเซ็ตค่าพิกัด
     document.getElementById('latitude').value = defaultData.latitude;
     document.getElementById('longitude').value = defaultData.longtitude;
@@ -20,8 +22,8 @@ updateProvinceInfo(provinceSelect)
 function updateProvinceInfo(selectedProvince) {
     province.forEach(function(prov) {
         if(prov.province_name === selectedProvince) {
-            document.getElementById('latitude').value = prov.latitude;
-            document.getElementById('longitude').value = prov.longitude; 
+            // document.getElementById('latitude').value = prov.latitude;
+            // document.getElementById('longitude').value = prov.longitude; 
             document.getElementById('regionShow').value = prov.region_name;
 
         }
@@ -133,11 +135,14 @@ function doSuggest(value) {
 }
 
 function setLocationDetails(data) {
+    
     // Set location details
     document.getElementById('locationInput').value = data.name;
     document.getElementById('latitude').value = data.lat;
     document.getElementById('longitude').value = data.lon;
     document.getElementById('floatingTextarea2').value = data.address;
+    
+    console.log(data.lat)
 
     // Parse address for province
     if (data.address) {
@@ -162,22 +167,23 @@ function setLocationDetails(data) {
         map.Overlays.clear();
         map.Overlays.add(new longdo.Marker({lat: data.lat, lon: data.lon}));
         
-        map.Event.bind('click', function() {
+    //     map.Event.bind('click', function() {
         
-        map.Overlays.clear();
-        var mouseLocation = map.location(longdo.LocationMode.Pointer);
-        console.log(mouseLocation)
-        document.getElementById('latitude').value = mouseLocation.lat;
-        document.getElementById('longitude').value = mouseLocation.lon;
-        map.Overlays.add(new longdo.Marker(mouseLocation));
-    });
+    //     map.Overlays.clear();
+    //     var mouseLocation = map.location(longdo.LocationMode.Pointer);
+    //     console.log(mouseLocation)
+    //     document.getElementById('latitude').value = mouseLocation.lat;
+        
+    //     document.getElementById('longitude').value = mouseLocation.lon;
+    //     map.Overlays.add(new longdo.Marker(mouseLocation));
+    // });
 }   
 
 function doSearch() {
     map.Search.search(search.value);
     map.Event.bind('search', function(result) {
         All_result = result.data;
-        
+        console.log(All_result[0]);
         setLocationDetails(All_result[0]);
     });
     const resultsDiv = document.getElementById('results');
@@ -192,6 +198,7 @@ function doSearch() {
             
             if (data) {                 
                 setLocationDetails(data);
+                
                 // เพิ่มการซูมไปยังตำแหน่งที่เลือก
                 map.location({ lon: data.lon, lat: data.lat }, true);
                 map.zoom(8, true); // ปรับระดับการซูมตามต้องการ (1-20)
@@ -303,12 +310,12 @@ function deletedata(action) {
     provinceSelect.addEventListener('change', function() {
         // ดึงค่าจังหวัดที่เลือกปัจจุบัน
         var selectedprovince_value = this.value;
-        
+
 
         // กรองและเพิ่มภูมิภาคที่ตรงกับจังหวัด
         var foundRegion = false;
         province.forEach(function(prov) {
-            console.log(prov);
+            console.log('-->',prov);
             if(prov.province_name === selectedprovince_value && !foundRegion) {
                 document.getElementById('latitude').value = prov.latitude;
                 document.getElementById('longitude').value = prov.longitude;

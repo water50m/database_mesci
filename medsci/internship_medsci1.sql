@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 30, 2025 at 07:28 AM
+-- Generation Time: Apr 30, 2025 at 08:30 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `internship_medsci2`
+-- Database: `internship_medsci1`
 --
 
 -- --------------------------------------------------------
@@ -705,8 +705,21 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `role_`, `FullName`, `position`) VALUES
 (9, 'admin9', '0@0', '$2y$10$2hV0V8Fbr8w0AEqFUPIoUuwGO4pwrqObFcJWc20P/vElK17Nhexcy', 'admin', '', ''),
-(10, 'my@l', 'my@l', '$2y$10$dEf.V2XTXdE./DKyQ4mZ9OidFT2A/Uf3S1clJuxbE2HCpe1M2szxu', '', '???', ''),
-(11, 'testB', 'aaa@aaa', '$2y$10$FQ2Jvolh8L6bDAKAVpWqz.ysK/6O.a8AowVmSavVnd/cSfD7xFFHq', 'adminB', 'aaa', 'aaa');
+(12, 'admin1', '', '$2y$10$.JgWXLBQgQQ.RSK/WvCDN.yA2pQrlcub4n5Hk65DxxKrC9ArkLevu', 'adminB', '', ''),
+(13, 'admin2', '', '$2y$10$OkoFjtPJmoZHbwO/E7IAHue1PFV62pZ0cVBzJllye/oRxX9xb9cVC', 'adminB', '', ''),
+(14, 'admin3', '', '$2y$10$ARghkq3HXwlHLY/8DFouY.X95S9sSVTFNoK6Nh9CGH9MOml1clhlC', 'adminB', '', ''),
+(16, 'admin4', '', '$2y$10$uRddkFFxAUPlOeBJw4LP1..phWds6QJNU2PiRLF0W/Odlh49MAYma', 'adminB', '', ''),
+(17, 'admin5', '', '$2y$10$/PT1doNjUfVSuZvPK1uNPerUn9YgQ82iAnC8tNTYXpIA8/l6ONxFe', 'adminB', '', ''),
+(18, 'admin6', '', '$2y$10$WeRmm2FlItkn1fDovQVhze0RLOjaqHoMZFln2H6geZ9w17/K7Gmwy', 'adminB', '', ''),
+(19, 'admin7', '', '$2y$10$GbP0ByKn.Drgv19ze9i1IeP7kaMb/a8UN1ciOLnJLzsVSFUBApZ12', 'adminB', '', ''),
+(20, 'admin8', '', '$2y$10$168QN3hyc9uJKsjTiEOqsO/xHJMo6HUSoF/qtIOm7ZHIzoh0Pq/9q', 'adminB', '', ''),
+(21, 'admin10', '', '$2y$10$O/wwDxY1d/6B/9r0ksTMTego1U3RaDvkTULa3whwNUtW6Kyhu0Uze', 'adminB', '', ''),
+(22, 'admin11', '', '$2y$10$ceCcot/nVdGMVGkINNkqlO1EqxHGj7lXDjRvmpES6j3sdtcfD5pEm', 'adminB', '', ''),
+(23, 'admin12', '', '$2y$10$T2iCTIbAVE7drRFSLchVbO4MqTyYqp5iddbdWAeiiN/iBoU4vK2gm', 'adminB', '', ''),
+(24, 'admin13', '', '$2y$10$Ays3aR.Qb7WiGNIjTuiwW.j3JYFgSUB/HHDwnHoeDW9Nm348xSDPy', 'adminB', '', ''),
+(25, 'admin14', '', '$2y$10$swYsaLClDp0JL7eY0V.yfeSmb.Suk3yEfFMChV0cVCCpuWrdfMp.G', 'adminB', '', ''),
+(26, 'admin15', '', '$2y$10$MP0xbw6bQIhlwqj9avsxlOzXvSDSri0rtd5pXR5Ibq1G.s3a7qJqS', 'adminB', '', ''),
+(27, 'admin16', '', '$2y$10$gKzIF0f6C3vXEF.RgCM2xeDRvnfx/vi7w0KP10wUCJEMGc.3aCHq2', 'adminB', '', '');
 
 --
 -- Indexes for dumped tables
@@ -799,7 +812,7 @@ ALTER TABLE `recieve_year`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

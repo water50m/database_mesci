@@ -204,8 +204,8 @@ $establishment= $query->establishment();
             <div class="input-group">
                     
                 <?php
-                    echo '<input type="number" step="0.000001" value="'.$result['latitude'].'" class="form-control" aria-label="Latitude" placeholder="ละติจูด" name="_latitude" id="latitude">';
-                    echo '<input type="number" step="0.000001" value="'.$result['longtitude'].'" class="form-control" aria-label="Longitude" placeholder="ลองจิจูด" name="_longitude" id="longitude">';
+                    echo '<input type="number" step="0.0000001" value="'.$result['latitude'].'" class="form-control" aria-label="Latitude" placeholder="ละติจูด" name="_latitude" id="latitude">';
+                    echo '<input type="number" step="0.0000001" value="'.$result['longtitude'].'" class="form-control" aria-label="Longitude" placeholder="ลองจิจูด" name="_longitude" id="longitude">';
                 ?>
             </div>
         </div>

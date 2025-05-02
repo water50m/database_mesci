@@ -371,7 +371,15 @@ function updateSelecting(new_coordinate) {
         if (!regionGroups[item.rid]) {
             regionGroups[item.rid] = L.layerGroup().addTo(map);
         }
-
+        var myIcon = L.icon({
+                iconUrl: 'images/maker/maker1.png',
+                iconSize: [38, 95],
+                iconAnchor: [22, 94],
+                popupAnchor: [-3, -76],
+                shadowUrl: 'my-icon-shadow.png',
+                shadowSize: [68, 95],
+                shadowAnchor: [22, 94]
+            });
         var marker = L.marker([item.latitude, item.longtitude], {
             rotationAngle: 45  // กำหนดมุมหมุน 45 องศา
         })
@@ -394,7 +402,7 @@ function updateSelecting(new_coordinate) {
             });
 
         regionGroups[item.rid].addLayer(marker);
-        
+        var marker = L.marker([14.00, 110.00], {icon: myIcon}).addTo(map);
         // Add this marker to the previousLayers array
         previousLayers.push(marker);
     });
