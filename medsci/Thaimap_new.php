@@ -460,27 +460,27 @@ function updateSelecting(new_coordinate) {
         
   
         // เก็บ marker เพื่อเช็คซ้ำตำแหน่ง
-        if (!coordinateMap[key]) {
-            coordinateMap[key] = [];
-        }
-        coordinateMap[key].push({ marker, color });
+        // if (!coordinateMap[key]) {
+        //     coordinateMap[key] = [];
+        // }
+        // coordinateMap[key].push({ marker, color });
     });
 
 
     // ตรวจสอบจุดที่มี marker ซ้ำ และทำให้กระพริบ
-    Object.entries(coordinateMap).forEach(([key, items]) => {
-        if (items.length > 1) {
-            let index = 0;
-            setInterval(() => {
-                const { marker, color} = items[index];
-                // marker.setIcon(L.AwesomeMarkers.icon({markerColor:color}));
-                marker.setIcon(L.AwesomeMarkers.icon({ markerColor:color}));
-                addMyIcon.call(marker);
-                index = (index + 1) % items.length;
+    // Object.entries(coordinateMap).forEach(([key, items]) => {
+    //     if (items.length > 1) {
+    //         let index = 0;
+    //         setInterval(() => {
+    //             const { marker, color} = items[index];
+    //             // marker.setIcon(L.AwesomeMarkers.icon({markerColor:color}));
+    //             marker.setIcon(L.AwesomeMarkers.icon({ markerColor:color}));
+    //             addMyIcon.call(marker);
+    //             index = (index + 1) % items.length;
                 
-            }, 2000); 
-        }
-    });
+    //         }, 2000); 
+    //     }
+    // });
 
     // ไม่จำเป็นต้องเพิ่ม marker ลง map อีกเพราะถูก add ผ่าน regionGroups ไปแล้ว
 }
