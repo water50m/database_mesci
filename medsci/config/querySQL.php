@@ -204,10 +204,13 @@ class SQLquery {
                 r.id AS rid,
                 d.province,
                 d.latitude,
-                d.longtitude
+                d.longtitude,
+                f.id AS fid,
+                f.major_subject
             FROM detail d 
             LEFT JOIN region r ON d.region_id = r.id
             LEFT JOIN establishment e ON  d.establishment_id = e.id
+            JOIN facuty f ON d.facuty_id = f.id
             ";
             
             $stmt = $this->prepareAndCache($sql);
@@ -284,9 +287,11 @@ class SQLquery {
                         re.received AS received,
                         re.term AS term,
                         f.id AS mid,
-                        f.major_subject AS m_name
-                    FROM recieve_year re
-                    LEFT JOIN facuty f ON re.major_subject_id = f.id
+                        f.major_subject AS m_name,
+                        d.province
+                    FROM detail d
+                    LEFT JOIN recieve_year re ON re.location_id = d.id
+                    LEFT JOIN facuty f ON d.facuty_id = f.id
                     WHERE location_id = ?";
             $stmt = $this->prepareAndCache($sql);
             $stmt->execute([$id]);
@@ -313,7 +318,7 @@ class SQLquery {
             // $major_subject = "allMajor";
             if (isset($major_subject) && $major_subject != "" && $major_subject !="allMajor") {
 
-                $conditions[] = "re.major_subject_id = :major_subject";
+                $conditions[] = "f.id = :major_subject";
                 $params[':major_subject'] = $major_subject;
 
                 $joun_receive = "JOIN recieve_year re ON  re.location_id = d.id ";
@@ -350,9 +355,12 @@ class SQLquery {
                 r.id AS rid,
                 d.province,
                 d.latitude,
-                d.longtitude
+                d.longtitude,
+                f.id AS fid,
+                f.major_subject
             FROM detail d 
             JOIN region r ON d.region_id = r.id 
+            JOIN facuty f ON d.facuty_id = f.id
             $joinProcinveTable
             $joun_establishment
             $joun_receive

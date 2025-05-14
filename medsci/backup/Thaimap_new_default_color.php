@@ -24,7 +24,9 @@ header('Cache-Control: public, max-age=3600');
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
+    <!-- ใส่ใน <head> เพื่อใช้ Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/leaflet.css" />
     <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
@@ -118,9 +120,115 @@ header('Cache-Control: public, max-age=3600');
         button:hover {
             background-color: #FF7A60; /* Darker red for hover */
         }
+/* --------------------------------------------------------------------------------------------------------------------------icon on map-------------------- */
+        
+        .marker-container {
+            position: relative;
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+        }
 
+        .marker-icon {
+            font-size: 40px;
+            
+            position: absolute;
+            top: 0;
+            left: 0;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            
+            /* เพิ่มการไฮไลท์เล็กน้อยที่ขอบเพื่อให้เห็นขอบชัดเจนขึ้น */
+            
+        }
 
+        .marker-shadow {
+            position: absolute;
+            bottom: -6px;
+            top:90%;
+            left: 34%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 6px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            filter: blur(2px);
+            z-index: -1;
+        }
 
+        .marker-number {
+            position: absolute;
+            top: 40%;
+            left: 34%;
+            transform: translate(-50%, -60%);
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            pointer-events: none;
+        }
+                        
+            /* .marker-red {
+                background: linear-gradient(to top, darkred, red);
+            }
+            .marker-green {
+                background: linear-gradient(to top, darkgreen, lightgreen);
+            }
+            .marker-blue {
+                background: linear-gradient(to top, blue, aqua);
+            }
+            .marker-violet {
+                background: linear-gradient(to top, indigo, darkorchid);
+            } */
+
+        .marker-icon-green {
+            font-size: 38px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: radial-gradient(circle at center, rgb(86, 253, 120) 70%, rgb(26, 199, 59) 10%, rgb(0, 153, 51) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0px 0px 1px rgb(0, 128, 43));
+        }
+        .marker-icon-blue {
+            font-size: 38px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: radial-gradient(circle at center, rgb(86, 198, 253) 70%, rgb(26, 140, 199) 10%, rgb(0, 102, 153) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0px 0px 1px rgb(0, 77, 128));
+        }
+        .marker-icon-purple {
+            font-size: 38px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: radial-gradient(circle at center, rgb(198, 86, 253) 70%, rgb(140, 26, 199) 10%, rgb(102, 0, 153) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0px 0px 1px rgb(77, 0, 128));
+        }
+        .marker-icon-red{
+            font-size: 38px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: radial-gradient(circle at center,rgb(253, 86, 86) 10%,rgb(199, 26, 26) 70%, #990000 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0px 0px 1px #800000);
+        }
+
+        .gradient-marker {
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow:
+
+                
+        }
+        
             </style>
             <title>Internship Display on Map</title>
 </head>
@@ -131,10 +239,7 @@ header('Cache-Control: public, max-age=3600');
 <script src='js/inert.min.js'></script>
 <script src="js/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
-<link href="http://netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.css" rel="stylesheet">
-<link rel="stylesheet" href="dist/leaflet.awesome-markers.css">
 <script src="js/th-new.js"></script>
-<script src="dist/leaflet.awesome-markers.js"></script>
 <script>
 
 // ใช้ Fetch API โหลดไฟล์ GeoJSON
@@ -184,25 +289,7 @@ if (regions[item.region_category]) {
 }}) 
 
 
-// Create a custom control-----------------------------------------------------------------------------------------------------------------------------------
-const legendControl = L.control({ position: 'topleft' });
-
-legendControl.onAdd = function (map) {
-    const div = L.DomUtil.create('div', 'info legend');
-    div.innerHTML = `
-        <div style="background: white; padding: 8px; border-radius: 6px; box-shadow: 0 0 6px rgba(0,0,0,0.3); font-size: 14px;">
-            <b>คำอธิบายหมุด</b><br>
-            <div><span style="display:inline-block; width:15px; height:15px; background:orange; border-radius:50%; margin-right:5px;"></span> พยาธิวิทยากายวิภาค</div>
-            <div><span style="display:inline-block; width:15px; height:15px; background:deepskyblue; border-radius:50%; margin-right:5px;"></span>วิทยาศาสตร์การแพทย์</div>
-            <div><span style="display:inline-block; width:15px; height:15px; background:mediumseagreen; border-radius:50%; margin-right:5px;"></span>จุลชีววิทยา</div>
-            <div><span style="display:inline-block; width:15px; height:15px; background:violet; border-radius:50%; margin-right:5px;"></span>ชีวเคมีและชีววิทยา</div>
-        </div>
-    `;
-    return div;
-};
-
-legendControl.addTo(map);
-
+    // Create a custom control
     const regionControl = L.control({position: 'topright'});
 
     regionControl.onAdd = function(map) {
@@ -354,44 +441,22 @@ function watchWithRegion() {
 
 let previousLayers = []; 
 updateSelecting(coordinate);
-// ------------------------------------------------------------------------------------------------------------------// สร้าง marker
-
-function addMyIcon() {
-    const el = this.getElement();
-    if (el) {
-        const iconEl = el.querySelector('i');
-        if (iconEl) {
-            iconEl.outerHTML = `<img src="images/maker/Medscinu-01.png" 
-            style=" font-size: 10px;
-                    width:20px; 
-                    height:20px; 
-                    filter: brightness(0) 
-                    invert(1); 
-                    border: 2px solid black; 
-                    border-radius: 50%; 
-                    box-sizing: 
-                    border-box; 
-                    position: relative;
-                    transform: translate(0, 7px);
-            " />`;
-        }
-    }
-}
-
+// สร้าง marker
 function updateSelecting(new_coordinate) {
-    console.log('coordinate', new_coordinate);
-
-    // ลบ marker เดิมออกจาก map
+    console.log('coordinate',new_coordinate);
+    // Remove previous layers if any
     if (previousLayers.length > 0) {
+   
         previousLayers.forEach(layer => {
-            map.removeLayer(layer);
+
+            map.removeLayer(layer); // Remove the layer from the map
         });
-        previousLayers = [];
+        previousLayers = []; // Clear the array of layers
     }
 
     if (!new_coordinate || !Array.isArray(new_coordinate)) {
         console.error('Invalid new_coordinate data:', new_coordinate);
-        return;
+        return; // Exit function if data is invalid
     }
 
     const regionData = [
@@ -406,85 +471,83 @@ function updateSelecting(new_coordinate) {
         { id: 9, name: 'ภาคกลาง' }
     ];
 
-    const regionGroups = {};
-    const coordinateMap = {}; // key = 'lat,lng', value = array of {marker, color}
-
-    new_coordinate.forEach(item => {
-        
+    var regionGroups = {};
+    
+    
+    new_coordinate.forEach(function (item) {
+        console.log('ite : ',item.fid);
         const region = regionData.find(r => r.id === item.rid);
-        if (region) item.rid = region.name;
+        if (region) {
+            item.rid = region.name; // Replace region_id with the name
+        }
 
         if (!regionGroups[item.rid]) {
             regionGroups[item.rid] = L.layerGroup().addTo(map);
         }
 
-        // กำหนดสีตาม fid
         let color = 'red';
-        if (item.fid === 1) color = 'orange';
-        else if (item.fid === 2) color = 'blue';
-        else if (item.fid === 3) color = 'darkgreen';
-        else if (item.fid === 4) color = 'purple';
+        if (item.fid === 1) color = 'marker-icon-red';
+        else if (item.fid === 2) color = 'marker-icon-green';
+        else if (item.fid === 3) color = 'marker-icon-blue';
+        else if (item.fid === 4) color = 'marker-icon-purple';
 
         const key = `${item.latitude},${item.longtitude}`;
 
-        const popupHtml = `
-        ${item.location}<br>
-        จังหวัด ${item.province}<br>
-        สาขาวิชา ${item.major_subject}<br>
-        <a href="search.php?func=3&type=${item.location}" target="_blank">รายละเอียดเพิ่มเติม</a>
-    `;
+        const myDivIcon = L.divIcon({
+            className: "my-custom-pin", // สามารถใช้ตกแต่งเพิ่มเติมด้วย CSS
+            html: `
+                   <div class="marker-container">
+                        <i class="fa fa-map-marker ${color} "></i>
+                        <span class="marker-number">1</span>
+                        <div class="marker-shadow"></div>
+                    </div>`,
+            iconSize: [30, 40],
+            iconAnchor: [10, 40]
+        });
 
+        var showNumberDuplicate =  `
+                        <span class="marker-number">1</span>
+                    `,
+        var marker = L.marker([item.latitude, item.longtitude],{icon: myDivIcon },{
+            rotationAngle: 45  // กำหนดมุมหมุน 45 องศา
+        })
+            .bindPopup(item.location + '<br>จังหวัด ' + item.province + 
+                       '<br><a href="search.php?func=3&type=' + item.location + '" target="_blank">รายละเอียดเพิ่มเติม</a>',
+                       {
+                         offset: [-3, -16] // ขยับ popup ขึ้น 40px (ตามความสูงของ marker)
+            })
+            .on('mouseover', function () {
+                this.openPopup();
+            })
+            .on('mouseout', function () {
+                if (!this.isPopupOpen) {
+                    this.closePopup();
+                }
+            })
+            .on('click', function() {
+                this.isPopupOpen = true;
+                this.openPopup(); 
+            })
+            .on('popupclose', function () {
+                this.isPopupOpen = false;
+            });
 
-        const marker = L.marker([item.latitude, item.longtitude], {
-            icon: L.AwesomeMarkers.icon({icon: 'plus-square', prefix: 'fa', markerColor:color, iconColor: '#ffffff'})
-        }).bindPopup(popupHtml)
-        .on('mouseover', function () {
-            this.openPopup();
-        }).on('mouseout', function () {
-            if (!this.isPopupOpen) {
-                this.closePopup();
-            }
-        }).on('click', function () {
-            this.isPopupOpen = true;
-            this.openPopup();
-        }).on('popupclose', function () {
-            this.isPopupOpen = false;
-        }).on('add', addMyIcon);
-        
-        marker.setPopupContent(popupHtml);
-        // เก็บ marker ลง map เฉพาะในกลุ่มที่เกี่ยวข้อง
         regionGroups[item.rid].addLayer(marker);
-
-        // เก็บลงใน previousLayers
-        previousLayers.push(marker);
+        console.log(item.rid);
         
-  
+        // Add this marker to the previousLayers array
+        previousLayers.push(marker);
         // เก็บ marker เพื่อเช็คซ้ำตำแหน่ง
         if (!coordinateMap[key]) {
             coordinateMap[key] = [];
         }
         coordinateMap[key].push({ marker, color });
+        
     });
+    
 
-
-    // ตรวจสอบจุดที่มี marker ซ้ำ และทำให้กระพริบ
-    Object.entries(coordinateMap).forEach(([key, items]) => {
-        if (items.length > 1) {
-            let index = 0;
-            setInterval(() => {
-                const { marker, color} = items[index];
-                // marker.setIcon(L.AwesomeMarkers.icon({markerColor:color}));
-                marker.setIcon(L.AwesomeMarkers.icon({ markerColor:color}));
-                addMyIcon.call(marker);
-                index = (index + 1) % items.length;
-                
-            }, 2000); 
-        }
-    });
-
-    // ไม่จำเป็นต้องเพิ่ม marker ลง map อีกเพราะถูก add ผ่าน regionGroups ไปแล้ว
+    // L.control.layers(null, regionGroups).addTo(map);
 }
-
 
 
 // ------------------------------------------------------------------------------------------------------------------

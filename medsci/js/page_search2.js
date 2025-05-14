@@ -30,7 +30,7 @@
     
             // ใช้ forEach เพื่อวนลูปตามข้อมูลใน data
             data.value.forEach(single_data => {
-                
+                console.log(single_data);
                
                 
                    
@@ -39,9 +39,9 @@
                             ${rights}
                             <input type="text" id="inputGroupFile01" name="_id" value="${single_data.id}" style="display: none;">
                         </form>
-                        <div class="card" onclick='handleCardClick(${JSON.stringify(single_data)})'>
+                        <div class="card" style="background-color:rgb(255, 216, 168);" onclick='handleCardClick(${JSON.stringify(single_data)})'>
                             <div class="row g-0 align-items-center">
-                                <div class="col-md-4">
+                                <div class="col-md-6 ps-5">
                                     <div class="avatar">
                                         ${single_data.picture_path ? 
                                             `<img src="${single_data.picture_path}" class="img-fluid" alt="รูปภาพสถานที่ฝึกงาน">` : 
@@ -52,15 +52,17 @@
                                         <p class="title">${single_data.location}</p>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                
+                                <div class="col-md-3">
                                     <div class="detail">
-                                        <p></p>
-                                        <p></p>
+                                        <h5>ประเภทสถานประกอบการ : </h5>
+                                        <p>${single_data.establishment}</p>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="detail">
-                                        <p></p>
+                                     <h5>สาขาวิชา : </h5>
+                                        <p>${single_data.majorName}</p>
                                     </div>
                                 </div>
                             </div>
@@ -131,7 +133,7 @@ function handleSubmit(event) {
                 <div class="card" onclick='handleCardClick(${JSON.stringify(single_data)}) '>
                     
                     <div class="row g-0 align-items-center">
-                        <div class="col-md-4">
+                        <div class="col-md-6 ps-5">
                             <div class="avatar">
                                 ${single_data.picture_path ? 
                                     `<img src="${single_data.picture_path}" class="img-fluid" alt="รูปภาพสถานที่ฝึกงาน">` : 
@@ -142,15 +144,17 @@ function handleSubmit(event) {
                                 <p class="title">${single_data.location}</p>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="detail">
-                                <p></p>
-                                <p></p>
+                               
+                                <p>ประเภทสถานประกอบการ : </p>
+                                <p>${single_data.establishment}</p>
                             </div>
                         </div>
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="detail">
-                                <p></p>
+                             <p>สาขาวิชา : </p>
+                              <p>${single_data.majorName}</p>
                             </div>
                         </div>
                     </div>
@@ -186,23 +190,11 @@ function handleCardClick(data) {
         return response.json();
     })
     .then(data2 => {
-        
-        const major_subject = document.getElementById('modal-major-subject');
-        
-        // ลบ options เก่า
-        major_subject.innerHTML = '';
-        
+        console.log('data-2 : ',data2);
+        console.log('data-1 : ',data);
+     
         // ลบตารางเก่า
         deleteTable();
-
-        // สร้าง options และตารางครั้งแรก
-        data2.value.forEach(item => {
-            const major_option = document.createElement('option');
-            major_option.value = item.mid;
-            major_option.textContent = item.m_name;
-            major_subject.appendChild(major_option);
-        });
-
         // สร้างตารางเริ่มต้นสำหรับตัวเลือกแรก
         const headers = ['ปีการศึกษา'];
         const body = ['จำนวนรับ(คน)'];
@@ -216,36 +208,13 @@ function handleCardClick(data) {
             updateTable(headers, body);
         }
 
-        // event listener สำหรับการเปลี่ยนค่า
-        major_subject.addEventListener('change', function(e) {
-            
-            const selectedValue = e.target.value;
-            const selectedText = e.target.options[e.target.selectedIndex].textContent;
-            // document.getElementById('modal-major').textContent = `ด้าน: ${selectedText}`;
-            
-            // ลบตารางเก่าก่อนสร้างใหม่
-      
-            
-            const newHeaders = ['ปีการศึกษา'];
-            const newBody = ['จำนวนรับ(คน)'];
-           
-            data2.value.some(item => {
-                
-                if(item.mid == selectedValue){
-                    document.getElementById('modal_id').value = item.mid;
-                    document.getElementById('modal_location_id').value = item.location_id;
-                    newHeaders.push(item.term+'/'+item.year);
-                    newBody.push(item.received);
-                    updateTable(newHeaders, newBody);
-                    return true;
-                }
-                return false;
-            });
-        });
+
         
         // แสดงข้อมูลอื่นๆ
+        
+        document.getElementById('modal-province').innerText = 'จังหวัด: ' +  data2.value[0].province;
         document.getElementById('modal-name').innerText = data.location;
-        // document.getElementById('modal-major').innerText = 'ด้าน: ' + data.majorName;
+        document.getElementById('modal-major-subject').innerText = 'สาขาวิชา: ' + data.majorName;
         document.getElementById('modal-department').innerText = 'แผนก: '+ data.department;
         document.getElementById('modal-region').innerText = 'ภูมิภาค: ' +data.regionName;
         document.getElementById('modal-scope-work').innerText = 'ขอบข่ายงาน: ' +data.Scope_work;

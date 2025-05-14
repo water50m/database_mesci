@@ -38,12 +38,12 @@ header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
 
 <body id = myBody>
   <script>
-    const body = document.getElementById("myBody");
-    body.style.backgroundImage = "url('images/IMG_1216.JPG')";
-    body.style.backgroundSize = "cover"; // ทำให้ responsive
-    body.style.backgroundRepeat = "no-repeat";
-    body.style.backgroundPosition = "center";
-    body.style.fontFamily = "Arial, sans-serif";
+const body = document.getElementById("myBody");
+body.style.backgroundImage = "url('images/IMG_1216.JPG')";
+body.style.backgroundSize = "100% auto"; // ปรับตามความกว้างเท่านั้น
+body.style.backgroundRepeat = "no-repeat";
+body.style.backgroundPosition = "center top"; // หรือ "center top"
+body.style.fontFamily = "Arial, sans-serif";
   </script>
       
 <div class="search-bar">
@@ -81,10 +81,12 @@ header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
                         <style>
                            
                         </style>
+                         
                         <div class="search-bars">
+                        <input type="text" class="form-control" id="location" placeholder="ชื่อสถานที่..." aria-label="Text input">
                             <div class="search-bar">
                                     
-                            <input type="text" class="form-control" id="location" placeholder="ชื่อสถานที่..." aria-label="Text input">
+                            
                                     </div>
                                 <div class="search-bar">
                                     <select class="form-control" id="regionSelect">
@@ -140,11 +142,11 @@ header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
                         
                     </div>
                 </form>
-            </div>
+            </div> 
     </div>
 
               <!-- ได้รับคำสั่งจากหน้า นี้ -->                              
-    <div class=eachrow id="detail_internship">
+    <div class="eachrow w-100" id="detail_internship">
         <?php try { 
             if(isset($datafrommap) && $datafrommap) { 
                 foreach($datafrommap as $data) {  ?>
@@ -156,7 +158,7 @@ header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
                     </form>
                     <div class="card" onclick='handleCardClick(<?php echo json_encode($data); ?>)'>
                         <div class="row g-0 align-items-center">
-                            <div class="col-md-4">
+                        <div class="col-md-6 ps-5">
                                 <div class="avatar">
                                     <?php if(!empty($data['picture_path'])): ?>
                                         <img src="<?php echo $data['picture_path']; ?>" class="img-fluid" alt="รูปภาพสถานที่ฝึกงาน">
@@ -168,15 +170,17 @@ header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
                                     <p class="title"><?php echo $data['location'];  ?></p>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            
+                            <div class="col-md-3">
                                 <div class="detail">
-                                    <p>ด้าน: <?php echo $data['majorName']; ?></p>
-                                    <p>แผนก: <?php echo $data['department']; ?></p>
+                                    <h5>ประเภทสถานประกอบการ:</h5>
+                                    <p> <?php echo $data['establishment']; ?></p>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="detail">
-                                    <p><?php echo $data['regionName']; ?></p>
+                                    <h5>สาขาวิชา:</h5>
+                                    <p><?php echo $data['majorName']; ?></p>
                                 </div>
                             </div>
                         </div>
@@ -196,16 +200,13 @@ header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
       <div class="modal-dialog  modal-xl modal-dialog-scrollable">
         <div class="modal-content">
           <div class="modal-header">
-            <h4 class="modal-title" id="exampleModalLabel">Details</h4>
+            <h4 class="modal-title" id="modal-name">Details</h4>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
           <div class="modal-body">
             <div class=text-modal-card>
-            <h5 id="modal-name">ชื่อ:</h5>
-            
-            <!-- <p id="modal-major">ด้าน:</p> -->
-            
-            <select class="form-select" aria-label="Default select example"  id = "modal-major-subject"></select>
+            <p id="modal-major-subject">สาขาวิชา:</p>
+            <p id="modal-province">จังหวัด:</p>
             <p id="modal-scope-work"></p>
              <p id="modal-department">แผนก:</p>
              <p id="modal-region">ภูมิภาค:</p>
@@ -280,7 +281,7 @@ document.getElementById('exampleModal').addEventListener('hidden.bs.modal', func
         //     });
         // });
             </script>
-        </div>
+        </div>  
 
 
     </body>

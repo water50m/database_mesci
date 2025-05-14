@@ -14,11 +14,16 @@ if (isset($_GET['func']) && $_GET['func'] == 1) {
                                 d.receive_term2, 
                                 r.name AS regionName,
                                 d.picture_path,
-                                re.major_subject_id AS mid
+                                d.facuty_id AS mid,
+                                f.id AS fid,
+                                f.major_subject AS majorName,
+                                e.establishment
                   FROM recieve_year re
                   LEFT JOIN detail d ON d.id = re.location_id
                   LEFT JOIN region r ON d.region_id = r.id
-                  WHERE re.major_subject_id = :value";
+                  JOIN facuty f ON d.facuty_id = f.id
+                  LEFT JOIN establishment e ON d.establishment_id = e.id
+                  WHERE d.facuty_id = :value";
 
 // เตรียม statement
 $stmt = $conn->prepare($details_query);
@@ -59,13 +64,15 @@ if (isset($_GET['func']) && $_GET['func'] == 2 ) {
                                 d.Scope_work, 
                                 d.receive_term1, 
                                 d.receive_term2, 
-                                -- re.major_subject_id as major_subject,
-                                -- f.major_subject AS majorName, 
+                                f.id AS fid,
+                                f.major_subject AS majorName, 
                                 r.name AS regionName,
-                                d.picture_path
+                                d.picture_path,
+                                e.establishment
                       FROM detail d 
-                    --   LEFT JOIN facuty f ON f.id = d.facuty_id 
+                      LEFT JOIN facuty f ON f.id = d.facuty_id 
                       LEFT JOIN region r ON d.region_id = r.id
+                      LEFT JOIN establishment e ON d.establishment_id = e.id
                       
                       $join_receive";
 
@@ -102,10 +109,10 @@ if (isset($_GET['func']) && $_GET['func'] == 2 ) {
     }
     if ($branch && $branch != 'noselect' && $branch != 'allp') {
         if (!$check_where){
-            $mainWordQuery .= " WHERE re.major_subject_id LIKE :branch GROUP BY d.id";
+            $mainWordQuery .= " WHERE d.facuty_id  LIKE :branch GROUP BY d.id";
             $check_where = TRUE;
         }else{
-            $mainWordQuery .= " AND re.major_subject_id LIKE :branch GROUP BY d.id";
+            $mainWordQuery .= " AND d.facuty_id LIKE :branch GROUP BY d.id";
         }
         
         $params[':branch'] = $branch;
@@ -131,7 +138,7 @@ if (isset($_GET['func']) && $_GET['func'] == 2 ) {
     // echo $mainWordQuery;
     // print_r($details);
     echo json_encode([
-        
+         
         'value' => $details
     ]);
 }
@@ -141,10 +148,11 @@ function func3($locationName){
     $db = new connectdb();
     $conn = $db->connectPDO();
     $details_query = "SELECT d.id,d.location, d.department, d.Scope_work, d.receive_term1, d.receive_term2, 
-                 f.major_subject AS majorName ,r.name AS regionName,d.picture_path
+                             f.major_subject AS majorName ,r.name AS regionName,d.picture_path,e.establishment
                   FROM detail d 
                   LEFT JOIN facuty f ON f.id = d.facuty_id 
                   LEFT JOIN region r ON d.region_id = r.id
+                  LEFT JOIN establishment e ON d.establishment_id = e.id
                   WHERE d.location LIKE :locationName";
 
     // เตรียม statement

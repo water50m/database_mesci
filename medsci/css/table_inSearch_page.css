@@ -13,7 +13,7 @@ body {
     position: relative;
     /* background: rgba(71, 147, 227, 1); - ถูกแทนที่ด้วย background-image */
     background-image: url('images/IMG_1216.JPG');
-    background-size: cover; /* Responsive พอดีกับหน้าจอ */
+    background-size: cover; 
     background-repeat: no-repeat;
     background-position: center;
     font-family: Arial, sans-serif;
@@ -218,7 +218,7 @@ h2{
 #modal-major-subject {
     width: 100%;
     padding: 10px;
-    margin: 15px 0;
+    
     border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 16px;
@@ -232,6 +232,7 @@ h2{
 }
 
 /* ข้อความรายละเอียด */
+#modal-province,
 #modal-department, 
 #modal-region, 
 #modal-scope-work {

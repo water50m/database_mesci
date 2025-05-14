@@ -83,14 +83,14 @@ width: 100%;
 
 .eachrow{
     width: 100%;
-    max-width: 1200px;
+    max-width: 1600px;
 
     
 }
 /* สไตล์สำหรับการ์ด */
 .card {
     width: 100%;
-    max-width: 1200px;
+    max-width: 1600px;
     padding: 10px;
     margin-bottom: 40px;
     background-color: #f9f9f9;
