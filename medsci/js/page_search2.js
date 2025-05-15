@@ -39,7 +39,7 @@
                             ${rights}
                             <input type="text" id="inputGroupFile01" name="_id" value="${single_data.id}" style="display: none;">
                         </form>
-                        <div class="card" style="background-color:rgb(255, 216, 168);" onclick='handleCardClick(${JSON.stringify(single_data)})'>
+                        <div class="card" style="" onclick='handleCardClick(${JSON.stringify(single_data)})'>
                             <div class="row g-0 align-items-center">
                                 <div class="col-md-6 ps-5">
                                     <div class="avatar">
