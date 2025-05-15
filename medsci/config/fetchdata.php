@@ -68,7 +68,8 @@ if (isset($_GET['func']) && $_GET['func'] == 2 ) {
                                 f.major_subject AS majorName, 
                                 r.name AS regionName,
                                 d.picture_path,
-                                e.establishment
+                                e.establishment,
+                                d.facuty_id AS mid
                       FROM detail d 
                       LEFT JOIN facuty f ON f.id = d.facuty_id 
                       LEFT JOIN region r ON d.region_id = r.id
@@ -201,7 +202,7 @@ if (isset($_GET['func']) && $_GET['func']==5){
     else if($region=='west'){$region=3;}
     // $province = "allProvince";
     // $region ="allRegion";
-    // $major_subject =  "allMajor";
+    // $major_subject =  "allMajor"; 
     // $establishment = " ";
 
     // $newQuery->selectToMap($region,$provinceWithoutSuffix,$establishment,$major_subject);

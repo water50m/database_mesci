@@ -166,7 +166,7 @@ body.style.fontFamily = "Arial, sans-serif";
                                         <img src="images/Medscinu-01.png" class="img-fluid" alt="ไม่มีรูปภาพ">
                                     <?php endif; ?>
                                 </div>
-                                <div class="info">
+                                <div class="info"> 
                                     <p class="title"><?php echo $data['location'];  ?></p>
                                 </div>
                             </div>
@@ -219,14 +219,14 @@ body.style.fontFamily = "Arial, sans-serif";
           </div>
           <div class="modal-footer">
             
-                <form action="modify_data.php" method="POST">
+                <form id="modalForm" action="modify_data.php"  method="POST" target="_blank">
                 <input type="text" id="modal_id" name="_id" style="display: none;">
                 <input type="text" id="modal_location_id" name="location_id" style="display: none;">
                 <?php if(isset($_SESSION['DoYouKnowImSoBig'])): ?>
                 <button type="submit" class="btn btn-warning">
                     <i class="fas fa-edit"></i> แก้ไข
                 </button>
-                <?php endif; ?>
+                <?php endif;   ?>
               </form>
             
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -259,27 +259,7 @@ document.getElementById('exampleModal').addEventListener('hidden.bs.modal', func
 
         var facuty = <?php echo $jsonDataFacuty; ?>;
         
-        // var facultySelect = document.getElementById('facuty_Select');
-        // var majorSelect = document.getElementById('branchSelect');
 
-        // facultySelect.addEventListener('change', function() {
-        //     // เคลียร์ตัวเลือกเก่า
-        //     majorSelect.innerHTML = '<option value="noselect" selected>เลือกสาขาวิชา(ทั้งหมด)</option>';
-            
-        //     // ดึงค่าคณะที่เลือกปัจจุบัน
-        //     var selectedFaculty_value = this.value;
-            
-            
-        //     // กรองและเพิ่มสาขาที่ตรงกับคณะ
-        //     facuty.forEach(function(faculty) {
-        //         if(faculty.facuty === selectedFaculty_value && faculty.f_major !== '') {
-        //             const option = document.createElement('option');
-        //             option.value = faculty.f_major;
-        //             option.text = faculty.f_major;
-        //             majorSelect.appendChild(option);
-        //         }
-        //     });
-        // });
             </script>
         </div>  
 

@@ -282,7 +282,7 @@ class SQLquery {
         try {
             $sql = "SELECT 
                         re.id AS reid,
-                        re.location_id AS location_id,
+                        d.id AS location_id,
                         re.year As year,
                         re.received AS received,
                         re.term AS term,
@@ -292,7 +292,7 @@ class SQLquery {
                     FROM detail d
                     LEFT JOIN recieve_year re ON re.location_id = d.id
                     LEFT JOIN facuty f ON d.facuty_id = f.id
-                    WHERE location_id = ?";
+                    WHERE d.id = ?";
             $stmt = $this->prepareAndCache($sql);
             $stmt->execute([$id]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);

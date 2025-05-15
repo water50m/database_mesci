@@ -190,6 +190,7 @@ function handleCardClick(data) {
         return response.json();
     })
     .then(data2 => {
+        
         console.log('data-2 : ',data2);
         console.log('data-1 : ',data);
      
@@ -215,9 +216,9 @@ function handleCardClick(data) {
         document.getElementById('modal-province').innerText = 'จังหวัด: ' +  data2.value[0].province;
         document.getElementById('modal-name').innerText = data.location;
         document.getElementById('modal-major-subject').innerText = 'สาขาวิชา: ' + data.majorName;
-        document.getElementById('modal-department').innerText = 'แผนก: '+ data.department;
-        document.getElementById('modal-region').innerText = 'ภูมิภาค: ' +data.regionName;
-        document.getElementById('modal-scope-work').innerText = 'ขอบข่ายงาน: ' +data.Scope_work;
+        document.getElementById('modal-department').innerText = 'แผนก: '+ (data?.department ?? '');
+        document.getElementById('modal-region').innerText = 'ภูมิภาค: ' + (data.regionName ?? '');
+        document.getElementById('modal-scope-work').innerText = 'ขอบข่ายงาน: ' + (data.Scope_work ?? '');
         
 
         // แสดง modal
@@ -273,3 +274,24 @@ function updateTable(headers, body) {
     // แสดงตาราง
     document.getElementById('table-recieve').appendChild(table);
 }
+
+
+function edit_data() {
+    const data = {
+      _id: document.getElementById('modal_id').value,
+      location_id: document.getElementById('modal_location_id').value
+    };
+
+    fetch('your_target.php', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams(data)
+    })
+    .then(response => response.text())
+    .then(result => {
+      console.log('ผลลัพธ์:', result);
+    })
+    .catch(error => console.error('เกิดข้อผิดพลาด:', error));
+  }

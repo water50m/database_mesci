@@ -17,8 +17,7 @@
         
         $faculty_major = $_POST['_facultymajor']; // เพิ่มตัวแปรที่ขาดหาย
         $establishment = $_POST['_establishment']; // เพิ่มตัวแปรที่ขาดหาย
-        echo $establishment;
-        echo "---";
+
         
         $region = $_POST['_region'];
         $address = $_POST['_address'];

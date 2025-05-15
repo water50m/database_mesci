@@ -10,16 +10,16 @@ require 'config/querySQL.php';
 $query = new SQLquery();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $type = $_POST['location_id'];
-    $major_id = $_POST['_id'];
-    
+    $type = isset($_POST['location_id']) ? $_POST['location_id'] : null;
+    $major_id = isset($_POST['_id']) ? $_POST['_id'] : null;
 }
 
 $gettype =  isset($_GET['type']) ? $_GET['type'] : '';
 if($gettype){
+ 
     $type = $gettype;
     $major_id = $_GET['type2'];
-    
+
 }
 
 if(!$type){
@@ -261,9 +261,9 @@ $establishment= $query->establishment();
                 ?>
             </select>
             <input type="number" style="display: none;" class="form-control" placeholder="ภาคการศึกษาที่..." aria-label="Text input" id="_term1_before" name="_term1_before" >
-            <input type="number" style="display: none;" class="form-control" placeholder="ปีการศึกษา..." aria-label="Text input" id="_year1_before" name="_year1_before" >           
+            <input type="number" style="display: none;" class="form-control" placeholder="xxxx" aria-label="Text input" id="_year1_before" name="_year1_before" >           
             <input type="number" class="form-control" placeholder="ภาคการศึกษาที่..." aria-label="Text input" id="_term1" name="_term1" readonly ondblclick="this.removeAttribute('readonly'); this.style.cursor = 'text';" onblur="this.setAttribute('readonly', true); this.style.cursor = 'pointer'; " style="cursor: pointer;">
-            <input type="number" class="form-control" placeholder="ปีการศึกษา..." aria-label="Text input" id="_year1Input" name="_year1" readonly ondblclick="this.removeAttribute('readonly'); this.style.cursor = 'text';" onblur="this.setAttribute('readonly', true); this.style.cursor = 'pointer'; " style="cursor: pointer;">
+            <input type="number" class="form-control" placeholder="ปีการศึกษา...XXXX" aria-label="Text input" id="_year1Input" name="_year1" readonly ondblclick="this.removeAttribute('readonly'); this.style.cursor = 'text';" onblur="this.setAttribute('readonly', true); this.style.cursor = 'pointer'; " style="cursor: pointer;">
             <input 
             type="number" 
             class="form-control" 
@@ -281,7 +281,7 @@ $establishment= $query->establishment();
         <div class="input-group mb-3">
             <input type="text" class="form-control"  value="เพิ่มปีการศึกษาใหม่" ria-label="Text input"  readonly>
             <input type="number" class="form-control" placeholder="ภาคการศึกษาที่..." aria-label="Text input" name="_term2">
-            <input type="number" class="form-control" placeholder="ปีการศึกษา..." aria-label="Text input" name="_year2">
+            <input type="number" class="form-control" placeholder="ปีการศึกษา...XXXX" aria-label="Text input" name="_year2">
             <input type="number" class="form-control" placeholder="รับ...คน" aria-label="Text input" name="_count2">
         </div>
         
