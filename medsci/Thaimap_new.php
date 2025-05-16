@@ -195,7 +195,7 @@ legendControl.onAdd = function (map) {
             <div><span style="display:inline-block; width:15px; height:15px; background:orange; border-radius:50%; margin-right:5px;"></span> พยาธิวิทยากายวิภาค</div>
             <div><span style="display:inline-block; width:15px; height:15px; background:deepskyblue; border-radius:50%; margin-right:5px;"></span>วิทยาศาสตร์การแพทย์</div>
             <div><span style="display:inline-block; width:15px; height:15px; background:mediumseagreen; border-radius:50%; margin-right:5px;"></span>จุลชีววิทยา</div>
-            <div><span style="display:inline-block; width:15px; height:15px; background:violet; border-radius:50%; margin-right:5px;"></span>ชีวเคมีและชีววิทยา</div>
+            <div><span style="display:inline-block; width:15px; height:15px; background:violet; border-radius:50%; margin-right:5px;"></span>ชีวเคมีและชีววิทยาโมเลกุล</div>
         </div>
     `;
     return div;
