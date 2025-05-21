@@ -59,18 +59,20 @@ body.style.fontFamily = "Arial, sans-serif";
         </div>
         <div class="rectangle-container">
             <?php $i = 1; 
-            $colorMap = [
-                    'พยาธิวิทยากายวิภาค' => 'mediumseagreen',
-                    'วิทยาศาสตร์การแพทย์' => 'deepskyblue',
-                    'จุลชีววิทยา' => 'orange',
-                    'ชีวเคมีและชีววิทยาโมเลกุล' => 'violet',
-                ];
+          $colorMap = [
+    'พยาธิวิทยากายวิภาค' => '#7ecf9d',   // medium pastel green
+    'วิทยาศาสตร์การแพทย์' => '#6ec5e9',   // medium pastel blue
+    'จุลชีววิทยา' => '#ffba66',            // medium pastel orange
+    'ชีวเคมีและชีววิทยาโมเลกุล' => '#c59ce6', // medium pastel violet
+];
+
+
              foreach ($fucn_query as $facuty) {
                 if ($i > 6){
                     break;
                 }
                     $bgColor = isset($colorMap[$facuty['f_major']]) ? $colorMap[$facuty['f_major']] : 'lightgray';
-                    echo "<a onclick='fetchData(this)' class='rectangle'  style='background-color: $bgColor;  filter: brightness(1.3);'
+                    echo "<a onclick='fetchData(this)' class='rectangle'  style='background-color: $bgColor;  '
                     value='".htmlspecialchars($facuty['fid'])."'><h3>".htmlspecialchars($facuty['f_major']).
                     "</h3><p>รับแล้ว ".htmlspecialchars($facuty['total'])." ตำแหน่ง</p></a> "    ;
                     $i++;

@@ -167,7 +167,7 @@ width: 100%;
 
 .title-welcome {
     
-    /* backdrop-filter: blur(2px); */
+    backdrop-filter: blur(2px);
     height: 200px;
     width: 400px;
     
@@ -182,16 +182,21 @@ width: 100%;
 }
 
 .title-welcome h1 {
-    font-size: 36px; /* ขนาดตัวอักษรใหญ่ขึ้น */
-    color: #d8c486;
-    
+  font-size: 36px;
+  color: #d8c486;
+  text-shadow: 
+    -1px -1px 0 #92977c,  
+     1px -1px 0 #515540,
+    -1px  1px 0 #515540,
+     1px  1px 0 #515540;
 }
 
 .title-welcome p {
-    font-size: 22px; /* ขนาดตัวอักษรใหญ่ขึ้น */
-    color: #78621f;
-        /* ระยะเยื้องขวาเล็กน้อย */
+  font-size: 22px;
+  color: #78621f;
+
 }
+
 
 .rectangle-container {
     
@@ -212,10 +217,12 @@ width: 100%;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
     font-size: 16px;
-    color: #555;
+    color: #272727;
     text-decoration: none;
     position: relative;
     transition: transform 0.2s, box-shadow 0.2s;
+    
+    
 }
 
 .rectangle p{
@@ -223,21 +230,24 @@ width: 100%;
     margin-bottom: 0;
     position: absolute;
     bottom: 0;
-    width: 100%; /* เพื่อให้ข้อความครอบคลุมเต็มความกว้างของ .rectangle */    
+    width: 100%; /* เพื่อให้ข้อความครอบคลุมเต็มความกว้างของ .rectangle */  
+    color: #272727;  
 }
 .rectangle h1{
     display: flex;
     padding:10px;
+    color: #272727;
     
     
 }
 
 /* การเปลี่ยนสีและเพิ่มเอฟเฟ็กต์เมื่อ hover */
 .rectangle:hover {
-    background-color: rgba(243, 204, 63, 1);
+    background-color: rgb(0, 0, 0);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
     transform: scale(1.05);
-    color: #7e6007;
+    color: #000000;
+    filter: brightness(1.1);
 }
 
 .eachrow  p{

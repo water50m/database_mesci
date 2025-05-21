@@ -223,10 +223,10 @@ body {
 
     /* การเปลี่ยนสีและเพิ่มเอฟเฟ็กต์เมื่อ hover */
     .rectangle:hover {
-        background-color: rgba(243, 204, 63, 1);
+        background-color: rgb(0, 0, 0);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         transform: scale(1.05);
-        color: #7e6007;
+        color: #000000;
     }
 
     .eachrow  p{

@@ -192,7 +192,7 @@ legendControl.onAdd = function (map) {
     div.innerHTML = `
         <div style="background: white; padding: 8px; border-radius: 6px; box-shadow: 0 0 6px rgba(0,0,0,0.3); font-size: 14px;">
             <b>คำอธิบายหมุด</b><br>
-            <div><span style="display:inline-block; width:15px; height:15px; background:mediumseagreen; border-radius:50%; margin-right:5px;"></span> พยาธิวิทยากายวิภาค</div>
+            <div><span type="checkBox" style="display:inline-block; width:15px; height:15px; background:mediumseagreen; border-radius:50%; margin-right:5px;"></span> พยาธิวิทยากายวิภาค</div>
             <div><span style="display:inline-block; width:15px; height:15px; background:deepskyblue; border-radius:50%; margin-right:5px;"></span>วิทยาศาสตร์การแพทย์</div>
             <div><span style="display:inline-block; width:15px; height:15px; background:orange; border-radius:50%; margin-right:5px;"></span>จุลชีววิทยา</div>
             <div><span style="display:inline-block; width:15px; height:15px; background:violet; border-radius:50%; margin-right:5px;"></span>ชีวเคมีและชีววิทยาโมเลกุล</div>
@@ -313,10 +313,6 @@ function watchWithRegion() {
     const major_subject = document.getElementById('major_subject').value;
     const establishment = document.getElementById('establishment').value;
     
-    // console.log(province);
-    // console.log(regionSelect);
-    // console.log(major_subject);
-    // console.log(establishment);
 
     fetch(`config/fetchdata.php?func=5`, {
         method: 'POST',
