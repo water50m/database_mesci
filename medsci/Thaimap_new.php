@@ -192,9 +192,9 @@ legendControl.onAdd = function (map) {
     div.innerHTML = `
         <div style="background: white; padding: 8px; border-radius: 6px; box-shadow: 0 0 6px rgba(0,0,0,0.3); font-size: 14px;">
             <b>คำอธิบายหมุด</b><br>
-            <div><span style="display:inline-block; width:15px; height:15px; background:orange; border-radius:50%; margin-right:5px;"></span> พยาธิวิทยากายวิภาค</div>
+            <div><span style="display:inline-block; width:15px; height:15px; background:mediumseagreen; border-radius:50%; margin-right:5px;"></span> พยาธิวิทยากายวิภาค</div>
             <div><span style="display:inline-block; width:15px; height:15px; background:deepskyblue; border-radius:50%; margin-right:5px;"></span>วิทยาศาสตร์การแพทย์</div>
-            <div><span style="display:inline-block; width:15px; height:15px; background:mediumseagreen; border-radius:50%; margin-right:5px;"></span>จุลชีววิทยา</div>
+            <div><span style="display:inline-block; width:15px; height:15px; background:orange; border-radius:50%; margin-right:5px;"></span>จุลชีววิทยา</div>
             <div><span style="display:inline-block; width:15px; height:15px; background:violet; border-radius:50%; margin-right:5px;"></span>ชีวเคมีและชีววิทยาโมเลกุล</div>
         </div>
     `;
@@ -420,9 +420,9 @@ function updateSelecting(new_coordinate) {
 
         // กำหนดสีตาม fid
         let color = 'red';
-        if (item.fid === 1) color = 'orange';
+        if (item.fid === 1) color = 'darkgreen';
         else if (item.fid === 2) color = 'blue';
-        else if (item.fid === 3) color = 'darkgreen';
+        else if (item.fid === 3) color = 'orange';
         else if (item.fid === 4) color = 'purple';
 
         const key = `${item.latitude},${item.longtitude}`;

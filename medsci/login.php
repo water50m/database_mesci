@@ -64,7 +64,7 @@ session_start();
                             
                     
                     ?>
-				<button class="ghost" id="signUp">Sign Up</button>
+				
 				<?php }?>
 			</div>
 		</div>

@@ -58,14 +58,21 @@ body.style.fontFamily = "Arial, sans-serif";
             <p>มหาวิทยาลัยนเรศวร</p>
         </div>
         <div class="rectangle-container">
-            <?php $i = 1; ?>
-            <?php foreach ($fucn_query as $facuty) {
+            <?php $i = 1; 
+            $colorMap = [
+                    'พยาธิวิทยากายวิภาค' => 'mediumseagreen',
+                    'วิทยาศาสตร์การแพทย์' => 'deepskyblue',
+                    'จุลชีววิทยา' => 'orange',
+                    'ชีวเคมีและชีววิทยาโมเลกุล' => 'violet',
+                ];
+             foreach ($fucn_query as $facuty) {
                 if ($i > 6){
                     break;
                 }
-                    echo "<a onclick='fetchData(this)' class='rectangle' 
+                    $bgColor = isset($colorMap[$facuty['f_major']]) ? $colorMap[$facuty['f_major']] : 'lightgray';
+                    echo "<a onclick='fetchData(this)' class='rectangle'  style='background-color: $bgColor;  filter: brightness(1.3);'
                     value='".htmlspecialchars($facuty['fid'])."'><h3>".htmlspecialchars($facuty['f_major']).
-                    "</h3><p>รับแล้ว ".htmlspecialchars($facuty['total'])." ตำแหน่ง</p></a>";
+                    "</h3><p>รับแล้ว ".htmlspecialchars($facuty['total'])." ตำแหน่ง</p></a> "    ;
                     $i++;
                     }
                 ?>                
