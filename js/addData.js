@@ -223,3 +223,26 @@ popupOverlay.addEventListener('click', function() {
     popupOverlay.style.display = 'none';
 });
 
+
+// ควบคุมการ submit
+document.getElementById("myForm").addEventListener("submit", function(e){
+    console.log('show form');
+    e.preventDefault(); // ป้องกัน reload
+
+    const formData = new FormData(this);
+
+    fetch("config/addDatadb.php", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.status === "error"){
+            console.log(data.data);
+            alert(data.message);  // แสดง error
+        } else {
+            alert("บันทึกสำเร็จ");
+            window.location.href = "success.php"; 
+        }
+    });
+});

@@ -50,6 +50,8 @@ if (isset($_GET['func']) && $_GET['func'] == 2 ) {
     $region = $_POST['region'] ?? null;
     $establishment = $_POST['department'] ?? null;
     $branch = $_POST['branch'] ?? null;
+    $semester = $_POST['semester'] ?? null;
+    $year = $_POST['year'] ?? null;
     $check_where = False;
 
 
@@ -58,6 +60,7 @@ if (isset($_GET['func']) && $_GET['func'] == 2 ) {
         $join_receive = "JOIN recieve_year re ON d.id = re.location_id";
         
     }
+
     // เริ่มสร้าง query หลัก
     $mainWordQuery = "SELECT    d.id,d.location, 
                                 d.department, 
@@ -74,9 +77,10 @@ if (isset($_GET['func']) && $_GET['func'] == 2 ) {
                       LEFT JOIN facuty f ON f.id = d.facuty_id 
                       LEFT JOIN region r ON d.region_id = r.id
                       LEFT JOIN establishment e ON d.establishment_id = e.id
-                      
+                      LEFT JOIN recieve_year ry ON d.id = ry.location_id
                       $join_receive";
 
+    
     // เพิ่มเงื่อนไขตามตัวแปรที่ส่งเข้ามา
     $params = array();
     if ($location) {
@@ -118,18 +122,42 @@ if (isset($_GET['func']) && $_GET['func'] == 2 ) {
         
         $params[':branch'] = $branch;
     }
+    if ($semester && $semester != 'all'){
+        if (!$check_where){
+            $mainWordQuery .= " WHERE ry.term  = :semester";
+            $check_where = TRUE;
+        }else{
+            $mainWordQuery .= " AND ry.term  = :semester";
+        }
+        
+        $params[':semester'] = $semester;
+    }
+        if ($year && $year != 'all'){
+        if (!$check_where){
+            $mainWordQuery .= " WHERE ry.year  = :year";
+            $check_where = TRUE;
+        }else{
+            $mainWordQuery .= " AND ry.year  = :year";
+        }
+        
+        $params[':year'] = $year;
+    }
     
     // เชื่อมต่อฐานข้อมูล
     $db = new connectdb();
     $conn = $db->connectPDO();
 
     // เตรียม statement
+    // var_dump($mainWordQuery);
+    // exit;
+    $mainWordQuery .= "GROUP BY d.id";
     $stmt = $conn->prepare($mainWordQuery);
 
     // bind ตัวแปรเพิ่มเติม
     foreach ($params as $key => $val) {
         $stmt->bindValue($key, $val);
     }
+
 
     // Execute คำสั่ง SQL
     $stmt->execute();
@@ -190,6 +218,8 @@ if (isset($_GET['func']) && $_GET['func']==5){
     $region = $_POST['region'] ?? null;
     $major_subject = $_POST['major_subject'] ?? null;
     $establishment = $_POST['establishment'] ?? null;
+    $semester = $_POST['semester'] ?? null;
+    $year = $_POST['year'] ?? null;
      // Debug: ดูข้อมูลทั้งหมดที่ได้รับ
 
     $newQuery = new SQLquery();
@@ -210,7 +240,7 @@ if (isset($_GET['func']) && $_GET['func']==5){
     
     echo json_encode([
 
-        'value' => $newQuery->selectToMap($region,$province,$establishment,$major_subject)
+        'value' => $newQuery->selectToMap($region,$province,$establishment,$major_subject,$semester,$year)
     ]);
 
 

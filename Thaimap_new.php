@@ -13,7 +13,9 @@ $establishment = $query->establishment();
 $establishmentData = json_encode($establishment);
 $Facuty = $query->selectMajor();
 $FacutyData = json_encode($Facuty);
-// print_r($data);
+$Year = $query->selectYearFromReceiveTable();
+$DistinctYearData = json_encode($Year);
+
 header('Cache-Control: public, max-age=3600'); 
 
 ?>
@@ -152,6 +154,7 @@ var coordinate = <?php echo $jsonData; ?>;
 var establishmentData = <?php echo $establishmentData; ?>;
 var region_province = <?php echo $jsonData_RP; ?>;
 var FacutyData = <?php echo $FacutyData; ?>;
+var DistinceYearData = <?php echo $DistinctYearData?>;
 
 const regions = {
     allRegion:[],
@@ -207,7 +210,24 @@ legendControl.addTo(map);
 
     regionControl.onAdd = function(map) {
         const div = L.DomUtil.create('div', 'leaflet-control-custom');
+        L.DomEvent.disableClickPropagation(div);
+        L.DomEvent.disableScrollPropagation(div);
         div.innerHTML = `
+        <label for="Semester">เลือก ภาคการศึกษา / ปีการศึกาษา:</label>
+         <div class="row">
+                    <div class="col">
+                        <select id="Semester" onchange="watchWithRegion();">
+                            <option value="all">ภาคการศึกษา(ทั้งหมด)</option>  
+                            <option value="1">1</option>  
+                            <option value="2">2</option>  
+                        </select>
+                    </div>
+                    <div class="col">
+                            <select id="Year" onchange="watchWithRegion();">
+                                <option value="all">ปีการศึกษา(ทั้งหมด)</option>  
+                            </select>
+                    </div>
+            </div>
             <label for="region">เลือกภูมิภาค:</label>
             <select id="regionSelect" onchange="updateProvinces();watchWithRegion();">
                 <option value="allRegion">เลือกภูมิภาค(ทั้งหมด)</option>
@@ -234,6 +254,12 @@ legendControl.addTo(map);
             <select id="major_subject" onchange="watchWithRegion();">
                 <option value="allMajor">เลือกสาขาวิชา(ทั้งหมด)</option>  
             </select>
+            <br/>
+            
+           
+           
+
+
         `;
         
         return div;
@@ -281,10 +307,11 @@ legendControl.addTo(map);
     // // Initialize major subjects based on the initial faculty selection
     // 
     }
+    
+    // update major select-------------------------------------------------------------------------------
     updateMajorSubjects();
-    // update major from selecting facuty-------------------------------------------------------------------------------
     function updateMajorSubjects() {
-        const establishment_selected = document.getElementById('establishment').value;
+
         const major_subject = document.getElementById('major_subject');
         major_subject.innerHTML = '<option value="">สาขาวิชา(ทั้งหมด)</option>'; // Clear previous options
 
@@ -305,13 +332,32 @@ legendControl.addTo(map);
     }
     updateEstablishment()
     let new_coordinate = '';
+    //update year from select -------------------------------------------------------------------------------
+    
+    function updateYear(){
+        
+        const year_selected = document.getElementById('Year');
+        year_selected.innerHTML = '<option value="">ปีการศึกษา(ทั้งหมด)</option>';
+        DistinceYearData.forEach(item=>{
+            console.log(item.year);
+            const year_option = document.createElement('option');
+            year_option.value = item.year;
+            year_option.textContent = item.year;
+            year_selected.appendChild(year_option);
+        });
 
+    }
+    updateYear();
 // เตรียมข้อมูลสำหรับสร้าง marker หลังจากเลือกจังหวัดหรือภาคแล้ว-----------------------------------------------------------------
 function watchWithRegion() {
     const province = document.getElementById('province').value;
     const regionSelect = document.getElementById('regionSelect').value;
     const major_subject = document.getElementById('major_subject').value;
     const establishment = document.getElementById('establishment').value;
+    const semester = document.getElementById('Semester').value;
+    const year = document.getElementById('Year').value;
+
+
     
 
     fetch(`config/fetchdata.php?func=5`, {
@@ -319,7 +365,7 @@ function watchWithRegion() {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-       body: `province=${encodeURIComponent(province)}&region=${encodeURIComponent(regionSelect)}&establishment=${encodeURIComponent(establishment)}&major_subject=${encodeURIComponent(major_subject)}`
+       body: `province=${encodeURIComponent(province)}&region=${encodeURIComponent(regionSelect)}&establishment=${encodeURIComponent(establishment)}&major_subject=${encodeURIComponent(major_subject)}&semester=${encodeURIComponent(semester)}&year=${encodeURIComponent(year)}`
     })
     .then(response => {
     
@@ -454,31 +500,10 @@ function updateSelecting(new_coordinate) {
         // เก็บลงใน previousLayers
         previousLayers.push(marker);
         
-  
-        // เก็บ marker เพื่อเช็คซ้ำตำแหน่ง
-        // if (!coordinateMap[key]) {
-        //     coordinateMap[key] = [];
-        // }
-        // coordinateMap[key].push({ marker, color });
     });
 
 
-    // ตรวจสอบจุดที่มี marker ซ้ำ และทำให้กระพริบ
-    // Object.entries(coordinateMap).forEach(([key, items]) => {
-    //     if (items.length > 1) {
-    //         let index = 0;
-    //         setInterval(() => {
-    //             const { marker, color} = items[index];
-    //             // marker.setIcon(L.AwesomeMarkers.icon({markerColor:color}));
-    //             marker.setIcon(L.AwesomeMarkers.icon({ markerColor:color}));
-    //             addMyIcon.call(marker);
-    //             index = (index + 1) % items.length;
-                
-    //         }, 2000); 
-    //     }
-    // });
 
-    // ไม่จำเป็นต้องเพิ่ม marker ลง map อีกเพราะถูก add ผ่าน regionGroups ไปแล้ว
 }
 
 

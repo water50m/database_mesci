@@ -7,6 +7,10 @@
     
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         // รับค่าจากฟอร์ม
+        
+        echo "<pre>=== RAW POSTT DATA ===\n";
+        var_dump($_POST);
+        echo "</pre>";
         $locationName = $_POST['_loName'];
         $location = $_POST['_location'];
         
@@ -24,19 +28,17 @@
         $sendTo = $_POST['_sendto'];
         $coordinator = $_POST['_coordinator'];
         $scope = $_POST['_scope'];
-
-        $year1 = $_POST['_year1'];//ปีที่แก้ไข
+        
+        //การแก้ไข จำนวนการรับในแต่ละปี
+        $reid = $_POST['reid'];
         $count1 = $_POST['_receive'];
-        $term1 = $_POST['_term1'];
-
-        $_term1_before = $_POST['_term1_before'];//ค่าก่อนแก้ไข
-        $_year1_before = $_POST['_year1_before'];
+        $_receive_before = $_POST['receive_before'];
 
         $year2 = $_POST['_year2'];//ปีที่เพิ่มใหม่
         $count2 = $_POST['_count2'];
         $term2 = $_POST['_term2'];
         $message = "อัพเดตข้อมูลสำเร็จ";
-        
+
         // ตรวจสอบว่ามีการส่งค่าจาก modal `_addfacultymajor` หรือไม่
         if (isset($_POST['_addfacultyname1']) && !empty($_POST['_addfacultyname1'])) {
             $addfacultyname1 = $_POST['_addfacultyname1'];
@@ -90,22 +92,27 @@
 
                     // อัพเดทตารางหลัก
                     $stmt1 = $conn->prepare("UPDATE detail 
-                    SET region_id = ?, department = ?, establishment_id = ?,
+                    SET region_id = ?, facuty_id = ?, department = ?, establishment_id = ?,
                         address = ?, sendto = ?, 
                         coordinator = ?, Scope_work = ?, province = ?, latitude = ?, longtitude = ?
                     WHERE id = ?");
-                    
-                    $stmt1->bind_param("isisssssdds", $region, $department, $establishment,$address, $sendTo,
+                    if (!$stmt1) {
+                        echo "❌ SQL Prepare Error: (" . $conn->errno . ") " . $conn->error;
+                        echo "\n\nSQL = " . $stmt1;
+                        exit;
+                    }
+                    $stmt1->bind_param("ississsssdds", $region, $faculty_id, $department, $establishment,$address, $sendTo,
                     $coordinator, $scope, $province, $latitude, $longitude, $location);
                     
                     // ตรวจสอบค่า $year1 และ $count1 ก่อนทำการอัปเดต
-                    if ($year1 != 'dontChange' && $year1) {
+          
+                    if ($reid != 'dontChange' && $reid && $count1 != $_receive_before && isset($count1) && $count1 !== null) {
                         $stmt2 = $conn->prepare("UPDATE recieve_year 
-                                                SET received = ?, year = ?, term = ?
-                                                WHERE year = ? AND term = ? AND location_id = ?");
-                        $stmt2->bind_param("iiissi", $count1, $year1, $term1, $_year1_before, $_term1_before, $location);
+                                                SET received = ?
+                                                WHERE id = ?");
+                        $stmt2->bind_param("ii", $count1, $reid);
                     }
-
+                    
                     // ตรวจสอบ $year2 ก่อนทำการเพิ่มข้อมูลใหม่
                     if ($year2) {
                         $chechYear2 = $conn->prepare("SELECT * FROM recieve_year WHERE year = ? AND term = ? AND location_id = ?");
@@ -114,10 +121,12 @@
                         $result = $chechYear2->get_result();
                         
                         if ($result->num_rows > 0) {
-                            $stmt4 = $conn->prepare("UPDATE recieve_year 
-                                                    SET received = ? ,major_subject_id = ?
-                                                    WHERE year = ? AND term = ? AND location_id = ?");
-                            $stmt4->bind_param("iiiii", $count2,$faculty_major, $year2, $term2, $location);
+                            header("Location: ../alert.php?func=2&type=".$location. "type2=". $faculty_major. "&message=" . urlencode($term2."/".$year2." มีข้อมูลอยู่แล้ว"));
+                            exit;
+                            // $stmt4 = $conn->prepare("UPDATE recieve_year 
+                            //                         SET received = ? ,major_subject_id = ?
+                            //                         WHERE year = ? AND term = ? AND location_id = ?");
+                            // $stmt4->bind_param("iiiii", $count2,$faculty_major, $year2, $term2, $location);
                         } else {
                             $stmt3 = $conn->prepare("INSERT INTO recieve_year(location_id, year, received, term) 
                                                         VALUES (?, ?, ?, ?)");
@@ -191,8 +200,9 @@
         if (isset($stmt1)) {
         
             if (!$stmt1->execute()) {
-                
-                throw new Exception("Error executing detail update: " . $stmt1->error);
+                  echo "Prepare failed: (" . $conn->errno . ") " . $conn->error;
+                    exit;
+                // throw new Exception("Error executing detail update: " . $stmt1->error);
             }
   
         }
@@ -201,6 +211,7 @@
             if (!$stmt2->execute()) {
                 throw new Exception("Error executing year1 update: " . $stmt2->error);
             }
+            
         }
 
         if (isset($stmt3)) {
@@ -219,7 +230,7 @@
         if (isset($stmt1)) $stmt1->close();
         if (isset($stmt2)) $stmt2->close();
         if (isset($stmt3)) $stmt3->close();
-        if (isset($stmt4)) $stmt4->close();
+        // if (isset($stmt4)) $stmt4->close();
 
         // redirect หลังจาก execute สำเร็จ
         header("Location: ../alert.php?func=2&type=".$location."&type2=".$faculty_major."&message=".urlencode($message));

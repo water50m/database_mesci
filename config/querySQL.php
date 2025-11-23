@@ -192,6 +192,20 @@ class SQLquery {
         }
     }
 
+    public function selectYearFromReceiveTable(){
+        try {
+            $sql = "SELECT DISTINCT year 
+                    FROM recieve_year
+                    ORDER BY year DESC;";
+            $stmt = $this->prepareAndCache($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch(PDOException $e) {
+            error_log("Error in selectYearFromReceiveTable: " . $e->getMessage());
+            throw $e;
+        }
+    }
+
     public function selectCoordinate(){
         try {
             $sql = "SELECT 
@@ -212,6 +226,7 @@ class SQLquery {
             LEFT JOIN establishment e ON  d.establishment_id = e.id
             JOIN facuty f ON d.facuty_id = f.id
             ";
+
             
             $stmt = $this->prepareAndCache($sql);
             $stmt->execute();
@@ -292,7 +307,8 @@ class SQLquery {
                     FROM detail d
                     LEFT JOIN recieve_year re ON re.location_id = d.id
                     LEFT JOIN facuty f ON d.facuty_id = f.id
-                    WHERE d.id = ?";
+                    WHERE d.id = ?
+                    ORDER BY re.term ASC";
             $stmt = $this->prepareAndCache($sql);
             $stmt->execute([$id]);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -303,14 +319,14 @@ class SQLquery {
     }
 
     
-    public function selectToMap($region, $province, $establishment, $major_subject){
+    public function selectToMap($region, $province, $establishment, $major_subject, $semester, $year){
         try {
            
             $params = array();
             $conditions = array();
-            $joun_receive = " ";
+            $join_receive_table = " ";
             $grou_major = " ";
-            $joun_establishment = " ";
+            $join_establishment = " ";
             $joinProcinveTable = " ";
             // $region = "allRegion";
             // $province = "allProvince";
@@ -321,7 +337,7 @@ class SQLquery {
                 $conditions[] = "f.id = :major_subject";
                 $params[':major_subject'] = $major_subject;
 
-                $joun_receive = "JOIN recieve_year re ON  re.location_id = d.id ";
+                $join_receive_table = "JOIN recieve_year re ON  re.location_id = d.id ";
                 $grou_major  = "GROUP BY d.id";
                 
             }
@@ -338,10 +354,22 @@ class SQLquery {
             }
 
             if (isset($establishment) && $establishment != " " && $establishment != "allEstablishment" ) {
-                $joun_establishment = "JOIN establishment e ON  d.establishment_id = e.id";
+                $join_establishment = "JOIN establishment e ON  d.establishment_id = e.id";
                 $conditions[] = "d.establishment_id = :establishment";
                 $params[':establishment'] = $establishment;
 
+            }
+
+            if (isset($semester) && $semester != "all"){
+                $join_receive_table = "LEFT JOIN recieve_year ry ON d.id = ry.location_id";
+                $conditions[] = "ry.term = :term";
+                $params[':term'] = $semester;
+            }
+
+            if (isset($year) && $year != "all"){
+                $join_receive_table = "LEFT JOIN recieve_year ry ON d.id = ry.location_id";
+                $conditions[] = "ry.year = :year";
+                $params[':year'] = $year;
             }
 
             
@@ -354,7 +382,7 @@ class SQLquery {
                 r.name AS regionName,
                 r.id AS rid,
                 d.province,
-                d.latitude,
+                d.latitude, 
                 d.longtitude,
                 f.id AS fid,
                 f.major_subject
@@ -362,11 +390,10 @@ class SQLquery {
             JOIN region r ON d.region_id = r.id 
             JOIN facuty f ON d.facuty_id = f.id
             $joinProcinveTable
-            $joun_establishment
-            $joun_receive
+            $join_establishment
+            $join_receive_table
             $whereClause
             $grou_major ";
-
             $stmt = $this->prepareAndCache($sql);
             $stmt->execute($params);
             return $stmt->fetchAll(PDO::FETCH_ASSOC);

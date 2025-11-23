@@ -5,6 +5,8 @@ $db = new connectdb();
 $conn = $db->connectMySQL();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        
+
 
     // ตรวจสอบว่ามีการส่งค่าจาก modal `_addfacultymajor` หรือไม่
     if (isset($_POST['_addfacultyname1']) && !empty($_POST['_addfacultyname1'])) {
@@ -61,7 +63,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $stmt_addfac2->close();
 
     } else {
-        
+
+
         $province = $_POST['_province'];
         $latitude = $_POST['_latitude'];
         $longitude = $_POST['_longitude'];
@@ -89,17 +92,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $sendTo = $_POST['_sendto'];
         $coordinator = $_POST['_coordinator'];
         $scope = $_POST['_scope'];
-        $year1 = $_POST['_year1'];
+        $year1 = !empty($_POST['_year1']) ? $_POST['_year1'] : 0;
         $count1 = $_POST['_count1'];
-        $year2 = $_POST['_year2'];
+        $year2 = !empty($_POST['_year2']) ? $_POST['_year2'] : 0;
         $count2 = $_POST['_count2'];
         if(isset($_GET['newlocation'])){
             $location = $_GET['newlocation'];
         }
-       
+        
+
+        $message = "บันทึกข้อมูลแล้ว";
         // เช็ค id จาก คณะและสาขา
         // เตรียมคำสั่ง SQL สำหรับการตรวจสอบค่า
-        $stmt_checkid = $conn->prepare("SELECT major_subject,id FROM facuty WHERE id = ? ");
+
+        $stmt_checkid = $conn->prepare("SELECT major_subject,id FROM facuty WHERE id = ? "); //select id where id... ????
         $stmt_checkid->bind_param("s", $faculty_major);
 
         // รันคำสั่ง
@@ -108,32 +114,61 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         // ตรวจสอบผลลัพธ์
         $faculty_id = 0;
+        $faculty_name = '';
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
             $faculty_id = $row['id'];
+            $faculty_name = $row['major_subject']
+
             // echo "พบคณะที่ตรงกับ ID: " . $faculty_id;
         } else {
             // header("Location: ../alert.php?func=1&message=" . urlencode("ไม่มีสาขาวิชา"."$faculty_major "." ในคณะ"."$establishment "));
-            header("Location: ../alert.php?func=1&message=" . urlencode("ไม่มีสาขาวิชาที่เลือก"));
-            exit;
+            echo json_encode([
+                "status" => "error",
+                "message" => "ไม่มีสาขาวิชาที่เลือก",
+                "data" => $_POST
+            ], JSON_UNESCAPED_UNICODE);
+            exit;   
+            
+        }
+
+        // ตรวจสอบสถานที่ซ้ำ
+        $stmt_check_duplicate_location = $conn->prepare("SELECT id FROM detail WHERE location = ? AND facuty_id = ?");
+        $stmt_check_duplicate_location->bind_param("si",$location,$faculty_id);
+        $stmt_check_duplicate_location->execute();
+        $result_duplicate_location_facuty_major = $stmt_check_duplicate_location->get_result(); 
+        if ($result_duplicate_location_facuty_major){
+
+            echo json_encode([
+                "status" => "error",
+                "message" => "สถานที่: ".$location . "\n" . "สาขาวิชา " . $faculty_name . " มีข้อมูลอยู่แล้ว",
+                "data" => $_POST
+            ], JSON_UNESCAPED_UNICODE);
+            exit;   
         }
         $stmt_checkid->close();
 
         // เพิ่มข้อมูลในตาราง detail
-        $stmt1 = $conn->prepare("INSERT INTO detail (region_id ,establishment_id ,location , department, address, sendto, coordinator, Scope_work, province, latitude, longtitude) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt1 = $conn->prepare("INSERT INTO detail (region_id ,facuty_id ,establishment_id ,location , department, address, sendto, coordinator, Scope_work, province, latitude, longtitude) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
         if ($stmt1 === false) {
-            die("Prepare failed: " . htmlspecialchars($conn->error));
-        }
+            echo json_encode([
+                "status" => "error",
+                "message" => "เกิดข้อผิดพลาดกับการเชื่อมต่อฐานข้อมูล",
+            ], JSON_UNESCAPED_UNICODE);
+            exit;           }
 
         // กำหนดค่าเริ่มต้นสำหรับ picture_path
         $picture_path = null;
         
         // ย้าย bind_param มาก่อนการ execute
-        $stmt1->bind_param("sssssssssss", $region,$establishment, $location, $department, $address, $sendTo, $coordinator, $scope, $province, $latitude, $longitude);
+        $stmt1->bind_param("sissssssssss", $region,$faculty_id,$establishment, $location, $department, $address, $sendTo, $coordinator, $scope, $province, $latitude, $longitude);
 
         if (!$stmt1->execute()) {
-            echo "Error query";
-            // echo "Error executing query: " . htmlspecialchars($stmt1->error);
+            echo json_encode([
+                "status" => "error",
+                "message" => htmlspecialchars($stmt1->error),
+            ], JSON_UNESCAPED_UNICODE);
+            exit;   
         }
 
 
@@ -158,41 +193,62 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     $update_stmt->bind_param("si", $targetFilePath, $max_id);
                     
                     if ($update_stmt->execute() === TRUE) {
-                        echo "The file has been uploaded and data saved.";
+                        $message =  "The file has been uploaded and data saved.";
                     } else {
-                        echo "Database error: "; //. $conn->error;
+                        $message = "Database error: "; //. $conn->error;
                     }
                 } else {
-                    echo "Sorry, there was an error uploading your file.";
+                    $message =  "Sorry, there was an error uploading your file.";
                 }
             } else {
-                echo "Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed.";
+                $message = "Invalid file type. Only JPG, JPEG, PNG, and GIF are allowed.";
             }
         }
         
 
         // เพิ่มข้อมูลในตาราง recieve_year
+
         $stmt2 = $conn->prepare("INSERT INTO recieve_year (location_id, year, received, term,major_subject_id) VALUES (?, ?, ?, ?, ?)");
+ 
         if ($stmt2 === false) {
-            die("Prepare failed: " . htmlspecialchars($conn->error));
+            // die("Prepare failed: " . htmlspecialchars($conn->error));
+            echo json_encode([
+                "status" => "error",
+                "message" => "เกิดข้อผิดพลาดกับการเชื่อมต่อฐานข้อมูล",
+            ], JSON_UNESCAPED_UNICODE);
+            exit;   
         }   
 
         // เพิ่มข้อมูลภาคการศึกษาที่ 1
-        $term1 = 1;
-        $stmt2->bind_param("isiii", $max_id, $year1, $count1, $term1,$faculty_major );
-        if (!$stmt2->execute()) {
-            echo "Error executing query: " . htmlspecialchars($stmt2->error);
+        if ($year1 != 0 && $count1 != 0){
+            $term1 = 1;
+            $stmt2->bind_param("isiii", $max_id, $year1, $count1, $term1,$faculty_major );
+            if (!$stmt2->execute()) {
+            echo json_encode([
+                "status" => "error",
+                "message" => htmlspecialchars($stmt1->error),
+            ], JSON_UNESCAPED_UNICODE);
+            exit;               }
         }
-
         // เพิ่มข้อมูลภาคการศึกษาที่ 2
-        $term2 = 2;
-        $stmt2->bind_param("isiii", $max_id, $year2, $count2, $term2,$faculty_major );
-        if (!$stmt2->execute()) {
-            echo "Error executing query: " . htmlspecialchars($stmt2->error);
-        } else {
-            header("Location: ../alert.php?func=1&message=" . urlencode("บันทึกข้อมูลสำเร็จ"));
-            exit;
+        if ($year2 != 0 && $count2 != 0){
+            $term2 = 2;
+            $stmt2->bind_param("isiii", $max_id, $year2, $count2, $term2,$faculty_major );
+            if (!$stmt2->execute()) {
+            echo json_encode([
+                "status" => "error",
+                "message" => htmlspecialchars($stmt2->error),
+            ], JSON_UNESCAPED_UNICODE);
+            exit;   
+               
+            } 
         }
+        echo json_encode([
+            "status" => "success",
+            "message" => "บันทึกข้อมูลสำเร็จ",
+        ], JSON_UNESCAPED_UNICODE);
+        exit;   
+        
         // ปิดคำสั่ง
         $stmt1->close();
         $stmt2->close();

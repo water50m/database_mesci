@@ -142,7 +142,6 @@ function setLocationDetails(data) {
     document.getElementById('longitude').value = data.lon;
     document.getElementById('floatingTextarea2').value = data.address;
     
-    console.log(data.lat)
 
     // Parse address for province
     if (data.address) {
@@ -183,7 +182,6 @@ function doSearch() {
     map.Search.search(search.value);
     map.Event.bind('search', function(result) {
         All_result = result.data;
-        console.log(All_result[0]);
         setLocationDetails(All_result[0]);
     });
     const resultsDiv = document.getElementById('results');
@@ -270,34 +268,25 @@ function deletedata(action) {
     
     // หากผู้ใช้กด "OK" ให้ดำเนินการส่งฟอร์ม
     if (isConfirmed) {
+        
+
         const form = document.getElementById('myForm');
+
+        // สร้าง hidden input ใหม่
+        const hidden = document.createElement("input");
+        hidden.type = "hidden";
+        hidden.name = "func";
+        hidden.id = "func";
+        hidden.value = 1;
+
+        // ใส่เข้าไปในฟอร์ม
+        form.appendChild(hidden);
+
         form.action = action;
         form.submit();
     }
 }
- function handleSelectChange(selectElement) {
-    const selectedValue = selectElement.value; // ค่าที่เลือก 
-    
-    
-    if (Array.isArray(numReceivePerYear)) {
-        numReceivePerYear.forEach(item=>{
-        if (selectedValue == item['id']){
-            document.getElementById('countInput').value = item['received'];
-            document.getElementById('_term1').value = item['term'];
-            document.getElementById('_year1Input').value = item['year'];
-            document.getElementById('_term1_before').value = item['term'];
-            document.getElementById('_year1_before').value = item['year'];
-        }if(selectedValue == 'dontChange'){
-            document.getElementById('countInput').value = 'รับ...คน';
-            document.getElementById('_term1').value = 'ภาคการศึกษาที่...';
-            document.getElementById('_year1Input').value = 'ปีการศึกษา...';
-        }
-    })
-    } else {
-        console.error("numReceivePerYear ไม่ใช่อาร์เรย์", numReceivePerYear);
-    }
-    // console.log(numReceivePerYear)    
-};
+
 
 
     
@@ -315,7 +304,6 @@ function deletedata(action) {
         // กรองและเพิ่มภูมิภาคที่ตรงกับจังหวัด
         var foundRegion = false;
         province.forEach(function(prov) {
-            console.log('-->',prov);
             if(prov.province_name === selectedprovince_value && !foundRegion) {
                 document.getElementById('latitude').value = prov.latitude;
                 document.getElementById('longitude').value = prov.longitude;
@@ -325,3 +313,83 @@ function deletedata(action) {
             }
         });
     });
+
+
+function deleteSemester(apiUrl) {
+    
+    const yearSelect = document.getElementById('_year1');
+    const location_id = document.getElementById('location_id').value;
+
+    const selectedValue = yearSelect.value;
+    if (selectedValue === 'dontChange') {
+        alert('กรุณาเลือกภาคการศึกษาที่ต้องการลบ');
+        return;
+    }
+
+    if (!confirm("คุณต้องการลบข้อมูลเทอมนี้จริงหรือไม่?")) {
+        return;
+    }
+    
+    // ส่งข้อมูลไปให้ delete.php
+    fetch(apiUrl + '?func=2', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'data=' + encodeURIComponent(selectedValue)+'&func=' + encodeURIComponent(2)+'&location_id=' + encodeURIComponent(location_id)
+    })
+    .then(response => response.text())
+    .then(result => {
+        const data = JSON.parse(result);
+
+        alert(data.message);
+        if(data.status == "success"){
+                location.reload();
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert("เกิดข้อผิดพลาดระหว่างลบข้อมูล");
+    });
+}
+
+function handleSelectChange(selectElem) {
+    const selectedOption = selectElem.options[selectElem.selectedIndex];
+
+    // ถ้าเลือก "dontChange" ก็ไม่ต้องทำอะไร
+    if (selectedOption.value === "dontChange") {
+        document.getElementById("_receive").value = "";
+        return;
+    }
+
+    // ดึงค่ารับ (received)
+    const received = selectedOption.getAttribute("data-received");
+
+    // อัปเดต input
+    document.getElementById("_receive").value = received;
+
+    // เตรียมข้อมูลสำหรับการ save
+     const selectedValue = selectElem.value; // ค่าที่เลือก 
+    
+    if (Array.isArray(numReceivePerYear)) {
+        numReceivePerYear.forEach(item=>{
+        if (selectedValue == item['reid']){
+            document.getElementById('receive_before').value = item['received'];
+            document.getElementById('_term1_edit').value = item['term'];
+            document.getElementById('_year1_edit').value = item['year'];
+        }if(selectedValue == 'dontChange'){
+            document.getElementById('countInput').value = 'รับ...คน';
+        }
+    })
+    } else {
+        console.error("numReceivePerYear ไม่ใช่อาร์เรย์", numReceivePerYear);
+    }
+}
+
+
+// ป้องกัน enter กับปุ่มลบ
+document.getElementById('_receive').addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault(); // ป้องกัน form submit
+    }
+});
