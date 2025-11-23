@@ -51,10 +51,14 @@ $establishment= $query->establishment();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
     <link rel="stylesheet" href="css/addData.css">
     <link rel="stylesheet" href="css/autoMap.css">
     <link rel="stylesheet" href="css/modify_data.css">
     <script src="https://api.longdo.com/map/?key=bff66f6baa485edba09ca806b597ed30"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
     <title>แก้ไขข้อมูล</title>
 
 </head>
@@ -83,7 +87,7 @@ $establishment= $query->establishment();
                 <div class="input-group">
                     <?php 
                     echo '<textarea id="locationInput" type="text"  value='.$result['location'].' class="form-control" aria-label="Text input" name="_loName">'.$result['location'].'</textarea>';
-                    echo '<input type="text" style="display: none;" value='.$result['id'].' class="form-control" aria-label="Text input" name="_location">';
+                    echo '<input id="location_id" type="text" style="display: none;" value='.$result['id'].' class="form-control" aria-label="Text input" name="_location">';
                     ?>
                 </div>
             </div>
@@ -183,8 +187,9 @@ $establishment= $query->establishment();
                 <select class="form-select" aria-label="Default select example" name="_province" id="provinceSelect">
                     <option value="noselect" selected>เลือกจังหวัด</option>
                     <?php 
-                            echo '<option selected value='.$result['province'].' style="background-color: yellow;">'.$result['province'].'</option>';
-                    ?>
+                        echo '<option selected value="' . htmlspecialchars($result['province']) . '" style="background-color: yellow;">'
+                            . htmlspecialchars($result['province']) .
+                            '</option>';                    ?>
                     <?php foreach ($func_province as $province): ?>
                         <?php if($province['province_name'] == $result['province']){ }else{?>
                         <option value="<?php echo $province['province_name']; ?>">
@@ -204,8 +209,8 @@ $establishment= $query->establishment();
             <div class="input-group">
                     
                 <?php
-                    echo '<input type="number" step="0.0000001" value="'.$result['latitude'].'" class="form-control" aria-label="Latitude" placeholder="ละติจูด" name="_latitude" id="latitude">';
-                    echo '<input type="number" step="0.0000001" value="'.$result['longtitude'].'" class="form-control" aria-label="Longitude" placeholder="ลองจิจูด" name="_longitude" id="longitude">';
+                    echo '<input type="number" step="0.00000001" value="'.$result['latitude'].'" class="form-control" aria-label="Latitude" placeholder="ละติจูด" name="_latitude" id="latitude">';
+                    echo '<input type="number" step="0.00000001" value="'.$result['longtitude'].'" class="form-control" aria-label="Longitude" placeholder="ลองจิจูด" name="_longitude" id="longitude">';
                 ?>
             </div>
         </div>
@@ -248,35 +253,51 @@ $establishment= $query->establishment();
             </div>
         </div>
         
-        <h5  class="form-label">จำนวนที่รับ</h5>
+        <h5 class="form-label">
+                    จำนวนที่รับ
+                     <i class="bi bi-info-circle fs-6 ms-1"
+                     tabindex="0"
+                    data-bs-toggle="popover"
+                    data-bs-trigger="focus"
+                    data-bs-content="หากต้องการเปลี่ยนข้อมูลภาคการศึกษาให้เลือกที่ตัวเลือก <ภาคการศึกษา> จากนั้นจึงทำการเปลี่ยนข้อมูลจำนวนคนที่ฝึกงาน จากนั้นคลิก 'บันทึกการแก้ไข' เพื่อบันทึกข้อมูลที่เปลี่ยนแปลง แต่ถ้าเลือกตัวเลือก <ภาคการศึกษา> ไว้อยู่ระบบจะไม่ทำการเปลี่ยนแปลงข้อมูลของจำนวนคน แม้จะทำการเปลี่ยนแปลงไปในช่อง input แล้วก็ตาม"
+                    role="button"
+                    style="cursor: pointer;"></i>
+                    
+                </h5>
         <div class="input-group mb-3">
 
-            <input type="text" class="form-control"  value="แก้ไขจากปีที่มีในฐานข้อมูลแล้ว" ria-label="Text input" name="_count1" readonly>
-            
-            <select class="form-select" aria-label="Default select example" id='_year1'  onchange="handleSelectChange(this)">
-                <option value='dontChange' selected>ภาคการศึกษา</option>
-                <?php foreach ($num_receive_per_year as $_year){
-                    echo '<option value="'.htmlspecialchars($_year['id']).'">'.htmlspecialchars($_year['term']).'/'.htmlspecialchars($_year['year']).'</option>';
-                    }                    
-                ?>
-            </select>
-            <input type="number" style="display: none;" class="form-control" placeholder="ภาคการศึกษาที่..." aria-label="Text input" id="_term1_before" name="_term1_before" >
-            <input type="number" style="display: none;" class="form-control" placeholder="xxxx" aria-label="Text input" id="_year1_before" name="_year1_before" >           
-            <input type="number" class="form-control" placeholder="ภาคการศึกษาที่..." aria-label="Text input" id="_term1" name="_term1" readonly ondblclick="this.removeAttribute('readonly'); this.style.cursor = 'text';" onblur="this.setAttribute('readonly', true); this.style.cursor = 'pointer'; " style="cursor: pointer;">
-            <input type="number" class="form-control" placeholder="ปีการศึกษา...XXXX" aria-label="Text input" id="_year1Input" name="_year1" readonly ondblclick="this.removeAttribute('readonly'); this.style.cursor = 'text';" onblur="this.setAttribute('readonly', true); this.style.cursor = 'pointer'; " style="cursor: pointer;">
-            <input 
-            type="number" 
-            class="form-control" 
-            placeholder="รับ...คน" 
-            aria-label="Text input" 
-            id="countInput" 
-            name="_receive" 
-            readonly
-            ondblclick="this.removeAttribute('readonly'); this.style.cursor = 'text';" 
-            onblur="this.setAttribute('readonly', true); this.style.cursor = 'pointer'; " 
-            style="cursor: pointer;"
-        >
-        </div>
+    <input type="text" class="form-control" value="แก้ไขจากปีที่มีในฐานข้อมูลแล้ว" readonly>
+
+    <select class="form-select" id="_year1" name="reid" onchange="handleSelectChange(this)">
+        <option value="dontChange" selected>ภาคการศึกษา</option>
+        <?php foreach ($num_receive_per_year as $_year){
+            echo '<option value="'.$_year['reid'].'" data-received="'.$_year['received'].'">'.
+                $_year['term'].'/'.$_year['year'].
+                '</option>';        }?>
+    </select>
+
+    <input type="number" class="form-control" id="_term1_edit" name="_term1_edit" style="display:none;">
+    <input type="number" class="form-control" id="_year1_edit" name="_year1_edit" style="display:none;">
+    <input type="number" class="form-control" id="receive_before" name="receive_before" style="display:none;">
+
+    <input type="number"
+        class="form-control"
+        placeholder="รับ...คน"
+        id="_receive"
+        name="_receive"
+        readonly
+        ondblclick="this.removeAttribute('readonly'); this.style.cursor='text';"
+        onblur="this.setAttribute('readonly', true); this.style.cursor='pointer';"
+        style="cursor: pointer;"
+    >
+
+    <button class="form-control" type="button" onclick="deleteSemester('config/delete.php')" style="color: red;">
+
+        ลบข้อมูลเทอมนี้
+    </button>
+
+</div>
+
 
         <div class="input-group mb-3">
             <input type="text" class="form-control"  value="เพิ่มปีการศึกษาใหม่" ria-label="Text input"  readonly>
@@ -288,7 +309,7 @@ $establishment= $query->establishment();
 
 
         <div class="d-flex justify-content-between mt-3">
-            <button type="submit" class="btn btn-danger w-100 me-2" onclick="deletedata('config/delete.php')" role="button">ลบ</button>
+            <button type="submit" class="btn btn-danger w-100 me-2" onclick="deletedata('config/delete.php')" role="button">ลบข้อมูลสถานที่นี้</button>
             
             <button type="submit" class="btn btn-warning w-100 ms-2" onclick="modifydata('config/modify_datadb.php')" role="button">บันทึกการแก้ไข</button>
         </div>
@@ -386,7 +407,17 @@ $establishment= $query->establishment();
     </div>
 
 <script>
-    
+        const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+        const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
+        var map;
+        var openPopupBtn = document.getElementById('openPopupBtn');
+        var closePopupBtn = document.getElementById('closePopupBtn');
+        var popup = document.getElementById('popup');
+        var popupOverlay = document.getElementById('popupOverlay');
+        var suggest = document.getElementById('suggest');
+        var search = document.getElementById('searchInput');
+        var suggest = document.getElementById('suggest');
+        var currentSuggestionIndex = -1;
     var province = <?php echo $jsonDataProvince; ?>;
     const result = <?php echo json_encode($result); ?>;
     const numReceivePerYear = <?php echo json_encode($num_receive_per_year); ?>;
@@ -396,7 +427,7 @@ $establishment= $query->establishment();
     const defaultValue = '<?php echo $jsonResult; ?>';
     const defaultData = JSON.parse(defaultValue);
     
-   
+
 </script>
 <script src="js/ModifyData.js"></script>
 </body>

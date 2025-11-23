@@ -8,6 +8,7 @@ $jsonDataFacuty = json_encode($fucn_query);
 $region = $query->selectRegion();
 $establishment= $query->establishment();
 $facuty_select = $query->facutyTable();
+$Year = $query->selectYearFromReceiveTable();
 
 if (isset($_GET['func']) && $_GET['func'] == 3 ) {
     require 'config/fetchdata.php';
@@ -34,71 +35,68 @@ header('Cache-Control: public, max-age=3600'); // Cache for 1 hour
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="js/page_search2.js"></script>
     <link href="css/table_inSearch_page.css" rel="stylesheet">
+    
 </head>
 
 <body id = myBody>
   <script>
-const body = document.getElementById("myBody");
-body.style.backgroundImage = "url('images/IMG_1216.JPG')";
-body.style.backgroundSize = "100% auto"; // ปรับตามความกว้างเท่านั้น
-body.style.backgroundRepeat = "no-repeat";
-body.style.backgroundPosition = "center top"; // หรือ "center top"
-body.style.fontFamily = "Arial, sans-serif";
+        const body = document.getElementById("myBody");
+        body.style.backgroundImage = "url('images/IMG_1216.JPG')";
+        body.style.backgroundSize = "100% auto"; // ปรับตามความกว้างเท่านั้น
+        body.style.backgroundRepeat = "no-repeat";
+        body.style.backgroundPosition = "center top"; // หรือ "center top"
+        body.style.fontFamily = "Arial, sans-serif";
   </script>
       
-<div class="search-bar">
+
                               
         <?php include 'navbar.php'; ?>
        <!-- การ์ด -->
-
+    <div class="container">
        <div class='container-welcome-title'>
-        <div class='title-welcome'>
+        <div class='title-welcome mt-4'>
             <h1>ระบบฐานข้อมูลฝึกงาน</h1>
             <p>คณะวิทยาศาสตร์การแพทย์</p>
             <p>มหาวิทยาลัยนเรศวร</p>
         </div>
         <div class="rectangle-container">
             <?php $i = 1; 
-          $colorMap = [
-    'พยาธิวิทยากายวิภาค' => '#7ecf9d',   // medium pastel green
-    'วิทยาศาสตร์การแพทย์' => '#6ec5e9',   // medium pastel blue
-    'จุลชีววิทยา' => '#ffba66',            // medium pastel orange
-    'ชีวเคมีและชีววิทยาโมเลกุล' => '#c59ce6', // medium pastel violet
-];
+                    $colorMap = [
+                                    'พยาธิวิทยากายวิภาค' => '#7ecf9d',   // medium pastel green
+                                    'วิทยาศาสตร์การแพทย์' => '#6ec5e9',   // medium pastel blue
+                                    'จุลชีววิทยา' => '#ffba66',            // medium pastel orange
+                                    'ชีวเคมีและชีววิทยาโมเลกุล' => '#c59ce6', // medium pastel violet
+                                ];
 
 
-             foreach ($fucn_query as $facuty) {
-                if ($i > 6){
-                    break;
-                }
-                    $bgColor = isset($colorMap[$facuty['f_major']]) ? $colorMap[$facuty['f_major']] : 'lightgray';
-                    echo "<a onclick='fetchData(this)' class='rectangle'  style='background-color: $bgColor;  '
-                    value='".htmlspecialchars($facuty['fid'])."'><h3>".htmlspecialchars($facuty['f_major']).
-                    "</h3><p>รับแล้ว ".htmlspecialchars($facuty['total'])." ตำแหน่ง</p></a> "    ;
-                    $i++;
-                    }
-                ?>                
+                        foreach ($fucn_query as $facuty) {
+                            if ($i > 6){
+                                break;
+                            }
+                                $bgColor = isset($colorMap[$facuty['f_major']]) ? $colorMap[$facuty['f_major']] : 'lightgray';
+                                echo "<a onclick='fetchData(this)' class='rectangle'  style='background-color: $bgColor;  '
+                                value='".htmlspecialchars($facuty['fid'])."'><h3>".htmlspecialchars($facuty['f_major']).
+                                "</h3><p>รับแล้ว ".htmlspecialchars($facuty['total'])." ตำแหน่ง</p></a> "    ;
+                                $i++;
+                                }
+            ?>                
         </div>
        </div>
-<div class='containersearch'>
+<div class='containersearch mx-auto'>
 
     <div class="eachrow">
     
-    <div class="card-body p-0">
-                <form id="search-form" onsubmit="handleSubmit(event)">
-                    <div class="row">
-                        <style>
-                           
-                        </style>
+    <div class="card-body p-0 mx-auto">
+                <form id="search-form "  onsubmit="handleSubmit(event)">
+                    <div class="row g-3 ">
                          
-                        <div class="search-bars">
-                        <input type="text" class="form-control" id="location" placeholder="ชื่อสถานที่..." aria-label="Text input">
-                            <div class="search-bar">
-                                    
-                            
-                                    </div>
-                                <div class="search-bar">
-                                    <select class="form-control" id="regionSelect">
+                        
+                            <div class="search-bar col-12 col-md-6 col-lg-4 ">
+                                    <input type="text" class="form-control" id="location" placeholder="ชื่อสถานที่..." aria-label="Text input">
+                                
+                            </div>
+                            <div class="search-bar col-12 col-md-6 col-lg-4 mx-auto">
+                                    <select class="form-control mw-100" id="regionSelect">
                                         <option  value="allr" >ภูมิภาค(ทั้งหมด)</option>
                                         <?php 
                                             foreach ($region as $row) {
@@ -109,10 +107,10 @@ body.style.fontFamily = "Arial, sans-serif";
 
                                     </select>
                         
-                                </div>
+                            </div>
                                 
                                
-                                <div class="search-bar">
+                            <div class="search-bar col-12 col-md-6 col-lg-4 ">
                                     <select class="form-control" id="establishment" >
                                         <option value="allf">ประเภทสถานประกอบการ(ทั้งหมด)</option>
                                         <?php  
@@ -127,7 +125,7 @@ body.style.fontFamily = "Arial, sans-serif";
                                     </select>
                         
                                 </div>
-                                <div class="search-bar">
+                                <div class="search-bar col-12 col-md-6 col-lg-4 ">
                                     <select class="form-control select-branch" id="branchSelect">
                                         <option value="allp">สาขาวิชา(ทั้งหมด)</option>
                                         <?php  
@@ -141,8 +139,32 @@ body.style.fontFamily = "Arial, sans-serif";
                                     </select>
                         
                                 </div>
+
+                                <div class="search-bar col-12 col-md-6 col-lg-4 ">
+                                    <select class="form-control select-branch" id="yearSelect">
+                                        <option value="all">ปีการศึกษา(ทั้งหมด)</option>
+                                        <?php  
+                                        foreach ($Year as $Y) {
+                                                print_r($Y);
+                                                
+                                                echo "<option value='".$Y['year']."'>".$Y['year']."</option>";
+                                            
+                                        }
+                                        ?>
+                                    </select>
+                        
+                                </div>
+                                <div class="search-bar col-12 col-md-6 col-lg-4 ">
+                                    <select class="form-control select-branch" id="semesterSelect">
+                                        <option value="all">ภาคการศึกษา(ทั้งหมด)</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+  
+                                    </select>
+                        
+                                </div>
  
-                        </div>
+                        
                         <button type="submit" class="btn btn-base search-bar-btn">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                         </button>  
@@ -153,9 +175,12 @@ body.style.fontFamily = "Arial, sans-serif";
                 </form>
             </div> 
     </div>
+    </div>
+    </div>
+
 
               <!-- ได้รับคำสั่งจากหน้า นี้ -->                              
-    <div class="eachrow w-100" id="detail_internship">
+    <div class="eachrow w-100 mx-auto" id="detail_internship">
         <?php try { 
             if(isset($datafrommap) && $datafrommap) { 
                 foreach($datafrommap as $data) {  ?>
@@ -201,7 +226,7 @@ body.style.fontFamily = "Arial, sans-serif";
         } ?>
     </div>
     
-  </div>
+ 
  
 
     <!-- Modal -->
@@ -270,7 +295,7 @@ document.getElementById('exampleModal').addEventListener('hidden.bs.modal', func
         
 
             </script>
-        </div>  
+        
 
 
     </body>

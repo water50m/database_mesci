@@ -418,3 +418,44 @@ h2{
     background-color: #5c636a;
     border-color: #565e64;
 }
+/* -------------------------------------------------------------------การแสดงผลของ card และ search----------------------------------------------------------------------- */
+.search-bar .form-control {
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+}
+/* แก้ไขปัญหาการทับกัน - เพิ่มใน css/table_inSearch_page.css */
+
+
+/* สำหรับหน้าจอขนาดเล็ก */
+@media (max-width: 1045px) {
+    .rectangle-container {
+        margin-bottom: 200px !important;
+    }
+    
+    .containersearch {
+        margin-top:200px !important;
+    }
+}
+
+
+@media (max-width: 768px) {
+    .rectangle-container {
+        margin-bottom: 200px !important;
+    }
+    
+    .containersearch {
+        margin-top: 200px !important;
+        padding-top: 30px !important;
+    }
+}
+
+@media (max-width: 544px) {
+    .rectangle-container {
+        margin-bottom: 650px !important;
+    }
+    
+    .containersearch {
+        margin-top: 600px !important;
+    }
+}

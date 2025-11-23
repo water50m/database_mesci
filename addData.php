@@ -27,13 +27,15 @@ $facuty_select = $query->facutyTable();
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <title>เพิ่มข้อมูลใหม่</title>
     <script src="https://api.longdo.com/map/?key=bff66f6baa485edba09ca806b597ed30"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 </head>
 <body>
     <?php include 'navbar.php'; ?>
 
     <div class="container2">
-        <form action="config/addDatadb.php" method="POST" enctype="multipart/form-data">
+        <form  id="myForm" method="POST" enctype="multipart/form-data">
             <div class="box">
                 <div class="mb-3">
                     <label class="form-label">
@@ -137,8 +139,8 @@ $facuty_select = $query->facutyTable();
                 <div class="mb-3">
                     <p class="form-label">พิกัด (หมุดจะปักไว้ที่จังหวัดนั้นๆ กรณีที่ไม่ได้ระบุพิกัดแบบเจาะจง)</p>
                     <div class="input-group">
-                        <input type="number" step="0.000001" class="form-control" aria-label="Latitude" placeholder="ละติจูด" name="_latitude" id="latitude">
-                        <input type="number" step="0.000001" class="form-control" aria-label="Longitude" placeholder="ลองจิจูด" name="_longitude" id="longitude">
+                        <input type="number" step="0.000000001" class="form-control" aria-label="Latitude" placeholder="ละติจูด" name="_latitude" id="latitude">
+                        <input type="number" step="0.000000001" class="form-control" aria-label="Longitude" placeholder="ลองจิจูด" name="_longitude" id="longitude">
                     </div>
                 </div>
                 <div class="mb-3">
@@ -164,18 +166,30 @@ $facuty_select = $query->facutyTable();
                 </div>
 
                 <div class="mb-3">
-                    <h5 class="form-label">ขอข่ายงาน</h5>
+                    <h5 class="form-label">ขอบข่ายงาน</h5>
                     <div class="input-group">
                         <textarea class="form-control" id="floatingTextarea3" style="height: 100px" name="_scope"></textarea>
                     </div>
                 </div>
 
-                <h5 class="form-label">จำนวนที่รับ</h5>
+                <h5 class="form-label">
+                    จำนวนที่รับ
+                     <i class="bi bi-info-circle fs-6 ms-1"
+                     tabindex="0"
+                    data-bs-toggle="popover"
+                    data-bs-trigger="focus"
+                    data-bs-content="สามารถบัทึกข้อมูล 2 ภาคการศึกษาพร้อมกันได้ 
+                                    ถ้าต้องการบันทึกเพียง 1 ภาคการศึกษาให้กรอกข้อมูลเฉพาะในส่วนของภาคการศึกษาที่ต้องการบันทึก และส่วนที่เหลือให้ปล่อยว่างไว้"
+                    role="button"
+                    style="cursor: pointer;"></i>
+                    
+                </h5>
+
                 <div class="input-group mb-3">
                     <span class="form-control">
                         ภาคการศึกษาที่ 1
                     </span>
-                    <input type="number" class="form-control" placeholder="ปีการศึกษา..." aria-label="Text input" name="_year1">
+                    <input type="number" class="form-control" placeholder="ปีการศึกษา...XXXX" aria-label="Text input" name="_year1">
                     <input type="number" class="form-control" placeholder="รับ...คน" aria-label="Text input" name="_count1">
                 </div>
 
@@ -183,7 +197,7 @@ $facuty_select = $query->facutyTable();
                     <span class="form-control">
                         ภาคการศึกษาที่ 2
                     </span>
-                    <input type="number" class="form-control" placeholder="ปีการศึกษา..." aria-label="Text input" name="_year2">
+                    <input type="number" class="form-control" placeholder="ปีการศึกษา...XXXX" aria-label="Text input" name="_year2">
                     <input type="number" class="form-control" placeholder="รับ...คน" aria-label="Text input" name="_count2">
                 </div>
 
@@ -280,6 +294,8 @@ $facuty_select = $query->facutyTable();
         </div>
     </div>
     <script>
+        const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]')
+        const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl))
         var map;
         var openPopupBtn = document.getElementById('openPopupBtn');
         var closePopupBtn = document.getElementById('closePopupBtn');

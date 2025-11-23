@@ -82,14 +82,16 @@
 
 function handleSubmit(event) {
     event.preventDefault(); // ป้องกันการส่งฟอร์มแบบธรรมดา
-
+    
     // ดึงค่าจาก input และ select
     const location = document.getElementById('location').value;
 
     const region = document.getElementById('regionSelect').value;
     const establishment = document.getElementById('establishment').value;
     const branch = document.getElementById('branchSelect').value;
-    console.log(establishment);
+    const semester = document.getElementById('semesterSelect').value;
+    const year = document.getElementById('yearSelect').value;
+
     rights = ``;
 
     // ส่งค่าผ่าน fetch API
@@ -98,7 +100,7 @@ function handleSubmit(event) {
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `&location=${encodeURIComponent(location)}&region=${encodeURIComponent(region)}&department=${encodeURIComponent(establishment)}&branch=${encodeURIComponent(branch)}`
+        body: `&location=${encodeURIComponent(location)}&region=${encodeURIComponent(region)}&department=${encodeURIComponent(establishment)}&branch=${encodeURIComponent(branch)}&semester=${encodeURIComponent(semester)}&year=${encodeURIComponent(year)}`
     })
     .then(response => {
         if (!response.ok) {
@@ -119,7 +121,8 @@ function handleSubmit(event) {
                 </div>
             `;
         } else {
-
+            console.log("data --v");
+            console.log(data.value);
         // ใช้ forEach เพื่อวนลูปตามข้อมูลใน data
         data.value.forEach(single_data => {
             
@@ -191,23 +194,41 @@ function handleCardClick(data) {
     })
     .then(data2 => {
         
-        console.log('data-2 : ',data2);
-        console.log('data-1 : ',data);
-     
+        console.log(data2);
         // ลบตารางเก่า
         deleteTable();
         // สร้างตารางเริ่มต้นสำหรับตัวเลือกแรก
-        const headers = ['ปีการศึกษา'];
-        const body = ['จำนวนรับ(คน)'];
+        const headers = ['ปีการศึกษา',"ภาคเรียนที่ 1","ภาคเรียนที่ 2","รวม"];
+        const body = {};
+        
         if(data2.value.length > 0) {
-            const firstItem = data2.value[0];
-            
-            document.getElementById('modal_id').value = firstItem.mid;
-            document.getElementById('modal_location_id').value = firstItem.location_id;
-            headers.push(firstItem.term+'/'+firstItem.year);
-            body.push(firstItem.received);
+            data2.value.forEach(item => {
+            const year = item.year;
+            const term = item.term;       // 1 หรือ 2
+            const received = item.received;
+            console.log("count ",term);
+            // เก็บค่า mid, location_id (ครั้งเดียวพอ)
+            document.getElementById('modal_id').value = item.mid;
+            document.getElementById('modal_location_id').value = item.location_id;
+
+            // 1) เชคว่า body มี item.year หรือยัง ถ้าไม่ให้สร้างใหม่
+            if (!body[year]) {
+                body[year] = [0, 0, 0];   // สร้าง [เทอม1, เทอม2]
+                
+            }
+
+            // 2) อัปเดตตำแหน่งตาม term
+            if (term == 1 ) {
+                body[year][0] = received;
+                
+            } else if (term == 2) {
+                body[year][1] = received;
+            }
+            body[year][2] = body[year][0] + body[year][1]
+        });
             updateTable(headers, body);
         }
+        
 
 
         
@@ -244,7 +265,9 @@ function deleteTable() {
 function updateTable(headers, body) {
     // ลบตารางเก่า
     deleteTable();
-    
+    // console.log('header ',headers);
+    // console.log('body ',body);
+
     // สร้างตารางใหม่
     const table = document.createElement('table');
     table.classList.add('custom-table');
@@ -261,15 +284,43 @@ function updateTable(headers, body) {
     table.appendChild(thead);
     
     // สร้างส่วนข้อมูล
+    // สร้างส่วนข้อมูล
     const tbody = document.createElement('tbody');
-    const row = document.createElement('tr');
-    body.forEach(text => {
-        const cell = document.createElement('td');
-        cell.textContent = text;
-        row.appendChild(cell);
+
+    Object.entries(body)
+        .sort((a, b) => b[0] - a[0])   // เรียงปีจากมาก → น้อย
+        .forEach(([year, terms]) => {
+            const row = document.createElement('tr');
+
+            // year cell
+            const yearCell = document.createElement('td');
+            yearCell.textContent = year;
+            row.appendChild(yearCell);
+
+            // terms (term1, term2)
+            terms.forEach((val, idx) => { 
+                const cell = document.createElement('td');
+                cell.textContent = val;
+
+                if (val != 0) {
+                    cell.style.backgroundColor = "#a6e7ad";
+                }
+                if (idx == 2){
+                    if(val == 0){
+                        cell.style.backgroundColor = "#ffffffff";
+                    }else{
+                         cell.style.backgroundColor = "#ebe484ff";
+                    }
+                }
+                row.appendChild(cell);
+            });
+
+            tbody.appendChild(row);
     });
-    tbody.appendChild(row);
+
+
     table.appendChild(tbody);
+
     
     // แสดงตาราง
     document.getElementById('table-recieve').appendChild(table);
