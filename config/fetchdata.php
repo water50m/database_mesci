@@ -150,7 +150,7 @@ if (isset($_GET['func']) && $_GET['func'] == 2 ) {
     // เตรียม statement
     // var_dump($mainWordQuery);
     // exit;
-    $mainWordQuery .= "GROUP BY d.id";
+    $mainWordQuery .= " GROUP BY d.id";
     $stmt = $conn->prepare($mainWordQuery);
 
     // bind ตัวแปรเพิ่มเติม
@@ -160,7 +160,7 @@ if (isset($_GET['func']) && $_GET['func'] == 2 ) {
 
 
     // Execute คำสั่ง SQL
-    $stmt->execute();
+    if ($stmt->execute()){
 
     // ดึงข้อมูลทั้งหมด
     $details = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -170,6 +170,14 @@ if (isset($_GET['func']) && $_GET['func'] == 2 ) {
          
         'value' => $details
     ]);
+    }
+    else {
+        echo json_encode([
+            "status" => "failed",
+            "error" => $stmt->errorInfo(),   // ข้อมูล error ของ PDO
+            "sql"   => $stmt->queryString ?? null  // ถ้าอยากดู query (ถ้ามี)
+        ]);
+    }
 }
 
 function func3($locationName){

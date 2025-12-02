@@ -118,7 +118,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
             $faculty_id = $row['id'];
-            $faculty_name = $row['major_subject']
+            $faculty_name = $row['major_subject'];
 
             // echo "พบคณะที่ตรงกับ ID: " . $faculty_id;
         } else {
@@ -137,7 +137,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt_check_duplicate_location->bind_param("si",$location,$faculty_id);
         $stmt_check_duplicate_location->execute();
         $result_duplicate_location_facuty_major = $stmt_check_duplicate_location->get_result(); 
-        if ($result_duplicate_location_facuty_major){
+        if ($result_duplicate_location_facuty_major && $result_duplicate_location_facuty_major->num_rows > 0){
 
             echo json_encode([
                 "status" => "error",

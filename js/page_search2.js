@@ -30,7 +30,6 @@
     
             // ใช้ forEach เพื่อวนลูปตามข้อมูลใน data
             data.value.forEach(single_data => {
-                console.log(single_data);
                
                 
                    
@@ -121,8 +120,7 @@ function handleSubmit(event) {
                 </div>
             `;
         } else {
-            console.log("data --v");
-            console.log(data.value);
+
         // ใช้ forEach เพื่อวนลูปตามข้อมูลใน data
         data.value.forEach(single_data => {
             
@@ -194,7 +192,6 @@ function handleCardClick(data) {
     })
     .then(data2 => {
         
-        console.log(data2);
         // ลบตารางเก่า
         deleteTable();
         // สร้างตารางเริ่มต้นสำหรับตัวเลือกแรก
@@ -206,7 +203,6 @@ function handleCardClick(data) {
             const year = item.year;
             const term = item.term;       // 1 หรือ 2
             const received = item.received;
-            console.log("count ",term);
             // เก็บค่า mid, location_id (ครั้งเดียวพอ)
             document.getElementById('modal_id').value = item.mid;
             document.getElementById('modal_location_id').value = item.location_id;
