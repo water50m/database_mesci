@@ -242,7 +242,7 @@ document.getElementById("myForm").addEventListener("submit", function(e){
             alert(data.message);  // แสดง error
         } else {
             alert("บันทึกสำเร็จ");
-            window.location.href = "success.php"; 
+            window.location.href = "search.php"; 
         }
     });
 });
